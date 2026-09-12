@@ -245,7 +245,7 @@ Horizon0427 for his [excellent hexagon wallpaper selector](https://github.com/Ho
 
 Happyzxzxz for showing me the Nix wizard way to do NixOS things.
 
-Harman1307 for [Iris](github.com/Harman1307/iris) which I have reimplemented in large parts and extended.
+Harman1307 for [Iris](https://github.com/Harman1307/iris) which I have reimplemented in large parts and extended.
 
 Achno for [Gowall](https://github.com/Achno/gowall) which I have reimplemented using Rust and similarly extended.
 
