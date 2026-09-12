@@ -46,9 +46,22 @@ RETIRED_LOCAL_PATHS = (
     "sonar-project.properties",
     "the",
 )
+PRIVATE_DEPLOYMENT_FILES = (
+    "scripts/launch-local-suite.py",
+    "scripts/stage-local-suite.py",
+    "scripts/tests/test_local_suite_launch.py",
+    "scripts/tests/test_local_suite_stage.py",
+)
 
 
 class RepositoryArtifactPolicyTests(unittest.TestCase):
+    def test_private_deployment_tools_are_absent(self):
+        present = [
+            path for path in PRIVATE_DEPLOYMENT_FILES
+            if (ROOT / path).exists() or (ROOT / path).is_symlink()
+        ]
+        self.assertEqual(present, [])
+
     def test_generated_outputs_are_absent_from_the_tracked_worktree(self):
         tracked = subprocess.run(
             ["git", "ls-files", "-z"], cwd=ROOT, check=True, capture_output=True
