@@ -12,7 +12,7 @@
 >
 > WIP: Some parts of the program does not have keyboard navigation options.
 >
-> WIP: Debian, Bazzite & NixOS versions
+> WIP: Debian & Bazzite versions
 >
 > WIP: Skwd-paper being able to be ran completely standalone without Skwd-deck organising smart features like hotplugging & restore on boot.
 
@@ -134,12 +134,24 @@ skwd-wall-v2
 
 </Details>
 
-### NixOS - WIP
+### NixOS
 
 <Details>
 <Summary>NixOS</Summary>
 
-NixOS is currently WIP. The CI/CD (or more accurately, me) is struggling a bit with flakes and I'm aiming to have NixOS supported by 6/9.
+```
+# Enable flakes if you don't already use them
+nix --extra-experimental-features 'nix-command flakes'
+
+# Install
+nix profile install github:liixini/skwd-wall/nix#default
+
+# If you're using KDE Plasma you need the KDE Plasma plugin
+nix profile install github:liixini/skwd-wall/nix#skwd-paper-plasma
+
+# run with (or put in a keybind, convenient script... up to you)...
+skwd-wall-v2
+```
 
 </Details>
 
