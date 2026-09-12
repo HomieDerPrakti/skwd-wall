@@ -21,25 +21,42 @@
 ![Arch Linux](https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=archlinux&logoColor=white)
 ![CachyOS](https://img.shields.io/badge/CachyOS-00AA88?style=for-the-badge&logo=cachyos&logoColor=white)
 ![Fedora](https://img.shields.io/badge/Fedora-51A2DA?style=for-the-badge&logo=fedora&logoColor=white)
+![Bazzite](https://img.shields.io/badge/Bazzite-6554C0?style=for-the-badge)
 ![NixOS](https://img.shields.io/badge/NixOS-5277C3?style=for-the-badge&logo=nixos&logoColor=white)
 ![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
+![Pop!_OS](https://img.shields.io/badge/Pop!__OS-48B9C7?style=for-the-badge&logo=popos&logoColor=white)
 ![Linux Mint](https://img.shields.io/badge/Linux_Mint-86BE43?style=for-the-badge&logo=linuxmint&logoColor=white)
+
+![Niri](https://img.shields.io/badge/Niri-4B83CD?style=for-the-badge&logo=niri&logoColor=white)
+![Hyprland](https://img.shields.io/badge/Hyprland-58E1FF?style=for-the-badge&logo=hyprland&logoColor=black)
+![KDE Plasma](https://img.shields.io/badge/KDE_Plasma-1D99F3?style=for-the-badge&logo=kdeplasma&logoColor=white)
+![Mango](https://img.shields.io/badge/Mango-FF9900?style=for-the-badge&logo=wayland&logoColor=white)
+![Sway](https://img.shields.io/badge/Sway-68751C?style=for-the-badge&logo=sway&logoColor=white)
+![COSMIC](https://img.shields.io/badge/COSMIC-FFAD00?style=for-the-badge&logo=system76&logoColor=black)
+![labwc](https://img.shields.io/badge/labwc-555555?style=for-the-badge&logo=wayland&logoColor=white)
 
 ### A video is a thousand pictures - Sun Tzu (probably)
 
 https://github.com/user-attachments/assets/336fec28-0cc1-4f19-adf3-fc80652b6a13
 
 ## What is Skwd-wall?
-<img alt="But it can be better" src="https://github.com/user-attachments/assets/851e0d8f-2e16-4253-99a8-c76aa8537d71" />
+> Something so beautiful and aesthetic yet so lightweight to run amazingly on a celeron
+> 
+> You have returned the hope I lost
+>
+> \- FutureKismo
 
 Skwd-wall v2 is what happens when someone says "hey so your wallpaper program is built in Quickshell and it is great but Quickshell is so-so for my 8 GB laptop, are you going to rewrite it?" and I go "challenge accepted".
+
+### What does it do besides apply wallpapers? well...
 
 <Details>
 <Summary>What Skwd-wall v2 actually does</Summary>
 
 - Displays images, videos and supported Wallpaper Engine scenes.
 - Has four completely different GPU-rendered pickers: Slices, Geometric, Wall and Sandy. Because why not?
+- Has out of the box colour theming for popular applications including KDE Plasma, but can easily be extended with Matugen scripts.
 - Starts in about 150 ms, stops rendering when idle and exits completely when closed meaning no resources required unless you're switching wallpapers.
 - Includes 39 (I counted them myself!) wallpaper transitions, from normal fades to turning every pixel into sand and firing it through a Möbius strip.
 - Snapchat filters! ...I mean, quick Photoshop effects that you might want to apply and create new wallpapers from. You can stack several of them on top of each other too.
@@ -61,7 +78,11 @@ Skwd-wall v2 is what happens when someone says "hey so your wallpaper program is
 
 </Details>
 
-The stats:
+### What does it work on?
+Skwd-wall has intentional wide support and targets all major distributions, Desktop Environments and Wayland compositors.
+However it does not support GNOME or Linux Mint's Cinnamon (yet!).
+
+### The stats
 ~80% less RAM usage than the other video wallpaper daemons on average (check the performance chart for details) and for images I'm on par with awww (awww is an amazing piece of software, and if it supported video Skwd-paper would probably never have been built).
 
 <img width="1320" height="3530" alt="performance" src="https://github.com/user-attachments/assets/cfe5b00c-412d-4b03-b786-79309cff00c0" />
