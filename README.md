@@ -8,13 +8,9 @@
 >
 > Current known issues / WIP:
 >
-> WIP: Wallpaper Engine inconsistencies / bugs in comparison to Linux Wallpaper Engine. This part of the application is still Work in Progress and does not have perfect coverage yet.
->
-> WIP: Some parts of the program does not have keyboard navigation options.
+> WIP: Wallpaper Engine inconsistencies / bugs in comparison to (the real) Wallpaper Engine. This part of the application is still Work in Progress and does not have perfect coverage yet. Please report any issues you may find with Wallpaper Engine scenes ❤️
 >
 > WIP: Debian & Bazzite versions
->
-> WIP: Skwd-paper being able to be ran completely standalone without Skwd-deck organising smart features like hotplugging & restore on boot.
 
 ![Stars](https://img.shields.io/github/stars/liixini/skwd-wall?style=for-the-badge)
 ![License](https://img.shields.io/github/license/liixini/skwd-wall?style=for-the-badge)
