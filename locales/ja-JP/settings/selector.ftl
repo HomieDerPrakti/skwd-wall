@@ -277,3 +277,9 @@ settings-selector-hand-skew-label = 傾き
 settings-selector-hand-skew-desc = カードの輪郭を平行四辺形にせん断します。単位は水平方向のずれのピクセルです。
 settings-selector-hand-backdrop-blur-label = 背景のぼかし
 settings-selector-hand-backdrop-blur-desc = 背景のぼかしの半径です（100 = デフォルト）。
+
+settings-selector-start-position-label = 開始位置
+settings-selector-start-position-desc = 先頭、最後に適用した壁紙、または前回閲覧を終えた位置から開きます。現在のフィルターを使用します。
+settings-selector-start-position-beginning = 先頭
+settings-selector-start-position-applied = 最後に適用した壁紙
+settings-selector-start-position-browsing = 前回の閲覧位置

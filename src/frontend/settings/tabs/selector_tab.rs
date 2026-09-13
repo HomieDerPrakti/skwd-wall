@@ -9,6 +9,16 @@ pub(super) fn tab_selector(builder: &mut Builder<'_>) {
     let cfg = builder.cfg;
     let mode = cfg.display_mode();
     builder.card(tr("settings-selector-layout-card"), "");
+    builder.dropdown(
+        tr("settings-selector-start-position-label"),
+        tr("settings-selector-start-position-desc"),
+        keys::selector::START_POSITION,
+        &[
+            ("beginning", tr("settings-selector-start-position-beginning")),
+            ("applied", tr("settings-selector-start-position-applied")),
+            ("browsing", tr("settings-selector-start-position-browsing")),
+        ],
+    );
     let display_mode = crate::contracts::picker::Mode::from_key(&mode).as_key();
     builder.row(
         tr("settings-selector-display-mode-label"),

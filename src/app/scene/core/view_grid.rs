@@ -23,6 +23,14 @@ impl SceneCore {
         let placements = self.grid_placements(ctx, total_w);
         let content_h = placements.iter().map(|place| place.2 + place.4).fold(0.0_f32, f32::max);
         let max_scroll = (content_h - view_h).max(0.0);
+        if self.layout_camera_anchor {
+            if let Some((_, _, y, _, height)) =
+                placements.iter().find(|place| place.0 == self.current)
+            {
+                self.camera.snap((y + height * 0.5 - view_h * 0.5).clamp(0.0, max_scroll));
+            }
+            self.layout_camera_anchor = false;
+        }
         let target = self.camera.target.clamp(0.0, max_scroll);
         self.camera.retarget(target);
         let cam = self.camera.x;

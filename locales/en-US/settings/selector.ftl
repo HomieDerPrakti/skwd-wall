@@ -278,3 +278,9 @@ settings-selector-hand-skew-label = Skew
 settings-selector-hand-skew-desc = Shear the card outline into a parallelogram, in pixels of horizontal offset.
 settings-selector-hand-backdrop-blur-label = Backdrop blur
 settings-selector-hand-backdrop-blur-desc = Blur radius of the backdrop, 100 = default.
+
+settings-selector-start-position-label = Start position
+settings-selector-start-position-desc = Open at the beginning, at the last wallpaper you applied, or where you stopped browsing. Uses the current filters.
+settings-selector-start-position-beginning = Beginning
+settings-selector-start-position-applied = Last applied wallpaper
+settings-selector-start-position-browsing = Last browsing position

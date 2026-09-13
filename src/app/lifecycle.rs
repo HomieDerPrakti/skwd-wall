@@ -2,6 +2,7 @@ use super::App;
 
 impl App {
     pub(in crate::app) fn on_hidden(&mut self) {
+        self.save_browse_position();
         self.panels.transition_preview.stop();
         self.release_settings_preview();
         self.theme.suspended = true;

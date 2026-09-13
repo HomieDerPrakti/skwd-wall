@@ -14,6 +14,7 @@ mod runtime;
 mod scene;
 mod scene_properties;
 mod search;
+mod selection_restore;
 mod settings;
 mod tag_editor;
 mod theme;

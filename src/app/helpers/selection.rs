@@ -46,6 +46,12 @@ pub(crate) fn apply_task(app: &mut App, filtered_index: usize) -> Task<Message> 
     let neighbors = collect_neighbors(app, &item.path);
     let params = apply_params(item, neighbors);
     info!("apply {} ({})", item.name, item.kind.as_str());
+    if matches!(
+        app.config.str_path(skwd_config::keys::selector::START_POSITION).as_str(),
+        "applied" | "browsing"
+    ) {
+        app.config.save_key(skwd_config::keys::selector::LAST_APPLIED_KEY, json!(item.key));
+    }
     app.daemon.client.call("wall.apply", params.clone());
     app.daemon.last_wallpaper = Some(params);
     if app.scene.mode == crate::frontend::scene::layout::Mode::Sandy

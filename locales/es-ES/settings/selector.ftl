@@ -278,3 +278,9 @@ settings-selector-hand-skew-label = Sesgo
 settings-selector-hand-skew-desc = Inclina el contorno de la carta hasta un paralelogramo, en píxeles de desplazamiento horizontal.
 settings-selector-hand-backdrop-blur-label = Desenfoque del fondo
 settings-selector-hand-backdrop-blur-desc = Radio de desenfoque del fondo, 100 = predeterminado.
+
+settings-selector-start-position-label = Posición inicial
+settings-selector-start-position-desc = Abre al principio, en el último fondo aplicado o donde dejaste de navegar. Usa los filtros actuales.
+settings-selector-start-position-beginning = Principio
+settings-selector-start-position-applied = Último fondo aplicado
+settings-selector-start-position-browsing = Última posición de navegación

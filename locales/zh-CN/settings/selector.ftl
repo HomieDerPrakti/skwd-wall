@@ -277,3 +277,9 @@ settings-selector-hand-skew-label = 倾斜
 settings-selector-hand-skew-desc = 将卡片轮廓错切成平行四边形，单位为水平偏移像素。
 settings-selector-hand-backdrop-blur-label = 背景模糊
 settings-selector-hand-backdrop-blur-desc = 背景的模糊半径，100 = 默认。
+
+settings-selector-start-position-label = 起始位置
+settings-selector-start-position-desc = 从开头、上次应用的壁纸或上次浏览的位置打开。使用当前筛选条件。
+settings-selector-start-position-beginning = 开头
+settings-selector-start-position-applied = 上次应用的壁纸
+settings-selector-start-position-browsing = 上次浏览的位置

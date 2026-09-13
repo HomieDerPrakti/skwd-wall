@@ -45,7 +45,8 @@ pub(crate) fn exit_picker(app: &mut App) -> ! {
 }
 
 #[cfg(not(target_os = "linux"))]
-pub(crate) fn exit_picker(_app: &mut App) -> ! {
+pub(crate) fn exit_picker(app: &mut App) -> ! {
+    app.save_browse_position();
     crate::hard_exit(0)
 }
 

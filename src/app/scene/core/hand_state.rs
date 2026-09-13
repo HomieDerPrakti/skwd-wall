@@ -441,7 +441,7 @@ impl SceneCore {
     }
 
     pub(super) fn hand_start_middle(&mut self, count: usize) {
-        if self.current == 0 && count > 0 {
+        if !self.user_engaged && self.current == 0 && count > 0 {
             self.current = (self.xp.hand.count / 2).min(count - 1);
         }
         if self.hand.deal.is_none() {

@@ -4,6 +4,7 @@ mod diagnostics;
 mod events;
 mod ipc;
 mod library;
+mod position;
 mod results;
 mod semantic;
 mod settings;

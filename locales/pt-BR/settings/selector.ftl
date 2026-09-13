@@ -277,3 +277,9 @@ settings-selector-hand-skew-label = Inclinação
 settings-selector-hand-skew-desc = Inclina o contorno da carta em um paralelogramo, em pixels de deslocamento horizontal.
 settings-selector-hand-backdrop-blur-label = Desfoque do fundo
 settings-selector-hand-backdrop-blur-desc = Raio de desfoque do fundo, 100 = padrão.
+
+settings-selector-start-position-label = Posição inicial
+settings-selector-start-position-desc = Abra no início, no último papel de parede aplicado ou onde você parou de navegar. Usa os filtros atuais.
+settings-selector-start-position-beginning = Início
+settings-selector-start-position-applied = Último papel de parede aplicado
+settings-selector-start-position-browsing = Última posição de navegação

@@ -284,6 +284,7 @@ fn compose_picker(
         &mut take_card(&mut general, tr("settings-general-behaviour-card")),
         &[tr("settings-general-close-on-selection-label")],
     ));
+    general_rows.extend(take_rows(&mut layout, &[tr("settings-selector-start-position-label")]));
     section(&mut out, tr("settings-section-general"), "", general_rows);
 
     let _filter_motion = take_rows(&mut layout, &[tr("settings-selector-filter-motion-label")]);

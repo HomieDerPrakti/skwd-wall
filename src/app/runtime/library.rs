@@ -35,6 +35,7 @@ impl App {
         self.rebuild_folder_options();
         self.refilter();
         let count = self.library_session.library.catalog().items.len();
+        self.restore_start_position();
         self.preview_resources.atlas = Some(AtlasMap::new(count.max(1)));
         if count == 0 {
             warn!(

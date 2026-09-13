@@ -277,3 +277,9 @@ settings-selector-hand-skew-label = Наклон
 settings-selector-hand-skew-desc = Скосить контур карты в параллелограмм, в пикселях горизонтального смещения.
 settings-selector-hand-backdrop-blur-label = Размытие фона
 settings-selector-hand-backdrop-blur-desc = Радиус размытия фона, 100 = по умолчанию.
+
+settings-selector-start-position-label = Начальная позиция
+settings-selector-start-position-desc = Открывать начало списка, последние применённые обои или место, где вы остановились. Используются текущие фильтры.
+settings-selector-start-position-beginning = Начало списка
+settings-selector-start-position-applied = Последние применённые обои
+settings-selector-start-position-browsing = Последняя позиция просмотра

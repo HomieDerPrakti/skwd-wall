@@ -159,6 +159,20 @@ impl SceneCore {
         self.reset_to_index(0, count);
     }
 
+    pub fn restore_selection(&mut self, idx: usize, count: usize, camera: Option<f32>) {
+        if self.user_engaged || count == 0 {
+            return;
+        }
+        self.user_engaged = true;
+        self.reset_to_index(idx, count);
+        self.layout_camera_anchor = matches!(self.mode, Mode::Slices | Mode::Hex | Mode::Grid);
+        if let Some(camera) = camera.filter(|value| value.is_finite()) {
+            self.camera.snap(camera);
+            self.layout_camera_anchor = false;
+            self.sandy.cam_free = self.mode == Mode::Sandy;
+        }
+    }
+
     pub fn reset_to_index(&mut self, idx: usize, count: usize) {
         self.card.widths.clear();
         self.card.hex_scales.clear();

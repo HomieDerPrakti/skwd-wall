@@ -55,6 +55,7 @@ pub(crate) struct LibrarySession {
     pub(crate) filter_transition_pending: bool,
     pub(crate) visible_count: usize,
     pub(crate) list_dirty: bool,
+    pub(crate) selection_restored: bool,
 }
 
 impl LibrarySession {
@@ -71,6 +72,7 @@ impl LibrarySession {
             filter_transition_pending: false,
             visible_count: 0,
             list_dirty: false,
+            selection_restored: false,
         }
     }
 }
