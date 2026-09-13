@@ -1,3 +1,4 @@
+mod app_theme;
 pub(super) mod control;
 #[allow(clippy::module_inception)]
 mod folio;

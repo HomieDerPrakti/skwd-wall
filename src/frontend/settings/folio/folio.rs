@@ -57,6 +57,7 @@ pub struct SourceCtx<'a> {
     pub output_statuses: &'a [crate::contracts::daemon::OutputStatus],
     pub output_previews: &'a HashMap<String, String>,
     pub library_watch: Option<&'a crate::contracts::daemon::LibraryWatchStatus>,
+    pub app_themes: Option<&'a crate::contracts::daemon::AppThemesResult>,
     pub playback: Option<&'a crate::contracts::daemon::PlaybackStatus>,
     pub thumbnail_task: Option<&'a crate::contracts::daemon::TaskStatus>,
     pub analysis: String,
@@ -84,6 +85,7 @@ impl SourceCtx<'_> {
             self.output_previews,
             self.library_watch,
             self.playback,
+            self.app_themes,
         );
         if let Some(task) = self.thumbnail_task {
             for row in cards.iter_mut().flat_map(|(_, rows)| rows) {
@@ -442,6 +444,7 @@ pub fn picker_layout_workbench<'a>(
         "grid" | "wall" => "settings-selector-mode-wall",
         "hex" => "settings-selector-mode-hex",
         "sandy" | "nova" => "settings-selector-mode-sandy",
+        "hand" => "settings-selector-mode-hand",
         _ => "settings-selector-mode-slices",
     });
     let page_actions = row![
@@ -548,6 +551,16 @@ fn picker_layout_field<'a>(
     fade: f32,
     motion: MotionProfile,
 ) -> Element<'a, Message> {
+    if let Control::AppTheme { app } = &setting.control {
+        return super::app_theme::view(
+            app.clone(),
+            index,
+            focus.expanded_details.contains(&format!("app-theme:{}", app.id)),
+            focus.on(SettingsFocus::Controls, index).0,
+            scale,
+            palette,
+        );
+    }
     if setting.control.is_inline_editor() {
         let (focused, _) = focus.on(SettingsFocus::Controls, index);
         return compact_inline_field(
@@ -1565,6 +1578,16 @@ fn field<'a>(
     fade: f32,
     motion: MotionProfile,
 ) -> Element<'a, Message> {
+    if let Control::AppTheme { app } = &setting.control {
+        return super::app_theme::view(
+            app.clone(),
+            index,
+            focus.expanded_details.contains(&format!("app-theme:{}", app.id)),
+            focus.on(SettingsFocus::Controls, index).0,
+            scale,
+            palette,
+        );
+    }
     if setting.control.is_inline_editor() {
         let (focused, _) = focus.on(SettingsFocus::Controls, index);
         return compact_inline_field(

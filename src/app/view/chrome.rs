@@ -62,7 +62,7 @@ pub(super) fn card_h(app: &App, vh: f32) -> f32 {
         Mode::Slices => app.scene.sp.slice_h + 110.0,
         Mode::Grid => app.scene.gp.total_h() + 85.0,
         Mode::Hex => app.scene.hp.content_h() + 140.0,
-        Mode::Sandy => (vh - 90.0).max(200.0),
+        Mode::Sandy | Mode::Hand => (vh - 90.0).max(200.0),
     }
 }
 

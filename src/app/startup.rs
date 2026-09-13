@@ -354,8 +354,40 @@ pub(crate) fn layout_params(config: &Config) -> LayoutParams {
             grain: config.sandy_grain(),
             video_out_live: config.sandy_video_out_live(),
         },
+        hand: hand_params(config),
     };
     LayoutParams { mode, slices: sp, grid: gp, hex: hp, extra: xp }
+}
+
+fn hand_params(config: &Config) -> crate::frontend::scene::hand::HandParams {
+    use crate::frontend::scene::hand::{Axis, Cut, DealMode, HandParams, Variance};
+    let (offset_x, offset_y) = config.hand_position();
+    HandParams {
+        offset_x,
+        offset_y,
+        count: config.hand_count(),
+        card_w: config.hand_card_width(),
+        card_h: config.hand_card_height(),
+        spread: config.hand_spread(),
+        ribbons: config.hand_ribbons(),
+        fan_angle: config.hand_fan_angle(),
+        fan_roll: config.hand_fan_roll(),
+        arch: config.hand_arch(),
+        radius: config.hand_corner_radius(),
+        skew: config.hand_skew(),
+        blur: config.hand_backdrop_blur(),
+        axis: Axis::from_key(&config.hand_ribbon_axis()),
+        cut: Cut::from_key(&config.hand_cut()),
+        variance: Variance::from_key(&config.hand_cut_variance()),
+        deal_mode: DealMode::from_key(&config.hand_move()),
+        moves: config.hand_moves(),
+        speed: config.hand_speed(),
+        tilt: config.hand_tilt(),
+        perspective: config.hand_perspective(),
+        ghosts: config.hand_ghosts(),
+        bob: config.hand_bob(),
+        backdrop: config.hand_backdrop(),
+    }
 }
 
 pub(crate) fn startup_filters(config: &Config) -> Filters {

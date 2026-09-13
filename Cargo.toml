@@ -37,6 +37,7 @@ iced_wgpu = { version = "0.14", default-features = false, features = ["texture-c
 ash = { version = "0.38", default-features = false }
 wgpu = { version = "27", default-features = false, features = ["std", "parking_lot", "vulkan", "wgsl"] }
 bytemuck = { version = "1", features = ["derive"] }
+glam = "0.25"
 bit-set = { version = "0.8", features = ["std"] }
 bit-vec = { version = "0.8", features = ["std"] }
 getrandom = { version = "0.3", features = ["std"] }

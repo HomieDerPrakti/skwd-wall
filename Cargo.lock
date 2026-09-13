@@ -3012,6 +3012,7 @@ dependencies = [
  "fluent",
  "futures-channel",
  "getrandom 0.3.4",
+ "glam",
  "iced",
  "iced_layershell",
  "iced_runtime",

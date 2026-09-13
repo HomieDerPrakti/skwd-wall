@@ -30,6 +30,7 @@ impl SceneCore {
         bump_opt(&mut self.sandy.storm_to);
         bump_opt(&mut self.sandy.ring_to);
         bump_opt(&mut self.sandy.filter_from);
+        self.hand_shift_after_insert(pos);
         let shift_map = |map: &mut HashMap<usize, Spring>| {
             *map = map.drain().map(|(k, v)| (if k >= pos { k + 1 } else { k }, v)).collect();
         };
@@ -37,6 +38,7 @@ impl SceneCore {
         shift_map(&mut self.card.fades);
         shift_map(&mut self.card.hex_scales);
         shift_map(&mut self.card.selection);
+        shift_map(&mut self.hand.lift);
         self.motion.needs_frame = true;
     }
 
@@ -51,8 +53,12 @@ impl SceneCore {
         }
         self.hover = None;
         if self.card.flipped.is_some() {
-            self.card.flipped = None;
-            self.card.flip.snap(0.0);
+            if self.mode == Mode::Hand {
+                self.close_flip();
+            } else {
+                self.card.flipped = None;
+                self.card.flip.snap(0.0);
+            }
         }
         if self.mode == Mode::Slices {
             self.slice_select(idx);
@@ -79,6 +85,9 @@ impl SceneCore {
         }
         if self.mode == Mode::Sandy && !self.sandy_select(idx) {
             return;
+        }
+        if self.mode == Mode::Hand {
+            self.hand_select(idx, count);
         }
         self.current = idx;
         self.motion.needs_frame = true;
@@ -139,6 +148,9 @@ impl SceneCore {
     pub fn relayout(&mut self, count: usize) {
         self.card.widths.clear();
         self.current = self.current.min(count.saturating_sub(1));
+        if self.mode == Mode::Hand {
+            self.hand_start_middle(count);
+        }
         self.hover = None;
         self.motion.needs_frame = true;
     }
@@ -156,6 +168,8 @@ impl SceneCore {
         self.hover = None;
         if self.mode == Mode::Sandy {
             self.camera.snap(crate::frontend::scene::sandy::clamp_cam(self.current as f32, count));
+        } else if self.mode == Mode::Hand {
+            self.hand_reset(count);
         } else {
             self.camera.snap(self.start_camera());
             self.layout_camera_anchor = matches!(self.mode, Mode::Slices | Mode::Hex);

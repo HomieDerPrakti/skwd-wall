@@ -5,6 +5,7 @@ use std::time::Instant;
 use crate::contracts::preview::UploadQueue;
 use crate::domain::library::catalog::Catalog;
 use crate::frontend::animation::{MotionProfile, MotionTier, Spring, Tween};
+use crate::frontend::scene::hand::{Move, PoseTween};
 use crate::frontend::scene::layout::{ExtraParams, GridParams, HexParams, Hit, Mode, SliceParams};
 use crate::frontend::scene::{
     BackPanel, Chrome, InstanceRaw, LaunchAnim, RenderSnapshot, SandySnap, Transition,
@@ -38,6 +39,7 @@ pub struct SceneCore {
     pub(super) vis_hi: usize,
     pub(super) card: CardState,
     pub(super) sandy: SandyState,
+    pub(super) hand: HandState,
     pub(super) motion: SceneMotionState,
     pub viewport: (f32, f32),
     pub render: Arc<RenderSnapshot>,
@@ -215,6 +217,80 @@ impl SandyState {
     }
 }
 
+pub(super) const BACKDROP_FADE_MS: f32 = 450.0;
+
+pub(super) struct HandState {
+    pub(super) offset: usize,
+    pub(super) shown: Vec<usize>,
+    pub(super) rig_x: Spring,
+    pub(super) rig_y: Spring,
+    pub(super) drag: Option<(f32, f32)>,
+    pub(super) lift: HashMap<usize, Spring>,
+    pub(super) deal: Option<HandDeal>,
+    pub(super) flip_p: f32,
+    pub(super) flip_closing: bool,
+    pub(super) flip_seed: f32,
+    pub(super) lseed: f32,
+    pub(super) bob_t: f32,
+    pub(super) cycle: Move,
+    pub(super) deals: u32,
+    pub(super) backdrop_store: Option<usize>,
+    pub(super) backdrop_prev: Option<usize>,
+    pub(super) backdrop_fade: Tween,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub(super) enum DealPhase {
+    Out,
+    In,
+}
+
+pub(super) struct HandDeal {
+    pub(super) phase: DealPhase,
+    pub(super) t: f32,
+    pub(super) mv: Move,
+    pub(super) cards: Vec<CardAnim>,
+    pub(super) end: f32,
+}
+
+pub(super) struct CardAnim {
+    pub(super) store: usize,
+    pub(super) slot: usize,
+    pub(super) n: f32,
+    pub(super) pose: PoseTween,
+    pub(super) ribbons: Vec<PoseTween>,
+    pub(super) ghosts: [PoseTween; 2],
+}
+
+impl HandState {
+    fn new() -> Self {
+        let motion = MotionProfile::default();
+        let mut rig_x = motion.override_spring(0.0, 450.0);
+        rig_x.set_zeta(0.75);
+        let mut rig_y = motion.override_spring(0.0, 450.0);
+        rig_y.set_zeta(0.75);
+        Self {
+            offset: 0,
+            shown: Vec::new(),
+            rig_x,
+            rig_y,
+            drag: None,
+            lift: HashMap::new(),
+            deal: None,
+            flip_p: 0.0,
+            flip_closing: false,
+            flip_seed: 0.71,
+            lseed: 0.31,
+            bob_t: 0.0,
+            cycle: Move::Corkscrew,
+            deals: 0,
+            backdrop_store: None,
+            backdrop_prev: None,
+            backdrop_fade: motion.override_tween(1.0, BACKDROP_FADE_MS),
+        }
+    }
+}
+
 pub struct RebuildCtx<'a> {
     pub catalog: &'a Catalog,
     pub filtered: &'a [u32],
@@ -266,6 +342,7 @@ impl SceneCore {
             vis_hi: 0,
             card: CardState::new(),
             sandy: SandyState::new(),
+            hand: HandState::new(),
             motion: SceneMotionState::new(),
             viewport: (0.0, 0.0),
             render: Arc::new(RenderSnapshot::default()),

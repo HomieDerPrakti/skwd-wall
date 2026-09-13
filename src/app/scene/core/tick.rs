@@ -79,6 +79,7 @@ impl SceneCore {
         }
         self.tick_springs(dt);
         self.tick_sandy(&ctx, now, dt);
+        self.tick_hand(&ctx, dt);
         self.tick_transition(dt);
         if self.hidden() {
             if self.render.vis != 0.0 {
@@ -105,7 +106,7 @@ impl SceneCore {
     }
 
     fn flip_closed(&self) -> bool {
-        if matches!(self.mode, Mode::Slices | Mode::Sandy) {
+        if matches!(self.mode, Mode::Slices | Mode::Sandy | Mode::Hand) {
             return self.card.flip.settled() && self.card.flip.target == 0.0;
         }
         self.card.det_target == 0.0 && self.card.det_p <= 0.001

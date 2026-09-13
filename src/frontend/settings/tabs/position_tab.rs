@@ -28,6 +28,12 @@ pub(super) fn tab_position(builder: &mut Builder<'_>) {
         keys::selector::SANDY_STAGE_X,
         keys::selector::SANDY_STAGE_Y,
     );
+    picker_position(
+        builder,
+        tr("settings-position-hand-card"),
+        keys::selector::HAND_STAGE_X,
+        keys::selector::HAND_STAGE_Y,
+    );
     builder.card(tr("settings-filter-position-card"), tr("settings-filter-position-card-desc"));
     builder.num_setting(
         tr("settings-filter-offset-x-label"),

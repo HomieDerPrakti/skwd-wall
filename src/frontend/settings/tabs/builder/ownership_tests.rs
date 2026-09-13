@@ -24,7 +24,9 @@ fn control_ids(control: &Control) -> Vec<String> {
         Control::Details { rows, .. } | Control::StackBar { rows, .. } => {
             rows.iter().flat_map(|row| control_ids(&row.control)).collect()
         }
-        Control::Static | Control::Code { .. } | Control::Preview => Vec::new(),
+        Control::Static | Control::Code { .. } | Control::AppTheme { .. } | Control::Preview => {
+            Vec::new()
+        }
     }
 }
 
@@ -55,7 +57,10 @@ fn source_cards(
     backends: &[String],
     outputs: &[String],
 ) -> Vec<(Card, Vec<Row>)> {
-    let mut cards = Vec::new();
+    let mut cards = vec![(
+        Card { title: tr("settings-app-themes-title"), subtitle: "" },
+        super::super::app_themes::rows(None),
+    )];
     cards.extend(collect(cfg, |builder| tab_general(builder, themes, outputs)));
     cards.extend(collect(cfg, tab_launch));
     cards.extend(collect(cfg, tab_motion));
@@ -161,6 +166,7 @@ fn controls_match_schema() {
                     | Control::StackBar { .. }
                     | Control::Static
                     | Control::Code { .. }
+                    | Control::AppTheme { .. }
                     | Control::Preview => continue,
                 };
                 if numeric_text_field
@@ -290,6 +296,7 @@ fn controls_emit_valid_values() {
                         | Control::StackBar { .. }
                         | Control::Static
                         | Control::Code { .. }
+                        | Control::AppTheme { .. }
                         | Control::Preview => Vec::new(),
                     };
                     for (path, value) in values {

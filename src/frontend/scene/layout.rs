@@ -3,15 +3,17 @@ pub use crate::contracts::picker::Mode;
 #[derive(Debug, Clone, Copy)]
 pub struct ExtraParams {
     pub sandy: super::sandy::SandyParams,
+    pub hand: super::hand::HandParams,
 }
 
 impl ExtraParams {
     pub fn morph_toward(&mut self, target: &ExtraParams, amt: f32) {
         self.sandy.morph_toward(&target.sandy, amt);
+        self.hand.morph_toward(&target.hand, amt);
     }
 
     pub fn settled_to(&self, target: &ExtraParams) -> bool {
-        self.sandy.settled_to(&target.sandy)
+        self.sandy.settled_to(&target.sandy) && self.hand.settled_to(&target.hand)
     }
 }
 

@@ -8,16 +8,23 @@ use super::browser::browser_apply_current;
 use super::effects::effects_nav;
 use super::update_inner;
 
+fn hand_nav_closes_flip(app: &mut App) -> bool {
+    if app.scene.mode == Mode::Hand && app.scene.flip_open() && !app.menu_capturing() {
+        app.scene.close_flip();
+        return true;
+    }
+    false
+}
+
 pub(super) fn wheel(app: &mut App, amount: f32) -> Task<Message> {
-    if app.detail_open() || app.menu_capturing() {
+    if !hand_nav_closes_flip(app) && (app.detail_open() || app.menu_capturing()) {
         return Task::none();
     }
     match app.scene.mode {
-        Mode::Slices => {
+        Mode::Slices | Mode::Sandy | Mode::Hand => {
             app.scene.slice_scroll(amount, app.library_session.filtered.len());
         }
         Mode::Grid => app.scene.grid_scroll(-amount),
-        Mode::Sandy => app.scene.slice_scroll(amount, app.library_session.filtered.len()),
         Mode::Hex => hex_wheel(app, amount),
     }
     app.retick();
@@ -45,7 +52,7 @@ pub(super) fn key_prev(app: &mut App) -> Task<Message> {
     if let Some(task) = effects_nav(app, -1, 0) {
         return task;
     }
-    if app.menu_capturing() || app.detail_open() {
+    if !hand_nav_closes_flip(app) && (app.menu_capturing() || app.detail_open()) {
         return Task::none();
     }
     app.scene.kb_nav = true;
@@ -64,7 +71,7 @@ pub(super) fn key_next(app: &mut App) -> Task<Message> {
     if let Some(task) = effects_nav(app, 1, 0) {
         return task;
     }
-    if app.menu_capturing() || app.detail_open() {
+    if !hand_nav_closes_flip(app) && (app.menu_capturing() || app.detail_open()) {
         return Task::none();
     }
     app.scene.kb_nav = true;
@@ -113,7 +120,7 @@ pub(super) fn key_flip(app: &mut App) -> Task<Message> {
     }
     let idx = app.scene.current;
     match app.scene.mode {
-        Mode::Slices => app.scene.toggle_flip(idx),
+        Mode::Slices | Mode::Hand => app.scene.toggle_flip(idx),
         Mode::Sandy => {
             app.scene.sandy_settle_now();
             app.scene.toggle_flip(app.scene.current);

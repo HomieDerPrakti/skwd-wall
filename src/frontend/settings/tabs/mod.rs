@@ -3,6 +3,7 @@ use crate::contracts::settings::keys;
 use super::tables::{NIRI_SNIPPET, POST_TYPES, motion_speed_options};
 use super::{ActionId, Builder, Card, Control, PRESET_NAME_KEY, Row};
 
+mod app_themes;
 mod builder;
 mod launch_tab;
 mod media_tabs;

@@ -340,6 +340,9 @@ impl App {
     }
 
     fn on_theme_done(&mut self, data: &Value) {
+        if self.panels.settings.open {
+            self.call_tracked("theme.apps", serde_json::json!({}), Pending::AppThemes);
+        }
         let payload = ev::ThemeDone::deserialize(data).unwrap_or_default();
         if !payload.ok {
             warn!("theme update failed for {:?}", payload.source);

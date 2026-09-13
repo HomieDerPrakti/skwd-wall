@@ -105,6 +105,7 @@ fn shader_mode_degrades() {
         ("hex", Mode::Hex),
         ("sandy", Mode::Sandy),
         ("nova", Mode::Sandy),
+        ("hand", Mode::Hand),
     ] {
         let cfg = Config::from_data(json!({
             "components": {"wallpaperSelector": {"displayMode": name}}
@@ -249,4 +250,33 @@ fn keyboard_nav_clamps() {
     drain_calls(&app);
     let _ = update(&mut app, Message::ApplyCurrent);
     assert!(drain_calls(&app).iter().all(|(method, _)| method != "wall.apply"));
+}
+
+#[test]
+fn hand_layout_params_follow_config() {
+    use crate::frontend::scene::hand::{Axis, Cut, DealMode, Variance};
+    let cfg = Config::from_data(json!({}));
+    let hand = layout_params(&cfg).extra.hand;
+    assert_eq!(hand.count, 5);
+    assert_eq!(hand.deal_mode, DealMode::Cycle);
+    assert_eq!(hand.moves, [true; 5]);
+    assert_eq!(hand.axis, Axis::Rows);
+    assert!(hand.ghosts && hand.backdrop && !hand.bob);
+    let cfg = Config::from_data(json!({
+        "components": {"wallpaperSelector": {
+            "displayMode": "hand", "handMove": "cascade", "handCut": "slant",
+            "handCutVariance": "soft", "handRibbonAxis": "columns", "handRibbons": 8,
+            "handSpeed": 150, "handStageY": 20
+        }}
+    }));
+    let params = layout_params(&cfg);
+    assert_eq!(params.mode, Mode::Hand);
+    assert_eq!(params.extra.hand.deal_mode, DealMode::Cycle);
+    assert_eq!(params.extra.hand.moves, [false, true, false, false, false]);
+    assert_eq!(params.extra.hand.cut, Cut::Slant);
+    assert_eq!(params.extra.hand.variance, Variance::Soft);
+    assert_eq!(params.extra.hand.axis, Axis::Columns);
+    assert_eq!(params.extra.hand.ribbons, 8);
+    assert!((params.extra.hand.speed - 1.5).abs() < 1e-6);
+    assert!((params.extra.hand.offset_y - 0.2).abs() < 1e-6);
 }

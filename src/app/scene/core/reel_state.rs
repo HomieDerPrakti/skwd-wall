@@ -11,6 +11,11 @@ const FILTER_FLIP_SWEEP: f32 = 0.6;
 
 impl SceneCore {
     pub fn filter_storm(&mut self, from_store: Option<usize>) {
+        if self.mode == Mode::Hand {
+            let offset = self.hand.offset;
+            self.hand_deal(offset);
+            return;
+        }
         if self.mode == Mode::Sandy {
             self.sandy.filter_from = from_store;
             self.sandy.from = None;

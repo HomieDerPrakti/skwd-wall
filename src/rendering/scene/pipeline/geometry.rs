@@ -2,6 +2,12 @@ use std::borrow::Cow;
 
 use crate::contracts::rendering::{InstanceRaw, SandySnap};
 
+pub const PROJECTED: u32 = 128;
+pub const RIBBON_COLUMNS: u32 = 4096;
+pub const GHOST: u32 = 8192;
+pub const BACKDROP: u32 = 16384;
+pub const BACKFACE: u32 = 32768;
+
 pub(crate) fn sandy_video_in(progress: f32, live: bool) -> f32 {
     if !live {
         return 0.0;
@@ -68,6 +74,13 @@ pub(super) fn scale_instances(
         instance.params[0] *= surface_scale;
         instance.params[1] *= surface_scale;
         instance.shape[0] *= surface_scale;
+        if instance.misc[3] & PROJECTED != 0 {
+            for value in
+                instance.quad_a.iter_mut().chain(&mut instance.quad_b).chain(&mut instance.quad_l)
+            {
+                *value *= surface_scale;
+            }
+        }
     }
     Cow::Owned(scaled)
 }
@@ -86,6 +99,14 @@ pub(super) fn place_instances(
     for instance in &mut placed {
         instance.rect[0] += ox;
         instance.rect[1] += oy;
+        if instance.misc[3] & PROJECTED != 0 {
+            for quad in [&mut instance.quad_a, &mut instance.quad_b] {
+                quad[0] += ox;
+                quad[1] += oy;
+                quad[2] += ox;
+                quad[3] += oy;
+            }
+        }
     }
     Cow::Owned(placed)
 }

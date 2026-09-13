@@ -157,6 +157,7 @@ pub(crate) fn update_inner(app: &mut App, message: Message) -> Task<Message> {
             Task::none()
         }
         Message::PointerUp => {
+            app.scene.hand_drag_end();
             if app.panels.schedule.as_ref().is_some_and(|ed| ed.drag.is_some()) {
                 return update_inner(
                     app,

@@ -1,5 +1,9 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ActionId {
+    RefreshAppThemes,
+    SetAppTheme(u8, bool),
+    AdoptAppTheme(u8),
+    RefreshAppTheme(u8),
     ClearCache,
     CaptureWeThumbnails,
     RecomputeColors,

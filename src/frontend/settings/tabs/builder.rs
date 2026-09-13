@@ -88,6 +88,7 @@ pub(crate) fn build_tab_with_output_statuses(
 ) -> Vec<(Card, Vec<Row>)> {
     build_tab_with_runtime_status(
         tab, cfg, themes, folders, analysis, backends, outputs, statuses, previews, None, None,
+        None,
     )
 }
 
@@ -104,6 +105,7 @@ pub(crate) fn build_tab_with_runtime_status(
     previews: &std::collections::HashMap<String, String>,
     library_watch: Option<&crate::contracts::daemon::LibraryWatchStatus>,
     playback: Option<&crate::contracts::daemon::PlaybackStatus>,
+    app_themes: Option<&crate::contracts::daemon::AppThemesResult>,
 ) -> Vec<(Card, Vec<Row>)> {
     match tab {
         "picker" => compose_picker(cfg, themes, outputs),
@@ -116,7 +118,7 @@ pub(crate) fn build_tab_with_runtime_status(
         "library" => compose_library(cfg, themes, outputs, library_watch),
         "sources" => compose_sources(cfg, themes, outputs),
         "automation" => compose_automation(cfg, themes, folders, outputs),
-        "theme" => compose_theme(cfg, backends),
+        "theme" => compose_theme(cfg, backends, app_themes),
         "integrations" => compose_integrations(cfg, themes),
         "language" => collect(cfg, tab_language),
         _ => Vec::new(),
@@ -292,6 +294,9 @@ fn compose_picker(
         tr("settings-selector-cards-card"),
         tr("settings-selector-performance-card"),
         tr("settings-selector-sandy-card"),
+        tr("settings-selector-hand-card"),
+        tr("settings-selector-ribbons-card"),
+        tr("settings-selector-hand-effects-card"),
         tr("settings-selector-slice-size-card"),
         tr("settings-selector-corners-card"),
     ] {
@@ -420,6 +425,7 @@ fn compose_position(cfg: &dyn SettingsSource) -> Vec<(Card, Vec<Row>)> {
         (tr("settings-position-hex-card"), tr("settings-position-picker-card-desc")),
         (tr("settings-position-wall-card"), tr("settings-position-picker-card-desc")),
         (tr("settings-position-sandy-card"), tr("settings-position-picker-card-desc")),
+        (tr("settings-position-hand-card"), tr("settings-position-picker-card-desc")),
         (tr("settings-filter-position-card"), tr("settings-filter-position-card-desc")),
         (
             tr("settings-selector-tag-cloud-position-card"),
@@ -926,10 +932,20 @@ fn compose_automation(
     out
 }
 
-fn compose_theme(cfg: &dyn SettingsSource, backends: &[String]) -> Vec<(Card, Vec<Row>)> {
+fn compose_theme(
+    cfg: &dyn SettingsSource,
+    backends: &[String],
+    apps: Option<&crate::contracts::daemon::AppThemesResult>,
+) -> Vec<(Card, Vec<Row>)> {
     let mut out = Vec::new();
     let mut theme = collect(cfg, |builder| tab_theme(builder, backends));
     let mut matugen = collect(cfg, tab_matugen);
+    section(
+        &mut out,
+        tr("settings-app-themes-title"),
+        tr("settings-app-themes-desc"),
+        super::app_themes::rows(apps),
+    );
     section(
         &mut out,
         tr("settings-section-behaviour"),
@@ -1000,7 +1016,13 @@ fn compose_theme(cfg: &dyn SettingsSource, backends: &[String]) -> Vec<(Card, Ve
         &mut out,
         tr("settings-section-theme-outputs"),
         tr("settings-matugen-integrations-card-desc"),
-        take_card(&mut matugen, tr("settings-matugen-integrations-card")),
+        vec![details(
+            tr("settings-app-themes-custom"),
+            tr("settings-app-themes-custom-desc"),
+            "app-themes.custom",
+            "",
+            take_card(&mut matugen, tr("settings-matugen-integrations-card")),
+        )],
     );
     out
 }

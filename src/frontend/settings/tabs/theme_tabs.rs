@@ -433,6 +433,14 @@ pub(super) fn tab_matugen(builder: &mut Builder<'_>) {
     );
     let count = cfg.array_len(keys::integrations::LIST);
     for idx in 0..count {
+        builder.cards.last_mut().expect("integration card").1.push(super::Row {
+            title: tr("settings-app-themes-custom-enabled").into(),
+            desc: tr("settings-app-themes-custom-enabled-desc").into(),
+            control: super::Control::Toggle {
+                path: format!("integrations.{idx}.enabled"),
+                value: cfg.flag_default_true(&format!("integrations.{idx}.enabled")),
+            },
+        });
         builder.text_field(
             tr("settings-matugen-name-label"),
             tr("settings-matugen-name-desc"),

@@ -13,6 +13,8 @@ pub(crate) enum Pending {
     CurrentTheme { load: bool },
     List,
     ThemeBackends,
+    AppThemes,
+    AppThemeSet,
     EffectThemes,
     Diag,
     BugReport,
@@ -42,6 +44,7 @@ pub(crate) enum Pending {
 }
 
 pub(crate) struct DaemonState {
+    pub(crate) app_themes: Option<crate::contracts::daemon::AppThemesResult>,
     pub(crate) playback: crate::contracts::daemon::PlaybackStatus,
     pub(crate) client: DaemonClient,
     pub(crate) pending: HashMap<u64, Pending>,
@@ -63,6 +66,7 @@ pub(crate) struct DaemonState {
 impl DaemonState {
     pub(crate) fn new(client: DaemonClient) -> Self {
         Self {
+            app_themes: None,
             playback: crate::contracts::daemon::PlaybackStatus::default(),
             client,
             pending: HashMap::new(),

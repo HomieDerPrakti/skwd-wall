@@ -226,6 +226,163 @@ pub(super) fn tab_selector(builder: &mut Builder<'_>) {
                 "px",
             );
         }
+        "hand" => {
+            builder.card(tr("settings-selector-hand-card"), tr("settings-selector-hand-card-desc"));
+            builder.chips(
+                tr("settings-selector-hand-move-label"),
+                tr("settings-selector-hand-move-desc"),
+                keys::selector::HAND_MOVE,
+                &[
+                    ("cycle", tr("settings-selector-hand-move-cycle")),
+                    ("random", tr("settings-selector-hand-move-random")),
+                ],
+            );
+            for (key, label) in [
+                (keys::selector::HAND_MOVE_CORKSCREW, "settings-selector-hand-move-corkscrew"),
+                (keys::selector::HAND_MOVE_CASCADE, "settings-selector-hand-move-cascade"),
+                (keys::selector::HAND_MOVE_SHUFFLE, "settings-selector-hand-move-shuffle"),
+                (keys::selector::HAND_MOVE_RIBBON, "settings-selector-hand-move-ribbon"),
+                (keys::selector::HAND_MOVE_SPIRAL, "settings-selector-hand-move-spiral"),
+            ] {
+                builder.toggle_default_true(tr(label), "", key);
+            }
+            builder.num(
+                tr("settings-selector-hand-count-label"),
+                tr("settings-selector-hand-count-desc"),
+                keys::selector::HAND_COUNT,
+                "",
+            );
+            builder.num(
+                tr("settings-selector-hand-card-width-label"),
+                "",
+                keys::selector::HAND_CARD_WIDTH,
+                "px",
+            );
+            builder.num(
+                tr("settings-selector-hand-card-height-label"),
+                "",
+                keys::selector::HAND_CARD_HEIGHT,
+                "px",
+            );
+            builder.num(
+                tr("settings-selector-hand-spread-label"),
+                tr("settings-selector-hand-spread-desc"),
+                keys::selector::HAND_SPREAD,
+                "px",
+            );
+            builder.num(
+                tr("settings-selector-hand-fan-angle-label"),
+                tr("settings-selector-hand-fan-angle-desc"),
+                keys::selector::HAND_FAN_ANGLE,
+                "deg",
+            );
+            builder.num(
+                tr("settings-selector-hand-fan-roll-label"),
+                tr("settings-selector-hand-fan-roll-desc"),
+                keys::selector::HAND_FAN_ROLL,
+                "deg",
+            );
+            builder.num(
+                tr("settings-selector-hand-arch-label"),
+                tr("settings-selector-hand-arch-desc"),
+                keys::selector::HAND_ARCH,
+                "px",
+            );
+            builder.num(
+                tr("settings-selector-hand-corner-radius-label"),
+                "",
+                keys::selector::HAND_CORNER_RADIUS,
+                "px",
+            );
+            builder.num(
+                tr("settings-selector-hand-skew-label"),
+                tr("settings-selector-hand-skew-desc"),
+                keys::selector::HAND_SKEW,
+                "px",
+            );
+            builder.num(
+                tr("settings-selector-hand-perspective-label"),
+                tr("settings-selector-hand-perspective-desc"),
+                keys::selector::HAND_PERSPECTIVE,
+                "px",
+            );
+            builder.num(
+                tr("settings-selector-hand-tilt-label"),
+                tr("settings-selector-hand-tilt-desc"),
+                keys::selector::HAND_TILT,
+                "%",
+            );
+            builder.num(
+                tr("settings-selector-hand-speed-label"),
+                tr("settings-selector-hand-speed-desc"),
+                keys::selector::HAND_SPEED,
+                "%",
+            );
+            builder.card(
+                tr("settings-selector-ribbons-card"),
+                tr("settings-selector-ribbons-card-desc"),
+            );
+            builder.chips(
+                tr("settings-selector-hand-ribbon-axis-label"),
+                "",
+                keys::selector::HAND_RIBBON_AXIS,
+                &[
+                    ("rows", tr("settings-selector-hand-ribbon-axis-rows")),
+                    ("columns", tr("settings-selector-hand-ribbon-axis-columns")),
+                ],
+            );
+            builder.num(
+                tr("settings-selector-hand-ribbons-label"),
+                tr("settings-selector-hand-ribbons-desc"),
+                keys::selector::HAND_RIBBONS,
+                "",
+            );
+            builder.chips(
+                tr("settings-selector-hand-cut-label"),
+                "",
+                keys::selector::HAND_CUT,
+                &[
+                    ("straight", tr("settings-selector-hand-cut-straight")),
+                    ("slant", tr("settings-selector-hand-cut-slant")),
+                    ("steep", tr("settings-selector-hand-cut-steep")),
+                ],
+            );
+            builder.chips(
+                tr("settings-selector-hand-cut-variance-label"),
+                tr("settings-selector-hand-cut-variance-desc"),
+                keys::selector::HAND_CUT_VARIANCE,
+                &[
+                    ("none", tr("settings-selector-hand-cut-variance-none")),
+                    ("soft", tr("settings-selector-hand-cut-variance-soft")),
+                    ("wild", tr("settings-selector-hand-cut-variance-wild")),
+                ],
+            );
+            builder.card(
+                tr("settings-selector-hand-effects-card"),
+                tr("settings-selector-hand-effects-card-desc"),
+            );
+            builder.toggle_default_true(
+                tr("settings-selector-hand-ghosts-label"),
+                tr("settings-selector-hand-ghosts-desc"),
+                keys::selector::HAND_GHOSTS,
+            );
+            builder.toggle_default_true(
+                tr("settings-selector-hand-backdrop-label"),
+                tr("settings-selector-hand-backdrop-desc"),
+                keys::selector::HAND_BACKDROP,
+            );
+            builder.num(
+                tr("settings-selector-hand-backdrop-blur-label"),
+                tr("settings-selector-hand-backdrop-blur-desc"),
+                keys::selector::HAND_BACKDROP_BLUR,
+                "%",
+            );
+            builder.toggle(
+                tr("settings-selector-hand-bob-label"),
+                tr("settings-selector-hand-bob-desc"),
+                keys::selector::HAND_BOB,
+            );
+        }
         "sandy" => {
             let grain = cfg.sandy_grain();
             let verts = crate::frontend::scene::sandy::grain_verts(
@@ -598,6 +755,7 @@ fn mode_label_key(mode: &str) -> &'static str {
         "hex" => "settings-selector-mode-hex",
         "wall" => "settings-selector-mode-wall",
         "sandy" => "settings-selector-mode-sandy",
+        "hand" => "settings-selector-mode-hand",
         _ => "settings-selector-mode-slices",
     }
 }

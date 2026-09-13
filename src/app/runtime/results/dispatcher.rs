@@ -7,6 +7,18 @@ use crate::app::*;
 impl App {
     pub(in crate::app) fn rpc_error(&mut self, kind: Pending, err: String) {
         match kind {
+            Pending::AppThemeSet => {
+                self.show_toast(crate::i18n::tr_args!("settings-app-themes-error", error => err));
+                self.call_tracked("theme.apps", serde_json::json!({}), Pending::AppThemes);
+                self.invalidate_settings();
+                self.retick();
+            }
+            Pending::AppThemes => {
+                self.daemon.app_themes = None;
+                self.show_toast(crate::i18n::tr_args!("settings-app-themes-error", error => err));
+                self.invalidate_settings();
+                self.retick();
+            }
             Pending::ResetThumbnail { .. } => {
                 self.show_toast(
                     crate::i18n::tr_args!("card-back-reset-thumbnail-error", error => err),
@@ -209,6 +221,16 @@ impl App {
                 result,
                 crate::infrastructure::rpc_results::decode_outputs,
             )),
+            Pending::AppThemes | Pending::AppThemeSet => {
+                self.adopt_external_config();
+                self.daemon.app_themes = Some(decoded!(
+                    "theme.apps",
+                    result,
+                    crate::infrastructure::rpc_results::decode_app_themes,
+                ));
+                self.invalidate_settings();
+                self.retick();
+            }
             Pending::ThemeBackends => self.on_theme_backends(decoded!(
                 "theme.backends",
                 result,

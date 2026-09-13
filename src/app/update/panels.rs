@@ -50,6 +50,7 @@ pub(super) fn toggle_settings(app: &mut App) -> Task<Message> {
         app.init_settings_inputs();
         app.call_tracked("wall.outputs", json!({}), Pending::Outputs);
         app.call_tracked("theme.backends", json!({}), Pending::ThemeBackends);
+        app.call_tracked("theme.apps", json!({}), Pending::AppThemes);
         app.chrome.pane_scrolls.remove("settings");
     }
     app.retick();
@@ -66,6 +67,7 @@ pub(super) fn toggle_theme_panel(app: &mut App) -> Task<Message> {
         app.chrome.filter_bar_visible = true;
         app.set_base_swatch();
         app.call_tracked("theme.backends", json!({}), Pending::ThemeBackends);
+        app.call_tracked("theme.apps", json!({}), Pending::AppThemes);
     }
     app.chrome.bar.cache.clear();
     app.retick();

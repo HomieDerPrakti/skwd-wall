@@ -23,6 +23,7 @@ pub fn search_settings(
     folders: &[String],
     analysis: &str,
     backends: &[String],
+    apps: Option<&crate::contracts::daemon::AppThemesResult>,
 ) -> Vec<SettingsSearchResult> {
     let query = normalized(query);
     let terms: Vec<&str> = query.split_whitespace().collect();
@@ -31,9 +32,25 @@ pub fn search_settings(
     }
     let mut results = Vec::new();
     for (tab, tab_label) in visible_tabs(cfg) {
-        for (section, (card, rows)) in
-            build_tab(tab, cfg, themes, folders, analysis, backends).into_iter().enumerate()
-        {
+        let cards = if apps.is_some() {
+            super::build_tab_with_runtime_status(
+                tab,
+                cfg,
+                themes,
+                folders,
+                analysis,
+                backends,
+                &[],
+                &[],
+                &std::collections::HashMap::new(),
+                None,
+                None,
+                apps,
+            )
+        } else {
+            build_tab(tab, cfg, themes, folders, analysis, backends)
+        };
+        for (section, (card, rows)) in cards.into_iter().enumerate() {
             for (row, setting) in rows.into_iter().enumerate() {
                 let title = normalized(&setting.title);
                 let section_title = normalized(card.title);
@@ -191,6 +208,7 @@ fn control_search_text(control: &Control) -> String {
                     .join(" ")
             )
         }
+        Control::AppTheme { app } => format!("{} {} {}", app.name, app.state, app.detail),
         Control::Static => String::from(tr("settings-search-control-static")),
         Control::Code { snippet } => {
             format!("{snippet} {}", tr("settings-search-control-code"))
@@ -235,6 +253,7 @@ fn control_value(control: &Control, cfg: &dyn SettingsSource) -> String {
         Control::Static => String::from(tr("settings-control-status")),
         Control::Code { .. } => String::from(tr("settings-control-code")),
         Control::Preview => String::from(tr("settings-control-preview")),
+        Control::AppTheme { app } => app.state.clone(),
     }
 }
 

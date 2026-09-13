@@ -202,6 +202,8 @@ impl SceneCore {
             "sandy_transition"
         } else if self.mode == Mode::Sandy && self.sandy.motion > 0.001 {
             "sandy_lod"
+        } else if let Some(reason) = self.hand_reason() {
+            reason
         } else {
             "none"
         }
@@ -245,6 +247,7 @@ impl SceneCore {
             || !self.sandy.pop.settled()
             || !self.card.filter_old.is_empty()
             || !self.card.filter_in.is_empty()
+            || self.hand_animating()
         {
             demand = FrameDemand::Motion;
         }
@@ -405,7 +408,7 @@ impl SceneCore {
             Mode::Slices => self.sp_target.topology_differs(&sp),
             Mode::Grid => self.gp_target.topology_differs(&gp),
             Mode::Hex => self.hp_target.topology_differs(&hp),
-            Mode::Sandy => false,
+            Mode::Sandy | Mode::Hand => false,
         };
         if animate && topology_changed {
             self.begin_transition(0, [0.5, 0.5]);
@@ -484,6 +487,9 @@ impl SceneCore {
         self.card.filter_cell.clear();
         self.card.filter_in.clear();
         self.card.filter_wave = 10.0;
+        self.hand.deal = None;
+        self.hand.lift.clear();
+        self.hand.drag = None;
         self.motion.needs_frame = true;
     }
 

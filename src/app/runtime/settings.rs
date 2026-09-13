@@ -52,6 +52,7 @@ impl App {
             &self.daemon.output_wallpaper_art,
             self.daemon.library_watch.as_ref(),
             Some(&self.daemon.playback),
+            self.daemon.app_themes.as_ref(),
         );
         for (_, rows) in &cards {
             for row in rows {

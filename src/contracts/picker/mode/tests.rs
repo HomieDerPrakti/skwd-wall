@@ -4,7 +4,7 @@ use super::Mode;
 
 #[test]
 fn canonical_keys_round_trip() {
-    for mode in [Mode::Slices, Mode::Grid, Mode::Hex, Mode::Sandy] {
+    for mode in [Mode::Slices, Mode::Grid, Mode::Hex, Mode::Sandy, Mode::Hand] {
         assert_eq!(Mode::from_key(mode.as_key()), mode);
         assert_eq!(Mode::try_from_key(mode.as_key()), Some(mode));
     }
@@ -16,6 +16,8 @@ fn aliases_decode_only() {
     assert_eq!(Mode::from_key("nova"), Mode::Sandy);
     assert_eq!(Mode::Grid.as_key(), "wall");
     assert_eq!(Mode::Sandy.as_key(), "sandy");
+    assert_eq!(Mode::from_key("hand"), Mode::Hand);
+    assert_eq!(Mode::Hand.as_key(), "hand");
 }
 
 #[test]

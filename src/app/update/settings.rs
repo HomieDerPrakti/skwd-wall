@@ -323,6 +323,7 @@ fn refresh_settings_search(app: &mut App) {
         &app.library_session.folder_options,
         &app.panels.settings.semantic_import_status,
         app.theme.backends.as_deref().unwrap_or(&[]),
+        app.daemon.app_themes.as_ref(),
     );
 }
 
@@ -389,6 +390,7 @@ fn settings_cards(
         &app.daemon.output_wallpaper_art,
         app.daemon.library_watch.as_ref(),
         Some(&app.daemon.playback),
+        app.daemon.app_themes.as_ref(),
     )
 }
 
@@ -698,6 +700,19 @@ fn activate_settings_control(app: &mut App) -> Task<Message> {
         return Task::none();
     };
     match control {
+        Control::AppTheme { app: entry } => {
+            let index = app
+                .daemon
+                .app_themes
+                .as_ref()
+                .and_then(|result| result.apps.iter().position(|row| row.id == entry.id));
+            index.map_or_else(Task::none, |index| {
+                settings_run(
+                    app,
+                    ActionId::SetAppTheme(index as u8, !entry.enabled && !entry.can_disable),
+                )
+            })
+        }
         Control::Toggle { path, value } => settings_toggle(app, &path, !value),
         Control::KeyBinding { path, .. } => open_keybind_capture(app, &path),
         Control::Number { key, .. } | Control::TextField { key, .. } => {
@@ -1078,6 +1093,55 @@ pub(super) fn settings_run(app: &mut App, id: ActionId) -> Task<Message> {
     app.panels.settings.armed = None;
     app.invalidate_settings();
     match id {
+        ActionId::RefreshAppThemes => {
+            if app.daemon.pending.values().any(|pending| matches!(pending, Pending::AppThemeSet)) {
+                return Task::none();
+            }
+            app.call_tracked("theme.apps", json!({}), Pending::AppThemes);
+        }
+        ActionId::SetAppTheme(index, _)
+        | ActionId::AdoptAppTheme(index)
+        | ActionId::RefreshAppTheme(index) => {
+            if app.daemon.pending.values().any(|pending| matches!(pending, Pending::AppThemeSet)) {
+                return Task::none();
+            }
+            let adopt = matches!(id, ActionId::AdoptAppTheme(_));
+            let refresh = matches!(id, ActionId::RefreshAppTheme(_));
+            let enabled = match id {
+                ActionId::SetAppTheme(_, value) => value,
+                _ => true,
+            };
+            let Some(entry) = app
+                .daemon
+                .app_themes
+                .as_mut()
+                .and_then(|result| result.apps.get_mut(index as usize))
+            else {
+                return Task::none();
+            };
+            if !(if adopt {
+                entry.can_adopt
+            } else if refresh {
+                entry.enabled
+                    && entry.can_disable
+                    && !matches!(entry.state.as_str(), "changed" | "interrupted")
+            } else if enabled {
+                entry.can_enable
+            } else {
+                entry.can_disable
+            }) {
+                return Task::none();
+            }
+            let id = entry.id.clone();
+            entry.state = "busy".into();
+            entry.can_enable = false;
+            entry.can_disable = false;
+            app.call_tracked(
+                "theme.app.set",
+                json!({"id": id, "enabled": enabled, "adopt": adopt}),
+                Pending::AppThemeSet,
+            );
+        }
         ActionId::CaptureWeThumbnails => {
             if app
                 .daemon

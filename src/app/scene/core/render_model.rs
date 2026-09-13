@@ -59,6 +59,10 @@ impl SceneCore {
                 self.rebuild_sandy(&mut ctx, &mut sinks, entrance);
                 None
             }
+            Mode::Hand => {
+                self.rebuild_hand(&mut ctx, &mut sinks, entrance);
+                None
+            }
         };
         self.rebuild_flip_overlay(&mut ctx, sinks.instances, sinks.wanted);
         let prefetch_n = ctx.filtered.len();

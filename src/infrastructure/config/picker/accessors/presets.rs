@@ -46,9 +46,46 @@ impl Config {
                 map.insert("hexStageDepthAngle".into(), Value::from(depth_angle as f64));
             }
             "sandy" => self.snapshot_sandy(&mut map),
+            "hand" => self.snapshot_hand(&mut map),
             _ => self.snapshot_slices(&mut map),
         }
         Value::Object(map)
+    }
+
+    fn snapshot_hand(&self, map: &mut serde_json::Map<String, Value>) {
+        let (x, y) = self.hand_position();
+        map.insert("handStageX".into(), Value::from(percent(x)));
+        map.insert("handStageY".into(), Value::from(percent(y)));
+        map.insert("handCount".into(), Value::from(self.hand_count() as u64));
+        map.insert("handCardWidth".into(), Value::from(self.hand_card_width() as f64));
+        map.insert("handCardHeight".into(), Value::from(self.hand_card_height() as f64));
+        map.insert("handSpread".into(), Value::from(self.hand_spread() as f64));
+        map.insert("handRibbons".into(), Value::from(self.hand_ribbons() as u64));
+        map.insert("handFanAngle".into(), Value::from(self.hand_fan_angle() as f64));
+        map.insert("handFanRoll".into(), Value::from(self.hand_fan_roll() as f64));
+        map.insert("handArch".into(), Value::from(self.hand_arch() as f64));
+        map.insert("handCornerRadius".into(), Value::from(self.hand_corner_radius() as f64));
+        map.insert("handSkew".into(), Value::from(self.hand_skew() as f64));
+        map.insert(
+            "handBackdropBlur".into(),
+            Value::from((self.hand_backdrop_blur() * 100.0) as f64),
+        );
+        map.insert("handRibbonAxis".into(), Value::from(self.hand_ribbon_axis()));
+        map.insert("handCut".into(), Value::from(self.hand_cut()));
+        map.insert("handCutVariance".into(), Value::from(self.hand_cut_variance()));
+        map.insert("handMove".into(), Value::from(self.hand_move()));
+        let [corkscrew, cascade, shuffle, ribbon, spiral] = self.hand_moves();
+        map.insert("handMoveCorkscrew".into(), Value::from(corkscrew));
+        map.insert("handMoveCascade".into(), Value::from(cascade));
+        map.insert("handMoveShuffle".into(), Value::from(shuffle));
+        map.insert("handMoveRibbon".into(), Value::from(ribbon));
+        map.insert("handMoveSpiral".into(), Value::from(spiral));
+        map.insert("handSpeed".into(), Value::from((self.hand_speed() * 100.0) as f64));
+        map.insert("handTilt".into(), Value::from((self.hand_tilt() * 100.0) as f64));
+        map.insert("handPerspective".into(), Value::from(self.hand_perspective() as f64));
+        map.insert("handGhosts".into(), Value::from(self.hand_ghosts()));
+        map.insert("handBob".into(), Value::from(self.hand_bob()));
+        map.insert("handBackdrop".into(), Value::from(self.hand_backdrop()));
     }
 
     fn snapshot_sandy(&self, map: &mut serde_json::Map<String, Value>) {

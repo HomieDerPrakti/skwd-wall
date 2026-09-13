@@ -1,5 +1,6 @@
 mod atlas_helpers;
 mod detail;
+mod hand_state;
 mod layout_helpers;
 mod lifecycle;
 mod model;
@@ -10,6 +11,7 @@ mod sandy_state;
 mod selection;
 mod tick;
 mod view_grid;
+mod view_hand;
 mod view_hex;
 mod view_sandy;
 mod view_slices;

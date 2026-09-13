@@ -77,6 +77,23 @@ fn sandy_preset_keeps_ring_size() {
 }
 
 #[test]
+fn hand_preset_keeps_every_knob() {
+    let conf = cfg(json!({"components":{"wallpaperSelector":{
+        "displayMode":"hand","handRibbons":9,"handMove":"ribbon","handStageX":12.0,"handBob":true
+    }}}));
+    let snapshot = conf.selector_preset_snapshot();
+    assert_eq!(snapshot["handRibbons"], json!(9));
+    assert_eq!(snapshot["handMove"], json!("cycle"));
+    assert_eq!(snapshot["handMoveRibbon"], json!(true));
+    assert_eq!(snapshot["handMoveCascade"], json!(false));
+    assert_eq!(snapshot["handStageX"], json!(12.0));
+    assert_eq!(snapshot["handBob"], json!(true));
+    assert_eq!(snapshot["handCount"], json!(5));
+    assert_eq!(snapshot["handPerspective"], json!(1700.0));
+    assert!(snapshot.get("sandyRingSize").is_none());
+}
+
+#[test]
 fn slices_preset_keeps_position() {
     let conf = cfg(json!({"components":{"wallpaperSelector":{
         "displayMode":"slices","sliceStageX":35.0,"sliceStageY":-20.0,"sliceEdgeTilt":48.0

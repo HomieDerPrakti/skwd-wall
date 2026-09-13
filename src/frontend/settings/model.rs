@@ -2,6 +2,9 @@ use super::ActionId;
 
 #[derive(Debug, Clone)]
 pub enum Control {
+    AppTheme {
+        app: crate::contracts::daemon::AppThemeStatus,
+    },
     Toggle {
         path: String,
         value: bool,
@@ -90,7 +93,7 @@ impl Control {
     }
 
     pub fn is_wide_field(&self) -> bool {
-        matches!(self, Self::StackBar { .. } | Self::Code { .. })
+        matches!(self, Self::StackBar { .. } | Self::Code { .. } | Self::AppTheme { .. })
     }
 }
 

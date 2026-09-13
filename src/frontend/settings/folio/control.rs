@@ -343,6 +343,9 @@ pub(super) fn widget<'a>(
     motion: MotionProfile,
 ) -> Element<'a, Message> {
     match control {
+        Control::AppTheme { app } => {
+            label(app.name, crate::frontend::ui::TYPE_SMALL, scale, palette.surface_text).into()
+        }
         Control::Toggle { path, value } => fixed_button(
             if value {
                 tr("settings-control-enabled").into()

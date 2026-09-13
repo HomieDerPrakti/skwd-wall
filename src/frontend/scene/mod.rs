@@ -1,4 +1,5 @@
 mod card_flip;
+pub mod hand;
 pub mod layout;
 mod reel;
 pub mod sandy;

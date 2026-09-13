@@ -71,4 +71,5 @@ pub struct BackPanel {
     pub overview_available: bool,
     pub scene_properties: bool,
     pub reset_thumbnail: bool,
+    pub picture_behind: bool,
 }

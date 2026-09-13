@@ -23,6 +23,10 @@ struct Instance {
     @location(8) misc: vec4<u32>,
     @location(9) flip: vec4<f32>,
     @location(10) shape: vec4<f32>,
+    @location(11) quad_a: vec4<f32>,
+    @location(12) quad_b: vec4<f32>,
+    @location(13) quad_w: vec4<f32>,
+    @location(14) quad_l: vec4<f32>,
 }
 
 struct VsOut {
@@ -40,7 +44,14 @@ struct VsOut {
     @location(10) world: vec2<f32>,
     @location(11) flip: vec4<f32>,
     @location(12) shape: vec4<f32>,
+    @location(13) @interpolate(flat) quad_l: vec4<f32>,
 }
+
+const PROJECTED: u32 = 128u;
+const RIBBON_COLUMNS: u32 = 4096u;
+const GHOST: u32 = 8192u;
+const BACKDROP: u32 = 16384u;
+const BACKFACE: u32 = 32768u;
 
 @vertex
 fn vs_main(@builtin(vertex_index) vi: u32, inst: Instance) -> VsOut {
@@ -50,15 +61,30 @@ fn vs_main(@builtin(vertex_index) vi: u32, inst: Instance) -> VsOut {
     );
     let c = corners[vi];
     let half_bb = vec2(inst.rect.z, inst.rect.w) + vec2(2.0, 2.0);
-    let local = c * half_bb;
-    let world = inst.rect.xy + local;
+    var local = c * half_bb;
+    var world = inst.rect.xy + local;
+    var w = 1.0;
+    if ((inst.misc.w & PROJECTED) != 0u) {
+        var order = array<u32, 6>(0u, 1u, 3u, 1u, 2u, 3u);
+        let ci = order[vi];
+        var screen = array<vec2<f32>, 4>(inst.quad_a.xy, inst.quad_a.zw, inst.quad_b.xy, inst.quad_b.zw);
+        var depth = array<f32, 4>(inst.quad_w.x, inst.quad_w.y, inst.quad_w.z, inst.quad_w.w);
+        var along = array<f32, 4>(inst.quad_l.x, inst.quad_l.y, inst.quad_l.z, inst.quad_l.w);
+        world = screen[ci];
+        w = depth[ci];
+        if ((inst.misc.w & RIBBON_COLUMNS) != 0u) {
+            local = vec2(along[ci], c.y * half_bb.y);
+        } else {
+            local = vec2(c.x * (half_bb.x + inst.shape.y), along[ci]);
+        }
+    }
     let ndc = vec2(
         world.x / globals.resolution.x * 2.0 - 1.0,
         1.0 - world.y / globals.resolution.y * 2.0,
     );
 
     var out: VsOut;
-    out.pos = vec4(ndc, 0.0, 1.0);
+    out.pos = vec4(ndc * w, 0.0, w);
     out.local = local;
     out.half_ext = vec2(inst.rect.z, inst.rect.w);
     out.radii = inst.radii;
@@ -72,7 +98,62 @@ fn vs_main(@builtin(vertex_index) vi: u32, inst: Instance) -> VsOut {
     out.world = world;
     out.flip = inst.flip;
     out.shape = inst.shape;
+    out.quad_l = inst.quad_l;
     return out;
+}
+
+fn ribbon_cut(in: VsOut) -> f32 {
+    let he = max(in.half_ext, vec2(1.0));
+    if ((in.misc.w & RIBBON_COLUMNS) != 0u) {
+        let f = clamp(in.local.y / he.y * 0.5 + 0.5, -0.5, 1.5);
+        let left = mix(in.quad_l.x, in.quad_l.w, f);
+        let right = mix(in.quad_l.y, in.quad_l.z, f);
+        return max(left - in.local.x, in.local.x - right);
+    }
+    let f = clamp(in.local.x / he.x * 0.5 + 0.5, -0.5, 1.5);
+    let top = mix(in.quad_l.x, in.quad_l.y, f);
+    let bottom = mix(in.quad_l.w, in.quad_l.z, f);
+    return max(top - in.local.y, in.local.y - bottom);
+}
+
+fn backdrop_blur(in: VsOut, norm: vec2<f32>, radius: f32) -> vec3<f32> {
+    var acc = vec3(0.0);
+    for (var i = 0; i < 16; i++) {
+        let fi = f32(i) + 0.5;
+        let ang = fi * 2.39996323;
+        let r = sqrt(fi / 16.0) * radius;
+        acc += near_lod(in, norm + vec2(cos(ang), sin(ang)) * r, 4.0);
+    }
+    return acc / 16.0;
+}
+
+fn ghost_blur(in: VsOut, norm: vec2<f32>, radius: f32) -> vec3<f32> {
+    let aspect = max(in.half_ext.x, 1.0) / max(in.half_ext.y, 1.0);
+    var acc = vec3(0.0);
+    for (var i = 0; i < 12; i++) {
+        let fi = f32(i) + 0.5;
+        let ang = fi * 2.39996323;
+        let r = sqrt(fi / 12.0) * radius;
+        let p = norm + vec2(cos(ang), sin(ang) * aspect) * r;
+        if (in.misc.x == 1u) {
+            acc += near_lod(in, p, 1.0);
+        } else {
+            acc += sample_card(in, p);
+        }
+    }
+    return acc / 12.0;
+}
+
+fn backdrop_grade(in: VsOut, rgb_in: vec3<f32>) -> vec3<f32> {
+    var rgb = (rgb_in - vec3(0.5)) * 1.25 + vec3(0.5);
+    rgb = max(rgb, vec3(0.0)) * 0.38;
+    let norm = in.local / (2.0 * max(in.half_ext, vec2(1.0))) + vec2(0.5);
+    let p = length((norm - vec2(0.5, 0.44)) / vec2(0.7, 0.6));
+    var veil = 0.72 * clamp(p / 0.7, 0.0, 1.0);
+    veil = veil + 0.24 * clamp((p - 0.7) / 0.3, 0.0, 1.0);
+    rgb = mix(rgb, vec3(4.0, 4.0, 6.0) / 255.0, clamp(veil, 0.0, 0.96));
+    let line = step(fract(in.world.y / 3.0), 0.34) - 0.34;
+    return rgb + vec3(line * 0.008);
 }
 
 fn sd_sheared_rounded_box(
@@ -388,6 +469,14 @@ fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
         let vfs = clamp(globals.vis, 0.0, 1.0);
         return vec4(in.fill.rgb * sa * vfs, sa * vfs);
     }
+    var card_p = in.local;
+    if ((in.misc.w & BACKFACE) != 0u) {
+        if ((in.misc.w & RIBBON_COLUMNS) != 0u) {
+            card_p.x = 2.0 * in.shape.z - card_p.x;
+        } else {
+            card_p.y = 2.0 * in.shape.z - card_p.y;
+        }
+    }
     var d: f32;
     if ((in.misc.w & 1u) == 1u) {
         let shape = (in.misc.w >> 8u) & 15u;
@@ -401,7 +490,10 @@ fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
             d = sd_hexagon_flat(in.local, in.half_ext.x);
         }
     } else {
-        d = sd_sheared_rounded_box(in.local, in.half_ext, in.radii, skew, in.shape.x);
+        d = sd_sheared_rounded_box(card_p, in.half_ext, in.radii, skew, in.shape.x);
+    }
+    if ((in.misc.w & PROJECTED) != 0u) {
+        d = max(d, ribbon_cut(in));
     }
     let grad = max(length(vec2(dpdx(d), dpdy(d))), 0.0001);
     let shape_a = clamp(0.5 - d / grad, 0.0, 1.0);
@@ -442,14 +534,18 @@ fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
     var base = in.fill;
     if (in.misc.x > 0u) {
         let norm = clamp(
-            in.local / (2.0 * in.half_ext) + vec2(0.5),
+            card_p / (2.0 * in.half_ext) + vec2(0.5),
             vec2(0.0),
             vec2(1.0),
         );
         let blur = in.flip.w;
         let ca = select(0.0, in.flip.y, in.flip.x < 0.001);
         var rgb: vec3<f32>;
-        if (blur > 0.01 || ca > 0.01) {
+        if ((in.misc.w & GHOST) != 0u) {
+            rgb = ghost_blur(in, norm, 0.06 * in.flip.w);
+        } else if ((in.misc.w & BACKDROP) != 0u && in.misc.x == 1u) {
+            rgb = backdrop_grade(in, backdrop_blur(in, norm, 0.05 * in.flip.w));
+        } else if (blur > 0.01 || ca > 0.01) {
             rgb = card_dof(in, norm, blur, ca);
         } else {
             let cropped = in.crop.xy + norm * in.crop.zw;
@@ -463,6 +559,12 @@ fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
                 tex = textureSample(far_tex, samp, uv, in.misc.y);
             }
             rgb = tex.rgb;
+        }
+        if ((in.misc.w & GHOST) != 0u) {
+            rgb = vec3(luma(rgb) * 1.7);
+        }
+        if ((in.misc.w & BACKFACE) != 0u) {
+            rgb = vec3(clamp((luma(rgb) - 0.5) * 1.15 + 0.5, 0.0, 1.0) * 0.5);
         }
         base = mix(in.fill, vec4(rgb, 1.0), fade);
     }

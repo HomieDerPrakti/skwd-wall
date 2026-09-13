@@ -4,6 +4,7 @@ pub enum Mode {
     Grid,
     Hex,
     Sandy,
+    Hand,
 }
 
 impl Mode {
@@ -13,6 +14,7 @@ impl Mode {
             "wall" | "grid" => Some(Self::Grid),
             "hex" => Some(Self::Hex),
             "sandy" | "nova" => Some(Self::Sandy),
+            "hand" => Some(Self::Hand),
             _ => None,
         }
     }
@@ -27,6 +29,7 @@ impl Mode {
             Self::Grid => "wall",
             Self::Hex => "hex",
             Self::Sandy => "sandy",
+            Self::Hand => "hand",
         }
     }
 }

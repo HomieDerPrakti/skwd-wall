@@ -156,6 +156,7 @@ fn test_extra() -> ExtraParams {
             grain: 3.0,
             video_out_live: true,
         },
+        hand: crate::frontend::scene::hand::HandParams::default(),
     }
 }
 
@@ -2157,5 +2158,450 @@ fn grid_thumbnail_spacing_matches_configured_gaps() {
                 }
             }
         }
+    }
+}
+
+fn hand_fixture(
+    count: usize,
+) -> (Catalog, Vec<u32>, UploadQueue, DecodePool, Palette, Option<AtlasMap>) {
+    use std::sync::{Arc, Mutex};
+    let uploads: UploadQueue = Arc::new(Mutex::new(Vec::new()));
+    let (tx, _rx) = futures_channel::mpsc::unbounded();
+    let pool = DecodePool::start(uploads.clone(), tx, 0);
+    let mut store = Catalog::default();
+    for index in 0..count {
+        store.items.push(Wallpaper {
+            key: format!("wall-{index}"),
+            name: format!("wall-{index}"),
+            thumb: format!("/tmp/wall-{index}.webp"),
+            path: format!("/tmp/wall-{index}.webp"),
+            kind: WallpaperKind::Static,
+            ..Default::default()
+        });
+    }
+    let filtered: Vec<u32> = (0..count as u32).collect();
+    let atlas = Some(AtlasMap::new(store.items.len()));
+    (store, filtered, uploads, pool, Palette::default(), atlas)
+}
+
+fn hand_scene() -> SceneCore {
+    let mut scene = test_scene(Mode::Hand);
+    scene.viewport = (1440.0, 900.0);
+    scene.motion.entrance.snap(1.0);
+    scene.motion.visibility.snap(1.0);
+    scene
+}
+
+fn hand_frames(
+    scene: &mut SceneCore,
+    fixture: &mut (Catalog, Vec<u32>, UploadQueue, DecodePool, Palette, Option<AtlasMap>),
+    now: &mut Instant,
+    frames: usize,
+) {
+    for _ in 0..frames {
+        *now += Duration::from_millis(16);
+        scene.tick(
+            *now,
+            RebuildCtx {
+                catalog: &fixture.0,
+                filtered: &fixture.1,
+                atlas: &mut fixture.5,
+                pool: &fixture.3,
+                palette: &fixture.4,
+                uploads: &fixture.2,
+                hover_fades: None,
+            },
+        );
+    }
+}
+
+#[test]
+fn hand_select_inside_window_pops_without_dealing() {
+    let mut scene = hand_scene();
+    scene.set_current(2, 20);
+    assert!(!scene.hand_dealing());
+    assert_eq!(scene.current, 2);
+    assert_eq!(scene.hand_offset(), 0);
+    assert!(scene.card.selection.contains_key(&0));
+    assert!(scene.card.selection.contains_key(&2));
+    assert!(scene.is_animating());
+}
+
+#[test]
+fn hand_select_outside_window_deals_and_settles() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(20);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    let projected = |scene: &SceneCore| {
+        scene
+            .render
+            .instances
+            .iter()
+            .filter(|inst| inst.misc[3] & crate::rendering::scene::PROJECTED != 0)
+            .count()
+    };
+    assert_eq!(projected(&scene), 5);
+    assert!(scene.render.hits.iter().any(|hit| hit.index == 4));
+    assert!(scene.render.chrome.len() == 1);
+
+    scene.set_current(9, 20);
+    assert!(scene.hand_dealing());
+    assert_eq!(scene.hand_offset(), 5);
+    assert_eq!(scene.current, 9);
+    hand_frames(&mut scene, &mut fixture, &mut now, 3);
+    assert!(scene.hand_dealing());
+    assert!(scene.render.hits.is_empty());
+    assert!(
+        scene
+            .render
+            .instances
+            .iter()
+            .any(|inst| inst.misc[3] & crate::rendering::scene::PROJECTED != 0)
+    );
+    hand_frames(&mut scene, &mut fixture, &mut now, 400);
+    assert!(!scene.hand_dealing());
+    assert!(scene.render.hits.iter().any(|hit| hit.index == 9));
+    assert_eq!(scene.visible_range(), (5, 9));
+    hand_frames(&mut scene, &mut fixture, &mut now, 300);
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+}
+
+#[test]
+fn hand_deal_interrupt_retargets_without_snapping_home() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(40);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    scene.set_current(12, 40);
+    hand_frames(&mut scene, &mut fixture, &mut now, 10);
+    scene.set_current(30, 40);
+    assert!(scene.hand_dealing());
+    assert_eq!(scene.hand_offset(), 30);
+    hand_frames(&mut scene, &mut fixture, &mut now, 500);
+    assert!(!scene.hand_dealing());
+    assert!(scene.render.hits.iter().any(|hit| hit.index == 30));
+}
+
+#[test]
+fn hand_flip_lands_face_on_with_back_panel() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(12);
+    let mut now = Instant::now();
+    scene.set_card_flip_options(1200.0, true, true);
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    scene.toggle_flip(scene.current);
+    assert!(scene.flip_open());
+    hand_frames(&mut scene, &mut fixture, &mut now, 20);
+    assert!(scene.render.back.is_none());
+    hand_frames(&mut scene, &mut fixture, &mut now, 34);
+    let plates = scene
+        .render
+        .instances
+        .iter()
+        .filter(|inst| {
+            inst.misc[3] & crate::rendering::scene::PROJECTED != 0
+                && inst.misc[0] == 0
+                && (inst.fill[3] - 1.0).abs() < 1e-3
+        })
+        .count();
+    assert_eq!(plates, 6, "all ribbons lie flat on their backs before the panel surface fades in");
+    assert!(scene.render.back.as_ref().is_some_and(|back| back.progress < 0.8));
+    assert!(
+        scene
+            .render
+            .instances
+            .iter()
+            .filter(|inst| inst.misc[3] & crate::rendering::scene::PROJECTED != 0)
+            .count()
+            > 5
+    );
+    hand_frames(&mut scene, &mut fixture, &mut now, 120);
+    let back = scene.render.back.clone().expect("back panel after landing");
+    assert!(back.progress >= 0.999);
+    assert!(back.embedded && back.coordinated_flip && back.picture_behind);
+    let hit = scene.render.hits.iter().find(|hit| hit.index == scene.current).expect("flipped hit");
+    assert!((hit.cx - back.cx).abs() < 1.0 && (hit.cy - back.cy).abs() < 1.0);
+    let expected_hw = 168.0 * 0.5 * 1.02 * 1700.0 / (1700.0 - 170.0);
+    assert!((back.hw - expected_hw).abs() < expected_hw * 0.08, "{} vs {expected_hw}", back.hw);
+    scene.close_flip();
+    hand_frames(&mut scene, &mut fixture, &mut now, 160);
+    assert!(scene.flipped().is_none());
+    assert!(scene.render.back.is_none());
+    hand_frames(&mut scene, &mut fixture, &mut now, 200);
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+}
+
+#[test]
+fn hand_rig_follows_pointer_and_settles() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(8);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    scene.hand_pointer(1440.0, 0.0, None);
+    assert!(scene.is_animating());
+    hand_frames(&mut scene, &mut fixture, &mut now, 200);
+    let (rx, ry) = scene.hand_rig();
+    assert!((rx - 2.25).abs() < 0.1 && (ry - 3.0).abs() < 0.1);
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    scene.hand_drag_start(700.0, 450.0);
+    scene.hand_pointer(760.0, 450.0, None);
+    assert!(scene.hand_dragging());
+    assert!(scene.hand_rig().1 > ry + 10.0);
+    scene.hand_drag_end();
+    hand_frames(&mut scene, &mut fixture, &mut now, 300);
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    assert!((scene.hand_rig().1 - 3.0).abs() < 0.1);
+}
+
+#[test]
+fn hand_hover_lift_settles_and_bob_holds_frames() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(8);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    scene.hand_pointer(700.0, 450.0, Some(3));
+    hand_frames(&mut scene, &mut fixture, &mut now, 100);
+    scene.hand_pointer(700.0, 450.0, None);
+    hand_frames(&mut scene, &mut fixture, &mut now, 200);
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    let mut bob = scene.xp_target;
+    bob.hand.bob = true;
+    scene.set_params(scene.sp_target, scene.gp_target, scene.hp_target, bob, false);
+    hand_frames(&mut scene, &mut fixture, &mut now, 1);
+    assert!(scene.is_animating());
+    assert_eq!(scene.anim_reason(), "hand_bob");
+}
+
+#[test]
+fn hand_filter_storm_deals_from_shown_cards() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(12);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    scene.reset_to_index(0, 12);
+    scene.filter_storm(None);
+    assert!(scene.hand_dealing());
+    assert_eq!(scene.filter_flip_count(), 0);
+    hand_frames(&mut scene, &mut fixture, &mut now, 400);
+    assert!(!scene.hand_dealing());
+}
+
+#[test]
+fn hand_backdrop_crossfades_between_selections() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(8);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    let (store, prev, fade) = scene.hand_backdrop_target(0, false);
+    assert_eq!((store, prev, fade), (None, None, 1.0));
+    let (store, prev, fade) = scene.hand_backdrop_target(0, true);
+    assert_eq!((store, prev, fade), (Some(0), None, 1.0));
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    let (store, prev, fade) = scene.hand_backdrop_target(3, true);
+    assert_eq!((store, prev), (Some(3), Some(0)));
+    assert_eq!(fade, 0.0);
+    assert!(scene.is_animating());
+    assert_eq!(scene.anim_reason(), "hand_backdrop");
+    hand_frames(&mut scene, &mut fixture, &mut now, 10);
+    let (_, prev, fade) = scene.hand_backdrop_target(3, true);
+    assert_eq!(prev, Some(0));
+    assert!(fade > 0.2 && fade < 0.6, "{fade}");
+    hand_frames(&mut scene, &mut fixture, &mut now, 60);
+    let (_, prev, fade) = scene.hand_backdrop_target(3, true);
+    assert_eq!((prev, fade), (None, 1.0));
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+}
+
+#[test]
+fn hand_starts_on_the_middle_card() {
+    let mut scene = hand_scene();
+    scene.reset_to_index(0, 20);
+    assert_eq!(scene.current, 2);
+    assert_eq!(scene.hand_offset(), 0);
+    scene.reset_to_index(7, 20);
+    assert_eq!(scene.current, 7);
+    assert_eq!(scene.hand_offset(), 5);
+    scene.reset_to_index(0, 2);
+    assert_eq!(scene.current, 1);
+    let mut fresh = hand_scene();
+    fresh.relayout(20);
+    assert_eq!(fresh.current, 2);
+    fresh.set_current(9, 20);
+    fresh.relayout(20);
+    assert_eq!(fresh.current, 9);
+    assert!(fresh.hand_dealing());
+}
+
+#[test]
+fn hand_push_holds_steady_while_selection_moves() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(8);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    scene.set_current(3, 8);
+    for _ in 0..40 {
+        hand_frames(&mut scene, &mut fixture, &mut now, 1);
+        let push = scene.hand_push();
+        assert!(push > 0.97 && push <= 1.0, "push dipped to {push}");
+    }
+}
+
+#[test]
+fn hand_refans_around_the_selected_card() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(8);
+    let mut now = Instant::now();
+    scene.reset_to_index(0, 8);
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    assert_eq!(scene.current, 2);
+    let k = scene.hand_stage_scale();
+    let spread = scene.xp.hand.spread * k * 1.24;
+    let centre_slot = scene.hand_rest_pose(2, 5, 1.0);
+    assert!(centre_slot.t[0].abs() < 1e-3);
+    scene.set_current(3, 8);
+    hand_frames(&mut scene, &mut fixture, &mut now, 200);
+    let lifted = scene.hand_rest_pose(3, 5, 1.0);
+    assert!(lifted.t[0].abs() < 1e-3 && lifted.t[2] > 0.0);
+    let vacated = scene.hand_rest_pose(2, 5, 1.0);
+    assert!((vacated.t[0] - 0.5 * spread).abs() < 1.0, "{} vs {}", vacated.t[0], 0.5 * spread);
+    let edge = scene.hand_rest_pose(0, 5, 1.0);
+    assert!((edge.t[0] + 1.5 * spread).abs() < 1.0);
+}
+
+fn hand_dump(scene: &SceneCore, label: &str) -> String {
+    use std::fmt::Write;
+    let mut out = String::new();
+    for inst in &scene.render.instances {
+        if inst.misc[3] & crate::rendering::scene::PROJECTED == 0 {
+            continue;
+        }
+        let q: Vec<String> = inst
+            .quad_a
+            .iter()
+            .chain(&inst.quad_b)
+            .chain(&inst.quad_w)
+            .chain(&inst.quad_l)
+            .map(|v| format!("{v:.3}"))
+            .collect();
+        let _ = writeln!(out, "{label} {} {} {}", inst.misc[3], inst.misc[0], q.join(" "));
+    }
+    out
+}
+
+#[test]
+#[ignore = "manual geometry snapshot for the math swap"]
+fn hand_geometry_snapshot() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(20);
+    let mut now = Instant::now();
+    scene.reset_to_index(0, 20);
+    hand_frames(&mut scene, &mut fixture, &mut now, 30);
+    let mut dump = hand_dump(&scene, "rest");
+    scene.hand_pointer(300.0, 200.0, Some(1));
+    hand_frames(&mut scene, &mut fixture, &mut now, 12);
+    dump.push_str(&hand_dump(&scene, "tilt"));
+    scene.set_current(9, 20);
+    hand_frames(&mut scene, &mut fixture, &mut now, 25);
+    dump.push_str(&hand_dump(&scene, "deal_out"));
+    hand_frames(&mut scene, &mut fixture, &mut now, 40);
+    dump.push_str(&hand_dump(&scene, "deal_in"));
+    hand_frames(&mut scene, &mut fixture, &mut now, 300);
+    scene.toggle_flip(scene.current);
+    hand_frames(&mut scene, &mut fixture, &mut now, 28);
+    dump.push_str(&hand_dump(&scene, "flip_lift"));
+    hand_frames(&mut scene, &mut fixture, &mut now, 30);
+    dump.push_str(&hand_dump(&scene, "flip_land"));
+    let path =
+        std::env::var("SKWD_HAND_SNAPSHOT").unwrap_or_else(|_| "/tmp/hand-snapshot.txt".into());
+    std::fs::write(&path, dump).unwrap();
+}
+
+#[test]
+#[ignore = "manual rebuild benchmark for the math swap"]
+fn hand_rebuild_bench() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(40);
+    let mut now = Instant::now();
+    let mut ribbon = scene.xp_target;
+    ribbon.hand.moves = [false, false, false, true, false];
+    scene.set_params(scene.sp_target, scene.gp_target, scene.hp_target, ribbon, false);
+    scene.reset_to_index(0, 40);
+    hand_frames(&mut scene, &mut fixture, &mut now, 10);
+    let started = Instant::now();
+    let mut frames = 0usize;
+    for round in 0..20 {
+        scene.set_current(if round % 2 == 0 { 30 } else { 5 }, 40);
+        hand_frames(&mut scene, &mut fixture, &mut now, 100);
+        frames += 100;
+    }
+    let deal_us = started.elapsed().as_secs_f64() * 1e6 / frames as f64;
+    let started = Instant::now();
+    scene.toggle_flip(scene.current);
+    for _ in 0..40 {
+        hand_frames(&mut scene, &mut fixture, &mut now, 100);
+        scene.toggle_flip(scene.current);
+    }
+    let flip_us = started.elapsed().as_secs_f64() * 1e6 / 4000.0;
+    eprintln!(
+        "hand_bench deal_frame_us={deal_us:.2} flip_frame_us={flip_us:.2} instances={}",
+        scene.render.instances.len()
+    );
+}
+
+#[test]
+fn hand_steep_cuts_still_land_every_ribbon_on_its_back() {
+    use crate::frontend::scene::hand::{Cut, Variance};
+    for (cut, variance) in [
+        (Cut::Straight, Variance::None),
+        (Cut::Steep, Variance::None),
+        (Cut::Steep, Variance::Wild),
+    ] {
+        let mut scene = hand_scene();
+        let mut fixture = hand_fixture(12);
+        let mut now = Instant::now();
+        let mut steep = scene.xp_target;
+        steep.hand.cut = cut;
+        steep.hand.variance = variance;
+        scene.set_params(scene.sp_target, scene.gp_target, scene.hp_target, steep, false);
+        scene.reset_to_index(0, 12);
+        hand_frames(&mut scene, &mut fixture, &mut now, 2);
+        scene.toggle_flip(scene.current);
+        hand_frames(&mut scene, &mut fixture, &mut now, 200);
+        let plates = scene
+            .render
+            .instances
+            .iter()
+            .filter(|inst| {
+                inst.misc[3] & crate::rendering::scene::PROJECTED != 0
+                    && inst.misc[0] == 0
+                    && (inst.fill[3] - 1.0).abs() < 1e-3
+            })
+            .count();
+        assert_eq!(plates, 6, "{cut:?} {variance:?}");
+        let k = scene.hand_stage_scale();
+        let back = scene.render.back.clone().expect("panel");
+        for inst in scene.render.instances.iter().filter(|inst| {
+            inst.misc[3] & crate::rendering::scene::PROJECTED != 0
+                && inst.misc[0] == 0
+                && (inst.fill[3] - 1.0).abs() < 1e-3
+                && inst.quad_l.iter().all(|v| v.abs() < 260.0 * k)
+        }) {
+            let ys = [inst.quad_a[1], inst.quad_a[3], inst.quad_b[1], inst.quad_b[3]];
+            for y in ys {
+                assert!(
+                    (y - back.cy).abs() <= back.hh * 1.45 + 6.0,
+                    "{cut:?}: interior plate corner {y} leaves the card around {} +-{}",
+                    back.cy,
+                    back.hh
+                );
+            }
+        }
+        let k = scene.hand_stage_scale();
+        assert!(
+            (back.hh - 216.0 * k * 1.02 * 1700.0 / 1530.0).abs() < 216.0 * k * 0.08,
+            "{}",
+            back.hh
+        );
     }
 }

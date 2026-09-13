@@ -479,12 +479,65 @@ fn selector_mode_degrades() {
         ("hex", "hex"),
         ("sandy", "sandy"),
         ("nova", "sandy"),
+        ("hand", "hand"),
     ] {
         assert_eq!(sel(json!({"displayMode": mode})).selector_mode(), expected);
     }
     for mode in ["spiral", "mosaic", "cascade", "warp", "fluid", "lens", "shelves"] {
         assert_eq!(sel(json!({"displayMode": mode})).selector_mode(), "slices");
     }
+}
+
+#[test]
+fn hand_getters_default_and_clamp() {
+    let def = cfg(json!({}));
+    assert_eq!(def.hand_count(), 5);
+    assert_eq!(def.hand_card_width(), 168.0);
+    assert_eq!(def.hand_card_height(), 432.0);
+    assert_eq!(def.hand_spread(), 126.0);
+    assert_eq!(def.hand_ribbons(), 6);
+    assert_eq!(def.hand_speed(), 1.0);
+    assert_eq!(def.hand_tilt(), 1.0);
+    assert_eq!(def.hand_perspective(), 1700.0);
+    assert_eq!(def.hand_ribbon_axis(), "rows");
+    assert_eq!(def.hand_cut(), "straight");
+    assert_eq!(def.hand_cut_variance(), "none");
+    assert_eq!(def.hand_move(), "cycle");
+    assert!(def.hand_ghosts());
+    assert!(!def.hand_bob());
+    assert!(def.hand_backdrop());
+
+    let wild = sel(json!({
+        "handCount": 40, "handRibbons": 0, "handSpeed": 5, "handPerspective": 10,
+        "handRibbonAxis": "columns", "handCut": "steep", "handCutVariance": "wild",
+        "handMove": "spiral", "handBob": true, "handStageX": 30.0, "handStageY": -10.0
+    }));
+    assert_eq!(wild.hand_count(), 16);
+    assert_eq!(def.hand_fan_angle(), 12.0);
+    assert_eq!(def.hand_fan_roll(), 8.5);
+    assert_eq!(def.hand_arch(), 20.0);
+    assert_eq!(def.hand_corner_radius(), 0.0);
+    assert_eq!(def.hand_skew(), 0.0);
+    assert_eq!(def.hand_backdrop_blur(), 1.0);
+    assert_eq!(sel(json!({"handCount": 1})).hand_count(), 2);
+    assert_eq!(sel(json!({"handFanAngle": 90})).hand_fan_angle(), 60.0);
+    assert_eq!(sel(json!({"handSkew": -500})).hand_skew(), -200.0);
+    assert_eq!(sel(json!({"handBackdropBlur": 250})).hand_backdrop_blur(), 2.5);
+    assert_eq!(wild.hand_ribbons(), 2);
+    assert_eq!(wild.hand_speed(), 0.35);
+    assert_eq!(wild.hand_perspective(), 400.0);
+    assert_eq!(wild.hand_ribbon_axis(), "columns");
+    assert_eq!(wild.hand_cut(), "steep");
+    assert_eq!(wild.hand_cut_variance(), "wild");
+    assert_eq!(wild.hand_move(), "cycle");
+    assert_eq!(wild.hand_moves(), [false, false, false, false, true]);
+    let random = sel(json!({"handMove": "random", "handMoveShuffle": false}));
+    assert_eq!(random.hand_move(), "random");
+    assert_eq!(random.hand_moves(), [true, true, false, true, true]);
+    assert!(wild.hand_bob());
+    assert_eq!(wild.hand_position(), (0.3, -0.1));
+    assert_eq!(sel(json!({"handMove": "bogus"})).hand_move(), "cycle");
+    assert_eq!(sel(json!({"handMove": "bogus"})).hand_moves(), [true; 5]);
 }
 
 #[test]

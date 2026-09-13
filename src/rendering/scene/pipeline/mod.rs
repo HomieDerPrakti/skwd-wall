@@ -10,5 +10,7 @@ mod tests;
 mod textures;
 mod transition_resources;
 
-pub(crate) use geometry::{sandy_video_in, sandy_video_out};
+pub(crate) use geometry::{
+    BACKDROP, BACKFACE, GHOST, PROJECTED, RIBBON_COLUMNS, sandy_video_in, sandy_video_out,
+};
 pub(crate) use model::{BrowserScenePrimitive, ScenePrimitive};

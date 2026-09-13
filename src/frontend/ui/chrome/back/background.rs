@@ -97,8 +97,10 @@ pub(super) fn draw_surface(
             sheet,
             embedded_section_radii(panel, layout, sheet, false, true),
         );
-        frame.fill(&masthead_path, with_alpha(palette.surface, 0.78 * fade));
-        frame.fill(&sheet_path, with_alpha(palette.surface, 0.92 * fade));
+        let (masthead_alpha, sheet_alpha) =
+            if panel.picture_behind { (0.42, 0.6) } else { (0.78, 0.92) };
+        frame.fill(&masthead_path, with_alpha(palette.surface, masthead_alpha * fade));
+        frame.fill(&sheet_path, with_alpha(palette.surface, sheet_alpha * fade));
         frame.stroke(
             &masthead_path,
             Stroke::default().with_color(with_alpha(palette.outline, 0.48 * fade)).with_width(1.0),

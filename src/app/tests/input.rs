@@ -885,3 +885,115 @@ fn pointer_release_ends_drag() {
     editor.drag_over(1);
     assert_eq!(editor.rows[0].name, "first");
 }
+
+fn hand_app(count: usize) -> (App, Instant) {
+    let mut app = test_app();
+    let walls: Vec<Value> =
+        (0..count).map(|i| wall(&format!("w{i}"), "static", (i * 20) as i64, i as i64)).collect();
+    seed(&mut app, &walls);
+    app.scene.mode = Mode::Hand;
+    let mut now = Instant::now();
+    tick_frames(&mut app, &mut now, 3);
+    (app, now)
+}
+
+fn hit_center(app: &App, index: usize) -> (f32, f32) {
+    let hit = app.scene.render.hits.iter().find(|hit| hit.index == index).expect("hand hit");
+    (hit.cx, hit.cy)
+}
+
+#[test]
+fn hand_click_selects_then_applies() {
+    use crate::domain::input::MouseButton;
+    let (mut app, mut now) = hand_app(8);
+    assert_eq!(app.scene.current, 0);
+    let (x, y) = hit_center(&app, 1);
+    let _ = update(&mut app, Message::Click(x, y, MouseButton::Left));
+    assert_eq!(app.scene.current, 1);
+    assert!(app.scene.hand_dragging());
+    let _ = update(&mut app, Message::PointerUp);
+    assert!(!app.scene.hand_dragging());
+    assert!(!drain_calls(&app).iter().any(|(method, _)| method == "wall.apply"));
+    tick_frames(&mut app, &mut now, 40);
+    let (x, y) = hit_center(&app, 1);
+    let _ = update(&mut app, Message::Click(x, y, MouseButton::Left));
+    assert!(drain_calls(&app).iter().any(|(method, _)| method == "wall.apply"));
+}
+
+#[test]
+fn hand_right_click_flips_and_esc_closes() {
+    use crate::domain::input::MouseButton;
+    let (mut app, mut now) = hand_app(8);
+    let (x, y) = hit_center(&app, 0);
+    let _ = update(&mut app, Message::Click(x, y, MouseButton::Right));
+    assert!(app.scene.flip_open());
+    tick_frames(&mut app, &mut now, 150);
+    assert!(app.scene.render.back.is_some());
+    let _ = update(&mut app, Message::Exit);
+    assert!(!app.scene.flip_open());
+}
+
+#[test]
+fn hand_wheel_past_edge_deals_next_hand() {
+    let (mut app, mut now) = hand_app(12);
+    for _ in 0..4 {
+        let _ = update(&mut app, Message::Wheel(-1.0));
+    }
+    assert_eq!(app.scene.current, 4);
+    assert!(!app.scene.hand_dealing());
+    let _ = update(&mut app, Message::Wheel(-1.0));
+    assert_eq!(app.scene.current, 5);
+    assert!(app.scene.hand_dealing());
+    assert_eq!(app.scene.hand_offset(), 5);
+    tick_frames(&mut app, &mut now, 300);
+    assert!(!app.scene.hand_dealing());
+    assert!(app.scene.render.hits.iter().any(|hit| hit.index == 5));
+}
+
+#[test]
+fn hand_filter_change_deals() {
+    let (mut app, mut now) = hand_app(8);
+    let _ = update(&mut app, Message::SetSort("date".into()));
+    assert!(app.scene.hand_dealing());
+    assert!(!app.scene.filter_flip_running());
+    tick_frames(&mut app, &mut now, 300);
+    assert!(!app.scene.hand_dealing());
+}
+
+#[test]
+fn hand_hover_only_lifts_and_click_selects() {
+    use crate::domain::input::MouseButton;
+    let (mut app, mut now) = hand_app(8);
+    app.scene.set_current(2, 8);
+    tick_frames(&mut app, &mut now, 40);
+    let (x, y) = hit_center(&app, 4);
+    let _ = update(&mut app, Message::MouseMoved(1.0, 1.0));
+    let _ = update(&mut app, Message::MouseMoved(x, y));
+    assert_eq!(app.scene.current, 2);
+    assert_eq!(app.scene.hover, Some(4));
+    let _ = update(&mut app, Message::Click(x, y, MouseButton::Left));
+    assert_eq!(app.scene.current, 4);
+    assert!(!drain_calls(&app).iter().any(|(method, _)| method == "wall.apply"));
+}
+
+#[test]
+fn hand_wheel_closes_the_flip_and_moves_on() {
+    let (mut app, mut now) = hand_app(8);
+    app.scene.set_current(2, 8);
+    tick_frames(&mut app, &mut now, 30);
+    let _ = update(&mut app, Message::KeyFlip);
+    tick_frames(&mut app, &mut now, 120);
+    assert!(app.scene.flip_open());
+    assert_eq!(app.scene.flipped(), Some(2));
+    let _ = update(&mut app, Message::Wheel(-1.0));
+    assert_eq!(app.scene.current, 3);
+    assert!(!app.scene.flip_open());
+    assert_eq!(app.scene.flipped(), Some(2));
+    tick_frames(&mut app, &mut now, 150);
+    assert_eq!(app.scene.flipped(), None);
+    let _ = update(&mut app, Message::KeyFlip);
+    assert!(app.scene.flip_open());
+    let _ = update(&mut app, Message::KeyPrev);
+    assert_eq!(app.scene.current, 2);
+    assert!(!app.scene.flip_open());
+}

@@ -40,7 +40,7 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: liixini/skwd-deck
-          ref: c06be07a36b4a023b952253049452f31cf606339
+          ref: 2c99c866acf00e135a993c32fdb26058b8216196
           path: suite/skwd-deck
           token: ${{ secrets.SKWD_SUITE_READ_TOKEN }}
           persist-credentials: false
@@ -49,7 +49,7 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: liixini/skwd-lens
-          ref: b4d993418a348cf0d455b3c41b3cbfe6e31060e1
+          ref: 33a83bcccf41ecaaf5b0bcb64c92386dcb9bae11
           path: suite/skwd-lens
           token: ${{ secrets.SKWD_SUITE_READ_TOKEN }}
           persist-credentials: false
@@ -58,7 +58,7 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: liixini/skwd-verify
-          ref: 8f62115b516b73c766e099737bbbab98f8f95b00
+          ref: b2ba0775223a95a34a1ced34cf4c5a3f27507858
           path: suite/skwd-verify
           token: ${{ secrets.SKWD_SUITE_READ_TOKEN }}
           persist-credentials: false
@@ -117,7 +117,7 @@ jobs:
         id: tests
         if: steps.clippy.outcome == 'success'
         continue-on-error: true
-        run: python3 "$SKWD_VERIFY_ROOT/scripts/ci-report.py" wrap --suite wall.tests --target linux-x86_64 --expect-skips 2 --out ci-artifacts/results/wall-tests.json -- cargo test --locked --release --features obs-heap -- --skip alloc_free
+        run: python3 "$SKWD_VERIFY_ROOT/scripts/ci-report.py" wrap --suite wall.tests --target linux-x86_64 --expect-skips 4 --out ci-artifacts/results/wall-tests.json -- cargo test --locked --release --features obs-heap -- --skip alloc_free
 
       - name: Allocation guards
         if: steps.tests.outcome == 'success'

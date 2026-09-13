@@ -90,7 +90,10 @@ impl SceneCore {
 
     pub fn close_flip(&mut self) {
         if self.card.flipped.is_some() {
-            if matches!(self.mode, Mode::Slices | Mode::Sandy)
+            if self.mode == Mode::Hand {
+                self.hand_flip_begin(true);
+            }
+            if matches!(self.mode, Mode::Slices | Mode::Sandy | Mode::Hand)
                 && !self.card.flip_shader_enabled
                 && !self.card.flip_back_enabled
             {
@@ -163,8 +166,8 @@ impl SceneCore {
             edge_tilt,
             radii,
             progress,
-            coordinated_flip: matches!(self.mode, Mode::Slices | Mode::Sandy),
-            embedded: self.mode == Mode::Slices,
+            coordinated_flip: matches!(self.mode, Mode::Slices | Mode::Sandy | Mode::Hand),
+            embedded: matches!(self.mode, Mode::Slices | Mode::Hand),
             animate_flip_shader: self.card.flip_shader_enabled,
             animate_flip_back: self.card.flip_back_enabled,
             title: back_title(item),
@@ -180,6 +183,7 @@ impl SceneCore {
             overview_available: crate::infrastructure::runtime::is_niri(),
             scene_properties: item.effective_kind() == WallpaperKind::We && !item.we_id.is_empty(),
             reset_thumbnail: item.kind == WallpaperKind::We && !item.we_id.is_empty(),
+            picture_behind: self.mode == Mode::Hand,
         }
     }
 
@@ -195,6 +199,9 @@ impl SceneCore {
             if self.card.flipped != Some(idx) {
                 self.card.flipped = Some(idx);
                 self.card.flip.snap(0.0);
+            }
+            if self.mode == Mode::Hand {
+                self.hand_flip_begin(false);
             }
             if !self.card.flip_shader_enabled && !self.card.flip_back_enabled {
                 self.card.flip.snap(1.0);

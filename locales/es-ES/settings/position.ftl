@@ -3,6 +3,7 @@ settings-position-slices-card = Selector Slices
 settings-position-hex-card = Selector Geometric
 settings-position-wall-card = Selector Wall
 settings-position-sandy-card = Selector Sandy
+settings-position-hand-card = Selector de mano de cartas
 settings-position-horizontal-label = Desplazamiento horizontal
 settings-position-horizontal-desc = Mueve el selector a izquierda o derecha en porcentaje de la mitad del ancho de pantalla. Valores positivos lo mueven a la derecha.
 settings-position-vertical-label = Desplazamiento vertical

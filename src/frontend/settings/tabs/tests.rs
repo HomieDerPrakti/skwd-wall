@@ -117,17 +117,19 @@ fn external_authority_replaces_engine() {
 
 #[test]
 fn matugen_under_theme() {
-    fn paths(cards: &[(Card, Vec<Row>)]) -> Vec<&str> {
-        cards
-            .iter()
-            .flat_map(|(_, rows)| rows)
-            .filter_map(|row| match &row.control {
+    fn row_paths(rows: &[Row]) -> Vec<&str> {
+        rows.iter()
+            .flat_map(|row| match &row.control {
                 Control::Toggle { path, .. } | Control::TextField { path, .. } => {
-                    Some(path.as_str())
+                    vec![path.as_str()]
                 }
-                _ => None,
+                Control::Details { rows, .. } | Control::StackBar { rows, .. } => row_paths(rows),
+                _ => Vec::new(),
             })
             .collect()
+    }
+    fn paths(cards: &[(Card, Vec<Row>)]) -> Vec<&str> {
+        cards.iter().flat_map(|(_, rows)| row_paths(rows)).collect()
     }
 
     let cfg = FakeSettingsSource::default().with_array_len(keys::integrations::LIST, 1);
@@ -320,6 +322,7 @@ fn library_watching_surfaces_polling_state_and_controls() {
         &std::collections::HashMap::new(),
         Some(&status),
         None,
+        None,
     );
     let rows = &cards
         .iter()
@@ -373,6 +376,7 @@ fn library_watching_explains_recovery_and_unavailable_states() {
             &[],
             &std::collections::HashMap::new(),
             Some(&status),
+            None,
             None,
         );
         let status_row = &cards
@@ -633,6 +637,7 @@ fn position_tab_groups_independent_surfaces() {
             "Geometric picker",
             "Wall picker",
             "Sandy picker",
+            "Card hand picker",
             "Filter bar position",
             "Search panel position",
         ]
@@ -657,6 +662,8 @@ fn position_tab_groups_independent_surfaces() {
             keys::selector::GRID_STAGE_Y,
             keys::selector::SANDY_STAGE_X,
             keys::selector::SANDY_STAGE_Y,
+            keys::selector::HAND_STAGE_X,
+            keys::selector::HAND_STAGE_Y,
             keys::filter_bar::OFFSET_X,
             keys::filter_bar::OFFSET_Y,
             keys::selector::TAG_CLOUD_OFFSET_X,
@@ -1202,5 +1209,51 @@ fn full_width_pause_is_only_exposed_on_niri() {
             matches!(&row.control, Control::Toggle { path, .. } if path == keys::niri::FULL_WIDTH_PAUSE)
         }).count();
         assert_eq!(count, usize::from(niri));
+    }
+}
+
+#[test]
+fn hand_mode_exposes_every_hand_knob_in_the_picker_page() {
+    let cfg = cfg().with_text(keys::selector::DISPLAY_MODE, "hand");
+    let cards = build_tab("picker", &cfg, &[], &[], "", &[]);
+    let paths: Vec<String> = cards
+        .iter()
+        .flat_map(|(_, rows)| rows)
+        .filter_map(|row| match &row.control {
+            Control::Number { path, .. }
+            | Control::Toggle { path, .. }
+            | Control::Chips { path, .. } => Some(path.clone()),
+            _ => None,
+        })
+        .collect();
+    for key in [
+        keys::selector::HAND_COUNT,
+        keys::selector::HAND_CARD_WIDTH,
+        keys::selector::HAND_CARD_HEIGHT,
+        keys::selector::HAND_SPREAD,
+        keys::selector::HAND_FAN_ANGLE,
+        keys::selector::HAND_FAN_ROLL,
+        keys::selector::HAND_ARCH,
+        keys::selector::HAND_CORNER_RADIUS,
+        keys::selector::HAND_SKEW,
+        keys::selector::HAND_PERSPECTIVE,
+        keys::selector::HAND_TILT,
+        keys::selector::HAND_SPEED,
+        keys::selector::HAND_MOVE,
+        keys::selector::HAND_MOVE_CORKSCREW,
+        keys::selector::HAND_MOVE_CASCADE,
+        keys::selector::HAND_MOVE_SHUFFLE,
+        keys::selector::HAND_MOVE_RIBBON,
+        keys::selector::HAND_MOVE_SPIRAL,
+        keys::selector::HAND_RIBBON_AXIS,
+        keys::selector::HAND_RIBBONS,
+        keys::selector::HAND_CUT,
+        keys::selector::HAND_CUT_VARIANCE,
+        keys::selector::HAND_GHOSTS,
+        keys::selector::HAND_BACKDROP,
+        keys::selector::HAND_BACKDROP_BLUR,
+        keys::selector::HAND_BOB,
+    ] {
+        assert!(paths.iter().any(|path| path == key), "missing {key}");
     }
 }

@@ -84,6 +84,125 @@ pub fn sandy_style_index(style: &str) -> f32 {
     SandyStyle::from_key(style).shader_index()
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HandMove {
+    Corkscrew,
+    Cascade,
+    Shuffle,
+    Ribbon,
+    Spiral,
+}
+
+impl HandMove {
+    pub const ALL: [HandMove; 5] = [
+        HandMove::Corkscrew,
+        HandMove::Cascade,
+        HandMove::Shuffle,
+        HandMove::Ribbon,
+        HandMove::Spiral,
+    ];
+
+    pub fn from_key(value: &str) -> Option<Self> {
+        match value {
+            "corkscrew" => Some(Self::Corkscrew),
+            "cascade" => Some(Self::Cascade),
+            "shuffle" => Some(Self::Shuffle),
+            "ribbon" => Some(Self::Ribbon),
+            "spiral" => Some(Self::Spiral),
+            _ => None,
+        }
+    }
+
+    pub fn index(self) -> usize {
+        Self::ALL.iter().position(|mv| *mv == self).unwrap_or(0)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HandCut {
+    Straight,
+    Slant,
+    Steep,
+}
+
+impl HandCut {
+    pub fn from_key(value: &str) -> Self {
+        match value {
+            "slant" => Self::Slant,
+            "steep" => Self::Steep,
+            _ => Self::Straight,
+        }
+    }
+
+    pub const fn as_key(self) -> &'static str {
+        match self {
+            Self::Straight => "straight",
+            Self::Slant => "slant",
+            Self::Steep => "steep",
+        }
+    }
+
+    pub const fn factor(self) -> f32 {
+        match self {
+            Self::Straight => 0.0,
+            Self::Slant => 1.2,
+            Self::Steep => 2.4,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HandVariance {
+    None,
+    Soft,
+    Wild,
+}
+
+impl HandVariance {
+    pub fn from_key(value: &str) -> Self {
+        match value {
+            "soft" => Self::Soft,
+            "wild" => Self::Wild,
+            _ => Self::None,
+        }
+    }
+
+    pub const fn as_key(self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Soft => "soft",
+            Self::Wild => "wild",
+        }
+    }
+
+    pub const fn factor(self) -> f32 {
+        match self {
+            Self::None => 0.0,
+            Self::Soft => 0.5,
+            Self::Wild => 1.05,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HandAxis {
+    Rows,
+    Columns,
+}
+
+impl HandAxis {
+    pub fn from_key(value: &str) -> Self {
+        if value == "columns" { Self::Columns } else { Self::Rows }
+    }
+
+    pub const fn as_key(self) -> &'static str {
+        match self {
+            Self::Rows => "rows",
+            Self::Columns => "columns",
+        }
+    }
+}
+
 pub fn format_config_number(value: f64) -> String {
     if value.fract() == 0.0 { format!("{}", value as i64) } else { format!("{value}") }
 }

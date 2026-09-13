@@ -42,6 +42,10 @@ pub(super) fn mouse_moved(app: &mut App, x: f32, y: f32) -> Task<Message> {
             app.scene.hover = hit;
             app.scene.sandy_pointer(x, y, hit, app.library_session.filtered.len());
         }
+        Mode::Hand => {
+            app.scene.hover = hit;
+            app.scene.hand_pointer(x, y, hit);
+        }
         Mode::Grid => app.scene.hover = hit,
     }
     if changed {
@@ -79,6 +83,13 @@ pub(super) fn click(
         .find(|hit| hit.contains(x, y))
         .map(|hit| (hit.index, [hit.cx, hit.cy, hit.hw, hit.hh]));
     let hit = hit_rect.map(|(idx, _)| idx);
+    if app.scene.mode == Mode::Hand
+        && button == MouseButton::Left
+        && app.scene.flipped().is_none()
+        && !app.tags.mode
+    {
+        app.scene.hand_drag_start(x, y);
+    }
     if app.tags.mode && button == MouseButton::Left {
         return tag_select_click(app, hit);
     }
@@ -180,7 +191,7 @@ fn select_click(app: &mut App, idx: usize) -> Task<Message> {
             }
             apply_task(app, idx)
         }
-        Mode::Slices => {
+        Mode::Slices | Mode::Hand => {
             if idx == app.scene.current {
                 return apply_task(app, idx);
             }
@@ -194,7 +205,7 @@ fn select_click(app: &mut App, idx: usize) -> Task<Message> {
 
 fn flip_click(app: &mut App, idx: usize, rect: [f32; 4]) -> Task<Message> {
     match app.scene.mode {
-        Mode::Slices => {
+        Mode::Slices | Mode::Hand => {
             if idx == app.scene.current {
                 app.scene.toggle_flip(idx);
             } else {

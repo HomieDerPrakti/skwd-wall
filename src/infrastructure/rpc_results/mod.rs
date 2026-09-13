@@ -1,3 +1,5 @@
+mod app_themes;
+pub use app_themes::decode_app_themes;
 mod browser;
 mod common;
 mod diagnostics;

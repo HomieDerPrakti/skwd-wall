@@ -1,5 +1,6 @@
 #![cfg(test)]
 
+mod app_themes;
 mod audio;
 mod effects;
 mod filters;
