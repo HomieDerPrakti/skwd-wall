@@ -10,7 +10,7 @@
 >
 > WIP: Wallpaper Engine inconsistencies / bugs in comparison to (the real) Wallpaper Engine. This part of the application is still Work in Progress and does not have perfect coverage yet. Please report any issues you may find with Wallpaper Engine scenes ❤️
 >
-> WIP: Debian & Bazzite versions
+> WIP: Debian version
 
 ![Stars](https://img.shields.io/github/stars/liixini/skwd-wall?style=for-the-badge)
 ![License](https://img.shields.io/github/license/liixini/skwd-wall?style=for-the-badge)
@@ -192,6 +192,32 @@ systemctl --user daemon-reload
 systemctl --user enable --now skwd-walld.service
 
 # Run using:
+skwd-wall-v2
+```
+
+</Details>
+
+### Bazzite KDE Plasma
+
+<Details>
+<Summary>Bazzite KDE Plasma</Summary>
+
+```sh
+# These are terminal commands!
+# COPR
+sudo dnf5 copr enable piixini/skwd-wall-v2 &&
+sudo rpm-ostree install \
+  skwd-wall-v2 skwd-deck skwd-paper \
+  skwd-lens skwd-lens-model skwd-paper-plasma
+
+# Reboot!
+reboot
+
+# Install the daemon that keeps wallpapers applied on reboot etc.
+systemctl --user daemon-reload
+systemctl --user enable --now skwd-walld.service
+
+# Run using the below command, or keybind it or search for skwd-wall in your app launcher:
 skwd-wall-v2
 ```
 
