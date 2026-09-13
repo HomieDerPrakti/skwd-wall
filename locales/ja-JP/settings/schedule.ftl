@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = スケジュール
+settings-schedule-schedule-card-desc = 時刻、曜日、天気、電源、ディスプレイなどの条件からルールが壁紙とテーマを選びます。最初に一致したルールが優先されます。
+settings-schedule-enable-label = スケジュールを有効化
+settings-schedule-enable-desc = ルールを削除せずに、すべてのスケジュールルールをオンまたはオフにします。
+settings-schedule-apply-on-start-label = 起動時に適用
+settings-schedule-apply-on-start-desc = サービスの起動時に最初に一致したルールを適用します。このセッションで手動選択した壁紙は引き続き優先されます。
+settings-schedule-editor-label = スケジュールエディター
+settings-schedule-editor-desc = 条件ブロックからルールを作成し、ドラッグで優先順位を設定します。最初の一致が優先されます。従来の昼と夜の設定は、初回に開いたときに 2 つのルールに変換されます。
+settings-schedule-editor-action = 開く
+settings-schedule-location-card = 位置情報
+settings-schedule-location-card-desc = 日の出と日の入りの時刻、および天気の条件に使用します。
+settings-schedule-latitude-label = 緯度
+settings-schedule-latitude-desc = 10 進数の度で、北がプラスです（例: 59.33）。
+settings-schedule-longitude-label = 経度
+settings-schedule-longitude-desc = 10 進数の度で、東がプラスです（例: 18.06）。

@@ -1,11 +1,11 @@
 playlists-unnamed = (namnlös)
 playlists-generated-name = Spellista { $number }
-playlists-new-name = Nytt namn på spellistan
+playlists-new-name = Namn på ny spellista
 playlists-name = Spellistans namn
 playlists-play-now = Spela nu
 playlists-delete = Ta bort
-playlists-type-curated = Handplockad
-playlists-type-smart = Smart
+playlists-type-curated = Manuell
+playlists-type-smart = Filtrerad
 playlists-order-shuffle = Blanda
 playlists-order-sequential = I ordning
 playlists-every = Var
@@ -14,16 +14,16 @@ playlists-all = Alla
 playlists-favourites = Favoriter
 playlists-filter-example = t.ex. type:video color:blue tag:cat,-anime
 playlists-empty-smart = Inga bakgrundsbilder matchar filtret än.
-playlists-empty-curated = Tom - vänd ett kort och tryck på ”+ Spellista” för att lägga till.
+playlists-empty-curated = Spellistan är tom. Öppna ett bakgrundskort och välj Spellista för att lägga till det.
 playlists-stop-all = ■ Stoppa alla
-playlists-card-add-title = LÄGG TILL I SPELLISTA
-playlists-card-none = Inga spellistor än - namnge en för att handplocka denna bakgrundsbild:
-playlists-card-new = Eller skapa en ny lista med denna bakgrundsbild:
+playlists-card-add-title = Lägg till i spellista
+playlists-card-none = Det finns inga spellistor än. Ge en ett namn för att skapa den med den här bakgrundsbilden redan tillagd:
+playlists-card-new = Eller skapa en ny spellista med den här bakgrundsbilden:
 playlists-masthead = Spellistor  /  { $selected }
 playlists-masthead-fallback = Bibliotek
-playlists-index-title = Spellisteindex
-playlists-index-subtitle = Bygg handplockade rotationer eller levande smarta samlingar och skicka dem sedan till skrivbordet.
-playlists-index-live-detail = { $kind }  ·  live på { $outputs }
+playlists-index-title = Spellistor
+playlists-index-subtitle = En manuell spellista innehåller bakgrundsbilder som du väljer. En filtrerad spellista hålls synkad med sina regler.
+playlists-index-live-detail = { $kind } · aktiv på { $outputs }
 playlists-index-count-detail =
     { $kind }  ·  { $count } { $count ->
         [one] bakgrundsbild
@@ -31,52 +31,48 @@ playlists-index-count-detail =
     }
 playlists-index-empty-title = Inga spellistor än
 playlists-index-empty-hint = Skapa en nedan för att komma igång.
-playlists-new-playlist = NY SPELLISTA
-playlists-live-routing = LIVE-DIRIGERING
+playlists-new-playlist = Ny spellista
+playlists-live-routing = Aktiva skärmar
 playlists-active-assignments =
     { $count } { $count ->
         [one] aktiv tilldelning
        *[other] aktiva tilldelningar
     }
-playlists-library = SPELLISTEBIBLIOTEK
-playlists-library-stats =
-    { $count } { $count ->
-        [one] sparad
-       *[other] sparade
-    }  ·  ingen aktiv
-playlists-live-results = LIVE-RESULTAT
-playlists-the-sequence = SEKVENSEN
-playlists-sequence-smart-hint = Den aktuella frågan, i läsordning.
-playlists-sequence-curated-hint = Läses uppifrån och ner. Ordna om på plats.
-playlists-empty-smart-hint = Justera samlingens regler för att fylla den här marginalen.
-playlists-empty-curated-hint = Använd kortets + Spellista-åtgärd för att lägga till den första bakgrunden.
-playlists-live-badge = LIVE
-playlists-empty-eyebrow = SPELLISTOR  /  BIBLIOTEK
+playlists-library = Sparade spellistor
+playlists-library-stats = { $count } sparade · ingen aktiv
+playlists-live-results = Matchande bakgrundsbilder
+playlists-the-sequence = Uppspelningsordning
+playlists-sequence-smart-hint = Bakgrundsbilder som matchar det aktuella filtret, i den ordning de visas.
+playlists-sequence-curated-hint = Bakgrundsbilderna spelas uppifrån och ner. Dra dem för att ändra ordningen.
+playlists-empty-smart-hint = Inga bakgrundsbilder matchar reglerna. Ändra filtret för att få med fler.
+playlists-empty-curated-hint = Öppna ett bakgrundskort och välj Spellista för att lägga till den första bakgrundsbilden.
+playlists-live-badge = Aktiv
+playlists-empty-eyebrow = Spellistor / bibliotek
 playlists-empty-title = Bygg en rotation
 playlists-empty-choose = Välj en spellista i indexet
-playlists-empty-desc = Eller skapa en ny handplockad spellista och börja arrangera bakgrundsbilder.
-playlists-kind-smart = Smart samling
-playlists-kind-curated = Handplockad spellista
-playlists-state-live = LIVE  /  { $outputs }
-playlists-state-query-ready = LIVE-FRÅGA  /  REDO
+playlists-empty-desc = Eller skapa en ny manuell spellista och börja lägga till bakgrundsbilder.
+playlists-kind-smart = Filtrerad spellista
+playlists-kind-curated = Manuell spellista
+playlists-state-live = Aktiv / { $outputs }
+playlists-state-query-ready = Filtret är redo
 playlists-state-ready =
     { $padded } { $count ->
-        [one] BAKGRUND
-       *[other] BAKGRUNDER
-    }  /  REDO
-playlists-edition-eyebrow = SPELLISTOR  /  UTGÅVA
-playlists-kind-tagline = { $kind }  ·  sammansatt för bakgrundsskrivbordet
-playlists-stop-edition = Stoppa utgåvan
-playlists-colour-notes = FÄRGTONER
-playlists-live-collection-title = Levande samling
-playlists-live-collection-desc = En självredigerande utgåva sammansatt av källa, taggar, upplösning och färg.
-playlists-definition-title = Definition
-playlists-definition-desc = Det publika namnet och metoden som används för att sätta samman utgåvan.
+        [one] bakgrundsbild redo
+       *[other] bakgrundsbilder redo
+    }
+playlists-edition-eyebrow = Spellistor / redigera
+playlists-kind-tagline = { $kind } · redo att tilldelas skärmar
+playlists-stop-edition = Stoppa spellistan
+playlists-colour-notes = Färger
+playlists-live-collection-title = Filtrerad spellista
+playlists-live-collection-desc = Listan uppdateras automatiskt utifrån valda filter för källa, taggar, upplösning och färg.
+playlists-definition-title = Spellistans detaljer
+playlists-definition-desc = Ange namnet och välj om bakgrundsbilder läggs till manuellt eller väljs av ett filter.
 playlists-playback-title = Uppspelning
-playlists-playback-desc = Ange läsordningen och pausen mellan en bakgrund och nästa.
-playlists-routing-title = Publicera till skärmar
-playlists-routing-desc = Välj var utgåvan visas. Alla skapar en enda global tilldelning.
+playlists-playback-desc = Välj ordningen och hur länge varje bakgrundsbild visas.
+playlists-routing-title = Använd på skärmar
+playlists-routing-desc = Välj var spellistan körs. Om du väljer alla skärmar skapas en gemensam tilldelning.
 playlists-routing-all = Alla anslutna skärmar
-playlists-routing-live = Live-tilldelning
+playlists-routing-live = Aktiv tilldelning
 playlists-routing-none = Ingen aktiv tilldelning
 playlists-demo-name = Det värsta klippet

@@ -1,0 +1,12 @@
+settings-launch-launch-card = Inicialização
+settings-launch-launch-card-desc = O seletor abre em cerca de 150 ms e é encerrado por completo ao fechar. Estas configurações só mudam como ele aparece durante a abertura.
+settings-launch-animation-label = Animação
+settings-launch-animation-desc = Nenhuma mostra o seletor assim que ele existe e é a opção mais rápida. Esmaecer muda apenas a opacidade; Subir e Zoom adicionam movimento.
+settings-launch-animation-none = Nenhuma
+settings-launch-animation-fade = Esmaecer
+settings-launch-animation-rise = Subir
+settings-launch-animation-zoom = Zoom
+settings-launch-motion-label = Movimento
+settings-launch-motion-desc = O ritmo compartilhado da interface do seletor. Altere os pesos Rápido, Padrão e Lento nas configurações de Movimento.
+settings-launch-fade-from-label = Esmaecer a partir de
+settings-launch-fade-from-desc = Opacidade inicial da entrada, em porcentagem. 0 começa totalmente transparente.

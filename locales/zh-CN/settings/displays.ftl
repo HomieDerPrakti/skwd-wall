@@ -1,0 +1,10 @@
+settings-displays-card = 当前壁纸
+settings-displays-card-desc = 这些是壁纸服务当前报告的壁纸。在此处所做的更改一次只应用于一个显示器。
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = 离线 · { $width } × { $height }
+settings-displays-placement-label = 放置方式
+settings-displays-placement-desc = 选择壁纸在显示器上是填充、适应、拉伸、居中、平铺还是跨屏显示。
+settings-displays-lock-label = 锁定
+settings-displays-lock-desc = 仅通过多屏选择器更新此显示器的壁纸。
+settings-displays-empty-label = 正在检测显示器
+settings-displays-empty-desc = 壁纸服务报告显示器后，当前壁纸将显示在这里。

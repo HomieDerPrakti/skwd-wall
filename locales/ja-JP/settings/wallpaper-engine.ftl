@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = レンダリング
+settings-wallpaper-engine-rendering-card-desc = 内蔵の Vulkan レンダラーがワークショップのシーンを表示するときのデフォルトを設定します。
+settings-wallpaper-engine-fps-label = FPS 上限
+settings-wallpaper-engine-fps-desc = 1 秒あたりの最大フレーム数です。値を下げると CPU/GPU の負荷が減ります。
+settings-wallpaper-engine-scaling-label = デフォルトのスケーリング
+settings-wallpaper-engine-scaling-desc = ワークショップのシーンを各モニターにどう合わせるかを指定します。「グローバル設定」は全体の塗りつぶしモードに従います。
+settings-wallpaper-engine-scaling-default = グローバル設定
+settings-wallpaper-engine-scaling-fill = 塗りつぶし
+settings-wallpaper-engine-scaling-fit = フィット
+settings-wallpaper-engine-scaling-stretch = 引き伸ばし
+settings-wallpaper-engine-scaling-center = 中央
+settings-wallpaper-engine-scaling-tile = タイル
+settings-wallpaper-engine-scaling-span = スパン
+settings-wallpaper-engine-effects-card = エフェクト
+settings-wallpaper-engine-particles-label = パーティクルを無効化
+settings-wallpaper-engine-particles-desc = パーティクルレイヤーを使うシーンでそのレイヤーをスキップします。GPU の処理を減らせますが、それらのシーンはアニメーションの一部が失われます。

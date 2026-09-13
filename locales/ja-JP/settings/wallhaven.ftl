@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = グリッド
+settings-wallhaven-columns-label = 列数
+settings-wallhaven-columns-desc = 1 行あたりのサムネイル数です。
+settings-wallhaven-rows-label = 行数
+settings-wallhaven-rows-desc = 一度に表示される行数です。
+settings-wallhaven-thumb-card = サムネイル
+settings-wallhaven-width-label = 幅
+settings-wallhaven-width-desc = サムネイルの幅（ピクセル）です。
+settings-wallhaven-height-label = 高さ
+settings-wallhaven-height-desc = サムネイルの高さ（ピクセル）です。
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = API キー
+settings-wallhaven-api-key-desc = アカウント機能と NSFW の結果を利用するには、Wallhaven の API キーを入力します。
+settings-wallhaven-api-key-placeholder = Wallhaven API キー（NSFW 用）
+settings-wallhaven-username-label = ユーザー名
+settings-wallhaven-username-desc = コレクションを閲覧してダウンロードするには、Wallhaven のユーザー名を入力します。
+settings-wallhaven-username-placeholder = Wallhaven ユーザー名

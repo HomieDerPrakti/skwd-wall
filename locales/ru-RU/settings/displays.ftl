@@ -1,0 +1,10 @@
+settings-displays-card = Текущие обои
+settings-displays-card-desc = Это обои, о которых сейчас сообщает служба обоев. Изменения здесь применяются к одному дисплею за раз.
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = Не в сети · { $width } × { $height }
+settings-displays-placement-label = Размещение
+settings-displays-placement-desc = Выберите, как обои размещаются на дисплее: заполнение, вписывание, растяжение, по центру, плиткой или на несколько дисплеев.
+settings-displays-lock-label = Блокировка
+settings-displays-lock-desc = Обновлять обои этого монитора только через мультивыбор.
+settings-displays-empty-label = Поиск дисплеев
+settings-displays-empty-desc = Текущие обои появятся, когда служба обоев сообщит о своих дисплеях.

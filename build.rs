@@ -49,24 +49,30 @@ fn generate_taxonomy_aliases() {
     std::fs::write(output, generated).expect("write wallpaper taxonomy aliases");
 }
 
+const LOCALE_CONSTANTS: &[(&str, &str)] = &[
+    ("en-US", "EN_US_RESOURCES"),
+    ("sv-SE", "SV_SE_RESOURCES"),
+    ("es-ES", "ES_ES_RESOURCES"),
+    ("pt-BR", "PT_BR_RESOURCES"),
+    ("ru-RU", "RU_RU_RESOURCES"),
+    ("zh-CN", "ZH_CN_RESOURCES"),
+    ("ja-JP", "JA_JP_RESOURCES"),
+];
+
 fn generate_embedded_locales() {
     println!("cargo:rerun-if-changed=locales");
     let out_dir = PathBuf::from(env::var_os("OUT_DIR").expect("Cargo must provide OUT_DIR"));
     let generated = out_dir.join("embedded_locales.rs");
     let locales = Path::new("locales");
 
-    let en_us = fluent_files(&locales.join("en-US")).expect("failed to scan en-US Fluent files");
-    let sv_se = fluent_files(&locales.join("sv-SE")).expect("failed to scan sv-SE Fluent files");
-    let es_es = fluent_files(&locales.join("es-ES")).expect("failed to scan es-ES Fluent files");
-
-    let source = format!(
-        "pub const EN_US_RESOURCES: &[&str] = &{};\n\
-         pub const SV_SE_RESOURCES: &[&str] = &{};\n\
-         pub const ES_ES_RESOURCES: &[&str] = &{};\n",
-        include_array(&en_us),
-        include_array(&sv_se),
-        include_array(&es_es),
-    );
+    let mut source = String::new();
+    for (locale, constant) in LOCALE_CONSTANTS {
+        let files = fluent_files(&locales.join(locale))
+            .unwrap_or_else(|error| panic!("failed to scan {locale} Fluent files: {error}"));
+        assert!(!files.is_empty(), "no Fluent files for {locale}");
+        writeln!(source, "pub const {constant}: &[&str] = &{};", include_array(&files))
+            .expect("write generated locale list");
+    }
     fs::write(generated, source).expect("failed to generate embedded Fluent resource list");
 }
 

@@ -1,0 +1,9 @@
+help-shortcuts = ショートカット
+help-keyboard = キーボード
+help-mouse = マウス
+help-key-esc = Esc
+help-mouse-wheel = ホイール
+help-mouse-hover = ホバー
+help-close-back-quit = 閉じる / 戻る / 終了
+help-wheel = 閲覧 / スクロール
+help-hover = 動画をプレビュー

@@ -133,7 +133,9 @@ impl App {
         if !self.config.reload() {
             return false;
         }
+        let previous = crate::i18n::active_script();
         crate::i18n::set_language(&self.config.str_path(skwd_config::keys::general::LANGUAGE));
+        crate::shell::reload_ui_font(previous);
         let semantic_after = (
             self.config.str_path(skwd_config::keys::semantic::MANIFEST),
             self.config.str_path(skwd_config::keys::semantic::INDEX_PROFILE),

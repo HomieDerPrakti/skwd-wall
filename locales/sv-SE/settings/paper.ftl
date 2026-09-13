@@ -1,5 +1,5 @@
 settings-paper-engine-card = Motor
-settings-paper-engine-card-desc = Vilket program som sätter pixlar på skärmen för statiska bilder. Video och Wallpaper Engine-objekt använder alltid den inbyggda vägen.
+settings-paper-engine-card-desc = Välj vilket program som visar bilder. Videor och Wallpaper Engine-scener använder alltid den inbyggda renderaren.
 settings-paper-engine-label = Bakgrundsmotor
 settings-paper-engine-desc = Jag föredrar Skwd-paper eftersom jag byggde den, men kör Awww om det är din grej :)
 settings-paper-static-backend-label = Backend för statiska bakgrunder
@@ -40,7 +40,7 @@ settings-paper-fill-fill = Fyll
 settings-paper-fill-fit = Anpassa
 settings-paper-fill-stretch = Sträck ut
 settings-paper-fill-center = Centrera
-settings-paper-fill-tile = Mosaik
+settings-paper-fill-tile = Upprepa
 settings-paper-fill-span = Spänn över
 settings-paper-awww-type-none = Ingen
 settings-paper-awww-type-simple = Enkel

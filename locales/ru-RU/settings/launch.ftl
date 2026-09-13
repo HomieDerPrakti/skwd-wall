@@ -1,0 +1,12 @@
+settings-launch-launch-card = Запуск
+settings-launch-launch-card-desc = Окно выбора открывается примерно за 150 мс и полностью завершается при закрытии. Эти настройки меняют только то, как оно появляется при запуске.
+settings-launch-animation-label = Анимация
+settings-launch-animation-desc = «Нет» показывает окно выбора сразу, это самый быстрый вариант. «Появление» меняет только прозрачность; «Подъём» и «Масштаб» добавляют движение.
+settings-launch-animation-none = Нет
+settings-launch-animation-fade = Появление
+settings-launch-animation-rise = Подъём
+settings-launch-animation-zoom = Масштаб
+settings-launch-motion-label = Движение
+settings-launch-motion-desc = Общий темп интерфейса окна выбора. Скорости «Быстро», «Обычно» и «Медленно» меняются в настройках движения.
+settings-launch-fade-from-label = Начальная непрозрачность
+settings-launch-fade-from-desc = Непрозрачность в начале появления, в процентах. 0 означает появление из полностью прозрачного состояния.

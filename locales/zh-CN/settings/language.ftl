@@ -1,0 +1,14 @@
+settings-tab-language = 语言
+settings-tab-note-language = 选择选择器和设置使用的语言。
+settings-language-card = 界面语言
+settings-language-card-desc = 更改会立即生效，并在下次启动时保留。
+settings-language-choice-label = 语言
+settings-language-choice-desc = “系统默认”跟随桌面语言。壁纸名称和标签保持不变。
+settings-language-system = 系统默认
+settings-language-english = English
+settings-language-swedish = Svenska
+settings-language-spanish = Español
+settings-language-portuguese = Português (Brasil)
+settings-language-russian = Русский
+settings-language-chinese = 简体中文
+settings-language-japanese = 日本語

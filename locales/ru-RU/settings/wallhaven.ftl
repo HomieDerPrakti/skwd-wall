@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = Сетка
+settings-wallhaven-columns-label = Столбцы
+settings-wallhaven-columns-desc = Количество миниатюр в строке.
+settings-wallhaven-rows-label = Строки
+settings-wallhaven-rows-desc = Количество строк, видимых одновременно.
+settings-wallhaven-thumb-card = Миниатюра
+settings-wallhaven-width-label = Ширина
+settings-wallhaven-width-desc = Ширина миниатюры в пикселях.
+settings-wallhaven-height-label = Высота
+settings-wallhaven-height-desc = Высота миниатюры в пикселях.
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = Ключ API
+settings-wallhaven-api-key-desc = Введите ключ API Wallhaven, чтобы получить доступ к функциям аккаунта и результатам NSFW.
+settings-wallhaven-api-key-placeholder = Ключ API Wallhaven (для NSFW)
+settings-wallhaven-username-label = Имя пользователя
+settings-wallhaven-username-desc = Введите имя пользователя Wallhaven, чтобы просматривать и скачивать обои из своих коллекций.
+settings-wallhaven-username-placeholder = Имя пользователя Wallhaven

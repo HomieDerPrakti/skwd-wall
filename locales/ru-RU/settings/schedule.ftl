@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = Расписание
+settings-schedule-schedule-card-desc = Правила выбирают обои и тему по условиям: время, день недели, погода, питание и дисплеи. Срабатывает первое подходящее правило.
+settings-schedule-enable-label = Включить расписание
+settings-schedule-enable-desc = Включает или выключает все правила расписания, не удаляя их.
+settings-schedule-apply-on-start-label = Применять при запуске
+settings-schedule-apply-on-start-desc = Применять первое подходящее правило при запуске службы. Обои, выбранные вручную в этом сеансе, всё равно имеют приоритет.
+settings-schedule-editor-label = Редактор расписания
+settings-schedule-editor-desc = Собирайте правила из блоков условий и перетаскивайте их, чтобы задать приоритет; срабатывает первое совпадение. Старые настройки дня и ночи превращаются в два правила при первом открытии.
+settings-schedule-editor-action = Открыть
+settings-schedule-location-card = Местоположение
+settings-schedule-location-card-desc = Используется для времени восхода и заката, а также для погодных условий.
+settings-schedule-latitude-label = Широта
+settings-schedule-latitude-desc = Десятичные градусы, север положительный (например, 59.33).
+settings-schedule-longitude-label = Долгота
+settings-schedule-longitude-desc = Десятичные градусы, восток положительный (например, 18.06).

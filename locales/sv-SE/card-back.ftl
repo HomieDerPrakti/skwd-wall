@@ -1,5 +1,5 @@
-card-back-kicker = BIBLIOTEK  /  { $kind }
-card-back-asset = OBJEKT
+card-back-kicker = Bibliotek / { $kind }
+card-back-asset = Detaljer
 card-back-field-resolution = Upplösning
 card-back-field-size = Storlek
 card-back-field-modified = Ändrad
@@ -12,17 +12,17 @@ card-back-applied-times =
         [one] gång
        *[other] gånger
     }
-card-back-tags-label = TAGGAR  /  { $count }
-card-back-actions-label = ÅTGÄRDER
-card-back-more = +{ $count } TILL  ›
-card-back-add-tag = LÄGG TILL TAGG
-card-back-playlist = SPELLISTA
-card-back-effects = EFFEKTER
-card-back-overview = ÖVERSIKT
-card-back-overview-set = Bakgrund vald
-card-back-delete = TA BORT
+card-back-tags-label = Taggar / { $count }
+card-back-actions-label = Åtgärder
+card-back-more = +{ $count } till ›
+card-back-add-tag = Lägg till tagg
+card-back-playlist = Spellista
+card-back-effects = Effekter
+card-back-overview = Använd i översikten
+card-back-overview-set = Bakgrundsbild vald
+card-back-delete = Ta bort
 card-back-scene-properties = SCEN
 card-back-reset-thumbnail = Återställ miniatyrbild
 card-back-reset-thumbnail-done = Genererar en ny miniatyrbild
 card-back-reset-thumbnail-error = Kunde inte återställa miniatyrbilden: { $error }
-card-back-reset-thumbnail-deferred = Miniatyrbilden genereras på nytt när bakgrunden används
+card-back-reset-thumbnail-deferred = Miniatyrbilden genereras på nytt när bakgrundsbilden används

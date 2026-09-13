@@ -1,0 +1,56 @@
+theme-audition-title = カラープレビュー
+theme-audition-subtitle = カラーソースを選び、同じ壁紙でそのプロファイルを比較します。
+theme-audition-backend = カラーソース
+theme-audition-backend-on = { $backend } · オン
+theme-audition-selected = 選択中
+theme-audition-preview = プレビュー
+theme-audition-loading = 現在の壁紙からプレビューを生成しています…
+theme-audition-empty = カラープレビューが返されませんでした。選択したカラーソースがインストールされ、正しく動作しているか確認してください。
+
+settings-theme-profile-desc = 現在の色を編集し、その色の元になっている壁紙用のプロファイルとして保存します。
+theme-profile-load = 現在の色を読み込む
+theme-profile-save = この壁紙用に保存
+theme-profile-enabled = このプロファイルを使う
+theme-profile-dark = ダーク
+theme-profile-light = ライト
+
+settings-playback-pause-title = 自動一時停止
+settings-playback-pause-desc = 有効な条件のいずれかを満たすと、アニメーション壁紙を一時停止します。
+settings-playback-process-enabled = アプリケーションの実行中は一時停止
+settings-playback-process-desc = 一覧のプロセスが実行中の間、すべてのディスプレイを一時停止します。
+settings-playback-processes = プロセス
+settings-playback-processes-desc = 実行ファイル名をカンマで区切ります。名前は大文字と小文字を区別せず、.exe の拡張子も無視して照合します。
+settings-playback-choose-process = 実行中のプロセスを選択
+settings-playback-fullscreen = 全画面時に一時停止
+settings-playback-fullscreen-desc = 全画面ウィンドウが表示されている間は一時停止します。コンポジターの対応が必要です。
+settings-playback-scope = ウィンドウによる一時停止の対象
+settings-playback-scope-desc = ウィンドウによる一時停止条件で、そのウィンドウのディスプレイだけを止めるか、すべてのディスプレイを止めるかを選びます。
+settings-playback-all = すべてのディスプレイ
+settings-playback-display = ウィンドウがあるディスプレイ
+settings-playback-resume = 再開までの待ち時間
+settings-playback-resume-desc = 最後の自動一時停止条件が解除されてから待つ時間です。手動の一時停止はそのまま維持されます。
+settings-playback-detection-off = コンポジターの対応を確認するには、全画面または最大化ウィンドウでの一時停止を有効にしてください。
+settings-playback-detection-ready = ウィンドウ状態の検出を利用できます
+settings-playback-detection-unavailable = このコンポジターではウィンドウ状態を検出できません
+settings-playback-paused-process = 一時停止中: { $names } が実行中です
+settings-playback-paused-fullscreen = 一時停止中: 全画面ウィンドウ
+settings-playback-resuming = 再開を待機中
+settings-playback-no-rule = 有効な自動一時停止ルールはありません
+
+settings-paper-layer-label = 壁紙のレイヤー
+settings-paper-layer-desc = 動画とシーンに使う Wayland レイヤーです。Niri の place-within-backdrop ルールと「背景」を組み合わせると、オーバービューの背後に現在の壁紙を表示できます。
+settings-paper-layer-bottom = 下層（デフォルト）
+settings-paper-layer-background = 背景
+settings-paper-layer-top = 上層
+settings-paper-layer-overlay = オーバーレイ
+settings-paper-overview-only-label = Niri のオーバービューでのみアニメーション
+settings-paper-overview-only-desc = 「背景」と place-within-backdrop が必要です。オーバービューを閉じている間は一時停止します。
+settings-playback-paused-overview = Niri のオーバービューを閉じているため一時停止中
+
+settings-playback-maximized = 最大化ウィンドウで一時停止
+settings-playback-maximized-desc = コンポジターが最大化ウィンドウを報告すると一時停止します。コンポジターの対応が必要です。Niri は非表示のワークスペースにあるウィンドウも報告します。
+settings-playback-paused-maximized = 一時停止中: 最大化ウィンドウ
+
+settings-playback-full-width = 全幅カラムで一時停止（Niri）
+settings-playback-full-width-desc = アクティブなタイルカラムがディスプレイ幅の 90% 以上を占めると一時停止します。通常の間隔での Mod+F も含みます。他のワークスペースは対象外です。
+settings-playback-paused-full-width = 一時停止中: 全幅カラム

@@ -1,0 +1,14 @@
+settings-tab-language = Idioma
+settings-tab-note-language = Escolha o idioma usado pelo seletor e pelas configurações.
+settings-language-card = Idioma da interface
+settings-language-card-desc = As mudanças são aplicadas na hora e salvas para a próxima abertura.
+settings-language-choice-label = Idioma
+settings-language-choice-desc = O padrão do sistema segue o idioma da sua área de trabalho. Nomes e tags dos papéis de parede não mudam.
+settings-language-system = Padrão do sistema
+settings-language-english = English
+settings-language-swedish = Svenska
+settings-language-spanish = Español
+settings-language-portuguese = Português (Brasil)
+settings-language-russian = Русский
+settings-language-chinese = 简体中文
+settings-language-japanese = 日本語

@@ -1,8 +1,8 @@
-settings-tagging-overview-desc = Välj mellan exakta manuella taggar och visuell sökning med naturligt språk.
+settings-tagging-overview-desc = Taggar matchar ord som sparats på varje bakgrundsbild. Beskriv söker i det lokala visuella indexet efter en bild som matchar en kort beskrivning.
 settings-tagging-search-card = Sök
 settings-tagging-search-card-desc = Välj hur bakgrundssökningen startar.
 settings-tagging-search-mode-label = Öppna med
-settings-tagging-search-mode-desc = Taggar hittar sparade taggar. Beskriv hittar bakgrundsbilder utifrån en kort beskrivning.
+settings-tagging-search-mode-desc = Välj vilket sökfält som öppnas först. Du kan fortfarande byta läge i sökpanelen.
 settings-tagging-mode-tags = Taggar
 settings-tagging-mode-describe = Beskriv
 settings-tagging-describe-info-label = Beskrivningssökning

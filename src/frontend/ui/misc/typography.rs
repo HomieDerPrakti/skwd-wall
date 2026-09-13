@@ -3,8 +3,10 @@ use iced::{Alignment, Color, Font, Point, alignment};
 
 pub const NERD_FONT: Font = Font::with_name("Symbols Nerd Font");
 
+pub const UI_FONT_FAMILY: &str = "Roboto Condensed";
+
 pub const UI_FONT: Font = Font {
-    family: iced::font::Family::Name("Roboto Condensed"),
+    family: iced::font::Family::Name(UI_FONT_FAMILY),
     weight: iced::font::Weight::Bold,
     stretch: iced::font::Stretch::Normal,
     style: iced::font::Style::Normal,

@@ -8,3 +8,7 @@ settings-language-system = Idioma del sistema
 settings-language-english = English
 settings-language-swedish = Svenska
 settings-language-spanish = Español
+settings-language-portuguese = Português (Brasil)
+settings-language-russian = Русский
+settings-language-chinese = 简体中文
+settings-language-japanese = 日本語

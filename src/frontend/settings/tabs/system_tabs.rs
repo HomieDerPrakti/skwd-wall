@@ -448,16 +448,14 @@ pub(super) fn tab_keybinds(builder: &mut Builder<'_>) {
 pub(super) fn tab_language(builder: &mut Builder<'_>) {
     builder.card(tr("settings-language-card"), tr("settings-language-card-desc"));
     let current = crate::i18n::language_choice(&builder.cfg.text(keys::general::LANGUAGE));
+    let mut options = vec![("auto", tr("settings-language-system"))];
+    options
+        .extend(crate::i18n::LANGUAGES.iter().map(|language| (language.tag, tr(language.label))));
     builder.dropdown_cur(
         tr("settings-language-choice-label"),
         tr("settings-language-choice-desc"),
         keys::general::LANGUAGE,
-        &[
-            ("auto", tr("settings-language-system")),
-            ("en-US", tr("settings-language-english")),
-            ("sv-SE", tr("settings-language-swedish")),
-            ("es-ES", tr("settings-language-spanish")),
-        ],
+        &options,
         current.to_string(),
     );
 }

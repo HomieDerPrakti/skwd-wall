@@ -13,4 +13,4 @@ settings-wallpaper-engine-scaling-tile = Upprepa
 settings-wallpaper-engine-scaling-span = Spänn över
 settings-wallpaper-engine-effects-card = Effekter
 settings-wallpaper-engine-particles-label = Stäng av partiklar
-settings-wallpaper-engine-particles-desc = Hoppa över partikeleffekter i scener som använder dem.
+settings-wallpaper-engine-particles-desc = Hoppa över partikellager i scener som använder dem. Det kan minska GPU-arbetet, men scenerna förlorar en del av sin animation.

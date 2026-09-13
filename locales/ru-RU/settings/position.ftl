@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = Настройте положение этого стиля окна выбора, его панели фильтров и панели поиска, не затрагивая остальные.
+settings-position-slices-card = Выбор полосами
+settings-position-hex-card = Геометрический выбор
+settings-position-wall-card = Выбор стеной
+settings-position-sandy-card = Песочный выбор
+settings-position-hand-card = Выбор картами в руке
+settings-position-horizontal-label = Смещение по горизонтали
+settings-position-horizontal-desc = Сдвигает окно выбора влево или вправо на процент от половины ширины экрана. Положительные значения сдвигают вправо.
+settings-position-vertical-label = Смещение по вертикали
+settings-position-vertical-desc = Сдвигает окно выбора вверх или вниз на процент от половины высоты экрана. Положительные значения сдвигают вниз.

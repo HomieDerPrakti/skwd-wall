@@ -25,7 +25,7 @@ settings-performance-we-renderer-value = Inbyggd Vulkan
 settings-performance-max-fps-label = Max FPS
 settings-performance-max-fps-desc = Ordinarie tak för animationens bildfrekvens. Sätt det till skärmens uppdateringsfrekvens för maximal mjukhet, eller 60 för en svalare bärbar dator.
 settings-performance-preview-fps-label = FPS för övergångsförhandsvisning
-settings-performance-preview-fps-desc = Bildfrekvens för live-förhandsvisningen i Övergångsinställningarna. En förhandsvisningsruta ritar om hela väljaren.
+settings-performance-preview-fps-desc = Begränsa övergångsförhandsvisningen i Rörelse-inställningarna. Varje förhandsvisningsruta ritar om hela väljaren.
 settings-performance-hover-previews-label = Videoförhandsvisning vid hovring
 settings-performance-hover-previews-desc = Avkoda och animera videominiatyrer medan du interagerar. De pausar vid stiltje; av drar minst ström.
 settings-performance-image-opt-card = Bildoptimering
@@ -63,9 +63,9 @@ settings-performance-bug-report-desc = Samla version, miljö och senaste loggar 
 settings-performance-bug-report-action = Skapa
 
 settings-performance-device-label = Bakgrundens GPU
-settings-performance-device-desc = Välj GPU för bakgrunder som renderas direkt. Ett kort som saknas ersätts med ett automatiskt val. Delade bilder i Plasma använder Plasmas egen GPU.
+settings-performance-device-desc = Välj GPU för inbyggd bakgrundsrendering. Ett kort som inte är tillgängligt faller tillbaka till Automatiskt. Delade bilder i Plasma använder Plasmas egen GPU.
 settings-performance-device-auto = Automatiskt
-settings-performance-device-unavailable = Sparad GPU saknas (använder automatiskt val)
+settings-performance-device-unavailable = Sparad GPU saknas (använder Automatiskt)
 
 settings-performance-capture-we-label = Lägg till miniatyrbilder från renderade bildrutor för alla WE-bakgrunder
 settings-performance-capture-we-desc = Rendera inbyggda scener i bakgrunden. Återanvänd giltiga bilder och behåll tidigare förhandsvisningar om en scen misslyckas. Du kan stoppa och fortsätta senare.

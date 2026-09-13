@@ -1,8 +1,8 @@
-settings-sources-providers-section-desc = Se alla källor i en överblick. Fäll ut en källa för dess åtkomst, nedladdning, sökvägar och bläddrarlayout.
+settings-sources-providers-section-desc = Slå på eller av nedladdningskällor och ange de inloggningsuppgifter, sökvägar och gränser som var och en behöver.
 settings-sources-wallhaven-card = Wallhaven
-settings-sources-wallhaven-card-desc = Sök på Wallhaven och hämta bilder eller samlingar till ditt bibliotek.
+settings-sources-wallhaven-card-desc = Sök på Wallhaven och ladda ner bilder eller samlingar till det lokala biblioteket.
 settings-sources-workshop-card = Steam Workshop
-settings-sources-workshop-card-desc = Bläddra, ladda ned och hitta Wallpaper Engine-objekt från Workshop.
+settings-sources-workshop-card-desc = Bläddra bland, ladda ner och hitta Wallpaper Engine-objekt från Workshop.
 settings-sources-unsplash-card = Unsplash
 settings-sources-unsplash-card-desc = Fria högupplösta foton. Kräver en gratis åtkomstnyckel från unsplash.com/developers.
 settings-sources-unsplash-enable-label = Aktivera Unsplash
@@ -33,7 +33,7 @@ settings-sources-bing-market-label = Marknad
 settings-sources-bing-market-desc = Bings marknads-/regionskod, t.ex. en-US, en-GB, ja-JP.
 
 settings-source-defaults-card = Standardfilter
-settings-source-defaults-desc = Använd dessa filter när en ny bläddringssession öppnas. Ändringar under bläddringen gäller tills webbläsaren stängs.
+settings-source-defaults-desc = Starta varje ny bläddringssession med dessa filter. Ändringar under bläddringen gäller tills bläddraren stängs.
 settings-source-default-sort = Standardsortering
 settings-source-default-range = Standardtidsperiod
 settings-source-default-min = Lägsta upplösning

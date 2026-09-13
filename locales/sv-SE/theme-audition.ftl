@@ -1,10 +1,10 @@
-theme-audition-title = FÄRGAUDITION
-theme-audition-subtitle = Välj en backend och prova sedan dess egna profiler på samma bakgrundsbild.
-theme-audition-backend = FÄRGBACKEND
-theme-audition-backend-on = { $backend } · PÅ
-theme-audition-selected = VALD
-theme-audition-preview = FÖRHANDSVISNING
-theme-audition-loading = Härleder gränssnittsförhandsvisningar från den aktuella bakgrundsbilden…
+theme-audition-title = Färgförhandsvisning
+theme-audition-subtitle = Välj en färgkälla och jämför sedan dess profiler med samma bakgrundsbild.
+theme-audition-backend = Färgkälla
+theme-audition-backend-on = { $backend } · på
+theme-audition-selected = Vald
+theme-audition-preview = Förhandsvisa
+theme-audition-loading = Genererar förhandsvisningar från den aktuella bakgrundsbilden…
 theme-audition-empty = Inga färgförhandsvisningar returnerades. Kontrollera att den valda färgkällan är installerad och fungerar.
 
 settings-theme-profile-desc = Redigera de aktuella färgerna och spara en profil för bakgrundsbilden som ger dem.

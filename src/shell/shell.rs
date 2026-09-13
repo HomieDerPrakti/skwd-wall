@@ -2,9 +2,13 @@ use std::time::Duration;
 
 use crate::app;
 
-pub(super) const UI_FONT_BYTES: &[u8] = include_bytes!("../../assets/RobotoCondensed-Bold.ttf");
-pub(super) const NERD_FONT_BYTES: &[u8] =
+pub(super) static UI_FONT_BYTES: &[u8] = include_bytes!("../../assets/RobotoCondensed-Bold-UI.ttf");
+pub(super) static NERD_FONT_BYTES: &[u8] =
     include_bytes!("../../assets/SymbolsNerdFont-Regular.ttf");
+pub(super) static SIMPLIFIED_UI_FONT_BYTES: &[u8] =
+    include_bytes!("../../assets/RobotoCondensed-Bold-SC.ttf");
+pub(super) static JAPANESE_UI_FONT_BYTES: &[u8] =
+    include_bytes!("../../assets/RobotoCondensed-Bold-JP.ttf");
 const CTRL_IO_TIMEOUT: Duration = Duration::from_secs(2);
 const CTRL_READ_TIMEOUT: Duration = Duration::from_millis(300);
 
@@ -311,7 +315,7 @@ fn run_layershell() -> Result<(), String> {
                 start_mode: start_mode(),
                 events_transparent: false,
             },
-            fonts: vec![UI_FONT_BYTES.into(), NERD_FONT_BYTES.into()],
+            fonts: startup_fonts(),
             default_font: crate::frontend::ui::UI_FONT,
             antialiasing: true,
             ..Settings::default()
@@ -449,10 +453,51 @@ fn namespace() -> String {
     String::from("skwd-wall")
 }
 
+pub(super) fn ui_font_bytes(script: crate::i18n::Script) -> &'static [u8] {
+    match script {
+        crate::i18n::Script::Latin | crate::i18n::Script::Cyrillic => UI_FONT_BYTES,
+        crate::i18n::Script::Simplified => SIMPLIFIED_UI_FONT_BYTES,
+        crate::i18n::Script::Japanese => JAPANESE_UI_FONT_BYTES,
+    }
+}
+
+pub fn reload_ui_font(previous: crate::i18n::Script) {
+    let bytes = ui_font_bytes(crate::i18n::active_script());
+    if std::ptr::eq(bytes, ui_font_bytes(previous)) {
+        return;
+    }
+    let mut font_system =
+        iced_wgpu::graphics::text::font_system().write().expect("font system poisoned");
+    remove_embedded_ui_faces(font_system.raw().db_mut());
+    font_system.load_font(std::borrow::Cow::Owned(bytes.to_vec()));
+}
+
+pub(super) fn remove_embedded_ui_faces(
+    db: &mut iced_wgpu::graphics::text::cosmic_text::fontdb::Database,
+) {
+    use iced_wgpu::graphics::text::cosmic_text::fontdb::Source;
+
+    let embedded: Vec<_> = db
+        .faces()
+        .filter(|face| matches!(face.source, Source::Binary(_)))
+        .filter(|face| {
+            face.families.iter().any(|(family, _)| family == crate::frontend::ui::UI_FONT_FAMILY)
+        })
+        .map(|face| face.id)
+        .collect();
+    for id in embedded {
+        db.remove_face(id);
+    }
+}
+
+fn startup_fonts() -> Vec<std::borrow::Cow<'static, [u8]>> {
+    vec![ui_font_bytes(crate::i18n::active_script()).into(), NERD_FONT_BYTES.into()]
+}
+
 fn run_winit() -> Result<(), String> {
     log::info!("shell mode: winit");
     iced::application(app::App::default, app::update, app::view_single)
-        .font(UI_FONT_BYTES)
+        .font(ui_font_bytes(crate::i18n::active_script()))
         .font(NERD_FONT_BYTES)
         .default_font(crate::frontend::ui::UI_FONT)
         .antialiasing(true)

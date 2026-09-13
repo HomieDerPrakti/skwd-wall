@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = Renderização
+settings-wallpaper-engine-rendering-card-desc = Define os padrões usados quando o renderizador Vulkan integrado exibe uma cena da Oficina.
+settings-wallpaper-engine-fps-label = Limite de FPS
+settings-wallpaper-engine-fps-desc = Quadros por segundo máximos. Valores menores reduzem a carga de CPU/GPU.
+settings-wallpaper-engine-scaling-label = Escala padrão
+settings-wallpaper-engine-scaling-desc = Como as cenas da Oficina se ajustam a cada monitor. Padrão global segue o modo de preenchimento geral.
+settings-wallpaper-engine-scaling-default = Padrão global
+settings-wallpaper-engine-scaling-fill = Preencher
+settings-wallpaper-engine-scaling-fit = Ajustar
+settings-wallpaper-engine-scaling-stretch = Esticar
+settings-wallpaper-engine-scaling-center = Centralizar
+settings-wallpaper-engine-scaling-tile = Lado a lado
+settings-wallpaper-engine-scaling-span = Estender
+settings-wallpaper-engine-effects-card = Efeitos
+settings-wallpaper-engine-particles-label = Desativar partículas
+settings-wallpaper-engine-particles-desc = Ignora camadas de partículas nas cenas que as usam. Isso pode reduzir o trabalho da GPU, mas essas cenas perdem parte da animação.

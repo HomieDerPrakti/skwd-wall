@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = Показывайте изображение, видео или сцену Wallpaper Engine за обзором niri. Размытие и затемнение настраиваются отдельно от обоев рабочего стола.
+settings-niri-show-label = Показывать обои в обзоре
+settings-niri-show-desc = Показывать отдельный фон обзора. Анимированные фоны приостанавливаются, пока обзор закрыт.
+settings-niri-blur-label = Размывать фон
+settings-niri-blur-desc = Размывать копию для обзора, оставляя обои рабочего стола чёткими.
+settings-niri-blur-radius-label = Радиус размытия
+settings-niri-blur-radius-desc = Радиус гауссова размытия копии. Чем больше, тем мягче.
+settings-niri-follow-label = Всегда использовать текущие обои
+settings-niri-follow-desc = Следовать за применяемыми обоями. Выключите, чтобы выбрать отдельный фон ниже.
+settings-niri-image-label = Источник фона
+settings-niri-image-desc = Выберите «Установить для обзора» на карточке обоев или укажите путь к изображению, видео или проекту Wallpaper Engine. Оставьте пустым, чтобы использовать последние обои.
+settings-niri-auto-theme-label = Автоматически оформлять фон
+settings-niri-auto-theme-desc = Перекрашивать статичные изображения палитрой темы gowall. Видео и сцены Wallpaper Engine сохраняют исходные цвета.
+settings-niri-theme-label = Тема фона
+settings-niri-theme-desc = Палитра для автоматического оформления фона.
+settings-niri-dim-label = Затемнение фона
+settings-niri-dim-desc = Затемняет фон обзора. 0 = без затемнения, 100 = чёрный.
+settings-niri-rule-label = Необходимое правило layer-rule для niri
+settings-niri-rule-desc = Вставьте это в ~/.config/niri/config.kdl, затем перезагрузите niri.
+settings-niri-refresh-label = Обновить фон сейчас
+settings-niri-refresh-desc = Перезагрузить выбранный источник с текущими настройками размытия, затемнения и темы.
+settings-niri-refresh-action = Обновить
+settings-niri-copy-label = Скопировать layer-rule в буфер обмена
+settings-niri-copy-desc = Копирует фрагмент выше для конфигурации niri.
+settings-niri-copy-action = Копировать

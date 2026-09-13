@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = 计划
+settings-schedule-schedule-card-desc = 规则根据时间、星期、天气、电源和显示器等条件选择壁纸和主题。第一条匹配的规则生效。
+settings-schedule-enable-label = 启用计划
+settings-schedule-enable-desc = 开启或关闭所有计划规则，但不删除规则。
+settings-schedule-apply-on-start-label = 启动时应用
+settings-schedule-apply-on-start-desc = 服务启动时应用第一条匹配的规则。本次会话中手动选择的壁纸仍然优先。
+settings-schedule-editor-label = 计划编辑器
+settings-schedule-editor-desc = 用条件块构建规则，拖动以设置优先级；第一条匹配的规则生效。旧版的白天和夜晚设置会在首次打开时转换为两条规则。
+settings-schedule-editor-action = 打开
+settings-schedule-location-card = 位置
+settings-schedule-location-card-desc = 用于计算日出和日落时间以及天气条件。
+settings-schedule-latitude-label = 纬度
+settings-schedule-latitude-desc = 十进制度数，北纬为正（例如 59.33）。
+settings-schedule-longitude-label = 经度
+settings-schedule-longitude-desc = 十进制度数，东经为正（例如 18.06）。

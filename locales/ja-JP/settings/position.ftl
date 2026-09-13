@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = このピッカースタイルとそのフィルターバー、検索パネルの位置を、他のスタイルに影響を与えずに調整します。
+settings-position-slices-card = スライスピッカー
+settings-position-hex-card = ジオメトリックピッカー
+settings-position-wall-card = ウォールピッカー
+settings-position-sandy-card = サンドピッカー
+settings-position-hand-card = 手札ピッカー
+settings-position-horizontal-label = 水平オフセット
+settings-position-horizontal-desc = 画面幅の半分に対する割合でピッカーを左右に移動します。正の値で右に移動します。
+settings-position-vertical-label = 垂直オフセット
+settings-position-vertical-desc = 画面の高さの半分に対する割合でピッカーを上下に移動します。正の値で下に移動します。

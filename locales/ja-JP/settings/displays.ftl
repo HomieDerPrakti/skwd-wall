@@ -1,0 +1,10 @@
+settings-displays-card = 現在の壁紙
+settings-displays-card-desc = 壁紙サービスが現在報告している壁紙です。ここでの変更は一度に 1 つのディスプレイに適用されます。
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = オフライン · { $width } × { $height }
+settings-displays-placement-label = 配置
+settings-displays-placement-desc = 壁紙をディスプレイに対して塗りつぶし、フィット、引き伸ばし、中央、タイル、スパンのどれで表示するかを選びます。
+settings-displays-lock-label = ロック
+settings-displays-lock-desc = このモニターの壁紙はマルチピッカーからのみ更新します。
+settings-displays-empty-label = ディスプレイを検出中
+settings-displays-empty-desc = 壁紙サービスがディスプレイを報告すると、現在の壁紙がここに表示されます。

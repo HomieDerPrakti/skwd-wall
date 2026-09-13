@@ -1,7 +1,7 @@
 settings-schedule-schedule-card = Schema
 settings-schedule-schedule-card-desc = Regler väljer bakgrundsbild och tema utifrån villkor som tid, veckodag, väder, ström och skärmar. Första matchande regel vinner.
 settings-schedule-enable-label = Aktivera schema
-settings-schedule-enable-desc = Huvudströmbrytare för alla schemaregler.
+settings-schedule-enable-desc = Slå på eller av alla schemaregler utan att ta bort dem.
 settings-schedule-apply-on-start-label = Använd vid uppstart
 settings-schedule-apply-on-start-desc = Tillämpa den första matchande regeln när tjänsten startar. En manuellt vald bakgrundsbild under sessionen vinner ändå.
 settings-schedule-editor-label = Schemaredigerare

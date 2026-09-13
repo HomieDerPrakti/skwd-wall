@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = Grade
+settings-wallhaven-columns-label = Colunas
+settings-wallhaven-columns-desc = Número de miniaturas por linha.
+settings-wallhaven-rows-label = Linhas
+settings-wallhaven-rows-desc = Número de linhas visíveis ao mesmo tempo.
+settings-wallhaven-thumb-card = Miniatura
+settings-wallhaven-width-label = Largura
+settings-wallhaven-width-desc = Largura da miniatura em pixels.
+settings-wallhaven-height-label = Altura
+settings-wallhaven-height-desc = Altura da miniatura em pixels.
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = Chave de API
+settings-wallhaven-api-key-desc = Informe uma chave de API do Wallhaven para acessar recursos da conta e resultados NSFW.
+settings-wallhaven-api-key-placeholder = Chave de API do Wallhaven (para NSFW)
+settings-wallhaven-username-label = Nome de usuário
+settings-wallhaven-username-desc = Informe seu nome de usuário do Wallhaven para navegar e baixar das suas coleções.
+settings-wallhaven-username-placeholder = Nome de usuário do Wallhaven

@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = Рендеринг
+settings-wallpaper-engine-rendering-card-desc = Значения по умолчанию, которые использует встроенный рендерер Vulkan при показе сцены из Мастерской.
+settings-wallpaper-engine-fps-label = Ограничение FPS
+settings-wallpaper-engine-fps-desc = Максимум кадров в секунду. Меньшие значения снижают нагрузку на CPU/GPU.
+settings-wallpaper-engine-scaling-label = Масштабирование по умолчанию
+settings-wallpaper-engine-scaling-desc = Как сцены из Мастерской размещаются на каждом мониторе. «Глобальное значение» следует общему режиму заполнения.
+settings-wallpaper-engine-scaling-default = Глобальное значение
+settings-wallpaper-engine-scaling-fill = Заполнение
+settings-wallpaper-engine-scaling-fit = Вписать
+settings-wallpaper-engine-scaling-stretch = Растянуть
+settings-wallpaper-engine-scaling-center = По центру
+settings-wallpaper-engine-scaling-tile = Плиткой
+settings-wallpaper-engine-scaling-span = На все дисплеи
+settings-wallpaper-engine-effects-card = Эффекты
+settings-wallpaper-engine-particles-label = Отключить частицы
+settings-wallpaper-engine-particles-desc = Пропускать слои частиц в сценах, где они есть. Это может снизить нагрузку на GPU, но такие сцены потеряют часть анимации.

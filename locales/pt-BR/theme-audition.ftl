@@ -1,0 +1,56 @@
+theme-audition-title = Pré-visualização de cores
+theme-audition-subtitle = Escolha uma fonte de cores e depois compare os perfis dela usando o mesmo papel de parede.
+theme-audition-backend = Fonte de cores
+theme-audition-backend-on = { $backend } · ativado
+theme-audition-selected = Selecionado
+theme-audition-preview = Pré-visualizar
+theme-audition-loading = Gerando pré-visualizações a partir do papel de parede atual…
+theme-audition-empty = Nenhuma pré-visualização de cores foi retornada. Verifique se a fonte de cores selecionada está instalada e funcionando.
+
+settings-theme-profile-desc = Edite as cores atuais e salve um perfil para o papel de parede que as fornece.
+theme-profile-load = Carregar atuais
+theme-profile-save = Salvar para este papel de parede
+theme-profile-enabled = Usar este perfil
+theme-profile-dark = Escuro
+theme-profile-light = Claro
+
+settings-playback-pause-title = Pausa automática
+settings-playback-pause-desc = Pausa papéis de parede animados quando qualquer condição ativada for atendida.
+settings-playback-process-enabled = Pausar quando aplicativos estiverem em execução
+settings-playback-process-desc = Pausa todas as telas enquanto um processo da lista estiver em execução.
+settings-playback-processes = Processos
+settings-playback-processes-desc = Separe os nomes de executáveis com vírgulas. Os nomes são comparados sem diferenciar maiúsculas e sem o sufixo .exe.
+settings-playback-choose-process = Escolher um processo em execução
+settings-playback-fullscreen = Pausar em tela cheia
+settings-playback-fullscreen-desc = Pausa enquanto uma janela em tela cheia estiver visível. Requer suporte do compositor.
+settings-playback-scope = Telas pausadas por janela
+settings-playback-scope-desc = Escolha se uma condição de pausa por janela pausa a tela dela ou todas as telas.
+settings-playback-all = Todas as telas
+settings-playback-display = Tela que contém a janela
+settings-playback-resume = Atraso para retomar
+settings-playback-resume-desc = Aguarda depois que a última condição de pausa automática deixar de valer. A pausa manual continua valendo.
+settings-playback-detection-off = Ative a pausa em tela cheia ou em janela maximizada para verificar o suporte do compositor.
+settings-playback-detection-ready = Detecção do estado das janelas disponível
+settings-playback-detection-unavailable = Detecção do estado das janelas indisponível neste compositor
+settings-playback-paused-process = Pausado: { $names } está em execução
+settings-playback-paused-fullscreen = Pausado: janela em tela cheia
+settings-playback-resuming = Aguardando para retomar
+settings-playback-no-rule = Nenhuma regra de pausa automática está ativa
+
+settings-paper-layer-label = Camada do papel de parede
+settings-paper-layer-desc = Camada Wayland para vídeos e cenas. Use Fundo com a regra place-within-backdrop do Niri para mostrar o papel de parede ativo atrás da visão geral.
+settings-paper-layer-bottom = Inferior (padrão)
+settings-paper-layer-background = Fundo
+settings-paper-layer-top = Superior
+settings-paper-layer-overlay = Sobreposição
+settings-paper-overview-only-label = Animar só na visão geral do Niri
+settings-paper-overview-only-desc = Requer Fundo e place-within-backdrop. Pausa enquanto a visão geral está fechada.
+settings-playback-paused-overview = Pausado enquanto a visão geral do Niri está fechada
+
+settings-playback-maximized = Pausar com janelas maximizadas
+settings-playback-maximized-desc = Pausa quando o compositor informa uma janela maximizada. Requer suporte do compositor; o Niri também informa janelas em áreas de trabalho ocultas.
+settings-playback-paused-maximized = Pausado: janela maximizada
+
+settings-playback-full-width = Pausar com colunas de largura total (Niri)
+settings-playback-full-width-desc = Pausa quando a coluna ativa lado a lado cobre pelo menos 90% da largura da tela. Inclui Mod+F com espaçamentos normais. Outras áreas de trabalho não contam.
+settings-playback-paused-full-width = Pausado: coluna de largura total

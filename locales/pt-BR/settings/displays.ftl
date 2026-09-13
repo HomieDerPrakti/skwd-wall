@@ -1,0 +1,10 @@
+settings-displays-card = Papéis de parede atuais
+settings-displays-card-desc = Estes são os papéis de parede informados agora pelo serviço de papel de parede. As mudanças feitas aqui se aplicam a uma tela por vez.
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = Desconectada · { $width } × { $height }
+settings-displays-placement-label = Posicionamento
+settings-displays-placement-desc = Escolha se o papel de parede preenche, se ajusta, estica, centraliza, repete lado a lado ou se estende pela tela.
+settings-displays-lock-label = Bloquear
+settings-displays-lock-desc = Atualiza o papel de parede deste monitor apenas pelo seletor múltiplo.
+settings-displays-empty-label = Detectando telas
+settings-displays-empty-desc = Os papéis de parede atuais aparecerão quando o serviço de papel de parede informar as telas.

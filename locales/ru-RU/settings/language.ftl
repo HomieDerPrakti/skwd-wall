@@ -1,0 +1,14 @@
+settings-tab-language = Язык
+settings-tab-note-language = Выберите язык окна выбора и настроек.
+settings-language-card = Язык интерфейса
+settings-language-card-desc = Изменения применяются сразу и сохраняются до следующего запуска.
+settings-language-choice-label = Язык
+settings-language-choice-desc = Системный язык следует языку рабочего стола. Названия и теги обоев не меняются.
+settings-language-system = Системный язык
+settings-language-english = English
+settings-language-swedish = Svenska
+settings-language-spanish = Español
+settings-language-portuguese = Português (Brasil)
+settings-language-russian = Русский
+settings-language-chinese = 简体中文
+settings-language-japanese = 日本語

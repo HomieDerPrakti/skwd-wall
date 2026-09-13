@@ -1,0 +1,56 @@
+theme-audition-title = 颜色预览
+theme-audition-subtitle = 选择一个颜色来源，然后用同一张壁纸比较它的各个配置。
+theme-audition-backend = 颜色来源
+theme-audition-backend-on = { $backend } · 已开启
+theme-audition-selected = 已选择
+theme-audition-preview = 预览
+theme-audition-loading = 正在根据当前壁纸生成预览…
+theme-audition-empty = 没有返回任何颜色预览。请检查所选颜色来源是否已安装并能正常工作。
+
+settings-theme-profile-desc = 编辑当前颜色，并为提供这些颜色的壁纸保存一个配置。
+theme-profile-load = 载入当前颜色
+theme-profile-save = 为此壁纸保存
+theme-profile-enabled = 使用此配置
+theme-profile-dark = 深色
+theme-profile-light = 浅色
+
+settings-playback-pause-title = 自动暂停
+settings-playback-pause-desc = 满足任一已启用的条件时暂停动态壁纸。
+settings-playback-process-enabled = 应用程序运行时暂停
+settings-playback-process-desc = 列表中的进程运行时，暂停所有显示器。
+settings-playback-processes = 进程
+settings-playback-processes-desc = 用逗号分隔可执行文件名。匹配时不区分大小写，也忽略 .exe 后缀。
+settings-playback-choose-process = 选择正在运行的进程
+settings-playback-fullscreen = 全屏时暂停
+settings-playback-fullscreen-desc = 有全屏窗口可见时暂停。需要合成器支持。
+settings-playback-scope = 窗口暂停的显示器
+settings-playback-scope-desc = 选择窗口暂停条件是暂停窗口所在的显示器，还是暂停所有显示器。
+settings-playback-all = 所有显示器
+settings-playback-display = 窗口所在的显示器
+settings-playback-resume = 恢复延迟
+settings-playback-resume-desc = 最后一个自动暂停条件解除后等待这段时间。手动暂停仍然有效。
+settings-playback-detection-off = 启用全屏或最大化窗口暂停，以检查合成器是否支持。
+settings-playback-detection-ready = 窗口状态检测可用
+settings-playback-detection-unavailable = 此合成器不支持窗口状态检测
+settings-playback-paused-process = 已暂停：{ $names } 正在运行
+settings-playback-paused-fullscreen = 已暂停：全屏窗口
+settings-playback-resuming = 等待恢复
+settings-playback-no-rule = 没有生效的自动暂停规则
+
+settings-paper-layer-label = 壁纸图层
+settings-paper-layer-desc = 视频和场景使用的 Wayland 图层。将“背景”与 Niri 的 place-within-backdrop 规则配合使用，可在概览后方显示当前壁纸。
+settings-paper-layer-bottom = 底层（默认）
+settings-paper-layer-background = 背景
+settings-paper-layer-top = 顶层
+settings-paper-layer-overlay = 覆盖层
+settings-paper-overview-only-label = 仅在 Niri 概览中播放动画
+settings-paper-overview-only-desc = 需要“背景”和 place-within-backdrop。概览关闭时暂停。
+settings-playback-paused-overview = Niri 概览关闭时已暂停
+
+settings-playback-maximized = 窗口最大化时暂停
+settings-playback-maximized-desc = 合成器报告有最大化窗口时暂停。需要合成器支持；Niri 也会报告隐藏工作区中的窗口。
+settings-playback-paused-maximized = 已暂停：最大化窗口
+
+settings-playback-full-width = 全宽列时暂停（Niri）
+settings-playback-full-width-desc = 当前平铺列占据其显示器宽度至少 90% 时暂停。包括使用普通间距的 Mod+F。其他工作区不计入。
+settings-playback-paused-full-width = 已暂停：全宽列

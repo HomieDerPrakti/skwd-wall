@@ -1,0 +1,9 @@
+help-shortcuts = Сочетания клавиш
+help-keyboard = Клавиатура
+help-mouse = Мышь
+help-key-esc = Esc
+help-mouse-wheel = Колесо
+help-mouse-hover = Наведение
+help-close-back-quit = Закрыть / назад / выйти
+help-wheel = Листать / прокручивать
+help-hover = Предпросмотр видео

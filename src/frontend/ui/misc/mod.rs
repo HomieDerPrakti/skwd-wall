@@ -25,7 +25,8 @@ pub use style::{
     ghost_input_style, panel_style, scrim, scrim_style, workbench_input_style,
 };
 pub use typography::{
-    NERD_FONT, TYPE_SMALL, UI_FONT, label, legible_type_scale, mid_text, sentence_case,
+    NERD_FONT, TYPE_SMALL, UI_FONT, UI_FONT_FAMILY, label, legible_type_scale, mid_text,
+    sentence_case,
 };
 pub(crate) use typography::{ellipsize_text, glyph_width, text_width};
 

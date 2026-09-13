@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = 在 niri 概览后方使用图片、视频或 Wallpaper Engine 场景。可独立于桌面壁纸进行模糊和调暗。
+settings-niri-show-label = 在概览中显示壁纸
+settings-niri-show-desc = 显示独立的概览背景。概览关闭时，动态背景会暂停。
+settings-niri-blur-label = 模糊背景
+settings-niri-blur-desc = 模糊概览中的副本，同时保持桌面壁纸清晰。
+settings-niri-blur-radius-label = 模糊半径
+settings-niri-blur-radius-desc = 应用于副本的高斯模糊半径。数值越高越柔和。
+settings-niri-follow-label = 始终使用当前壁纸
+settings-niri-follow-desc = 跟随你应用的壁纸。关闭后可在下方选择单独的背景。
+settings-niri-image-label = 背景来源
+settings-niri-image-desc = 在壁纸上选择“设为概览壁纸”，或输入图片、视频或 Wallpaper Engine 项目的路径。留空则使用上一张壁纸。
+settings-niri-auto-theme-label = 自动为背景应用主题
+settings-niri-auto-theme-desc = 使用 gowall 主题调色板为静态图片重新着色。视频和 Wallpaper Engine 场景保留原始颜色。
+settings-niri-theme-label = 背景主题
+settings-niri-theme-desc = 自动为背景应用主题时使用的调色板。
+settings-niri-dim-label = 背景调暗
+settings-niri-dim-desc = 调暗概览背景。0 = 不调暗，100 = 全黑。
+settings-niri-rule-label = 所需的 niri layer-rule
+settings-niri-rule-desc = 将此内容粘贴到 ~/.config/niri/config.kdl 中，然后重新加载 niri。
+settings-niri-refresh-label = 立即刷新背景
+settings-niri-refresh-desc = 使用当前的模糊、调暗和主题设置重新加载所选来源。
+settings-niri-refresh-action = 刷新
+settings-niri-copy-label = 将 layer-rule 复制到剪贴板
+settings-niri-copy-desc = 复制上方用于 niri 配置的片段。
+settings-niri-copy-action = 复制

@@ -1,12 +1,80 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU8, Ordering};
-use std::sync::{LazyLock, Mutex};
+use std::sync::{LazyLock, Mutex, OnceLock};
 
 use fluent::{FluentArgs, FluentResource};
 
 type Bundle = fluent::concurrent::FluentBundle<FluentResource>;
 
 include!(concat!(env!("OUT_DIR"), "/embedded_locales.rs"));
+
+pub struct Language {
+    pub tag: &'static str,
+    pub prefix: &'static str,
+    pub label: &'static str,
+    pub resources: &'static [&'static str],
+    pub script: Script,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum Script {
+    Latin,
+    Cyrillic,
+    Simplified,
+    Japanese,
+}
+
+pub const LANGUAGES: &[Language] = &[
+    Language {
+        tag: "en-US",
+        prefix: "en",
+        label: "settings-language-english",
+        resources: &[],
+        script: Script::Latin,
+    },
+    Language {
+        tag: "sv-SE",
+        prefix: "sv",
+        label: "settings-language-swedish",
+        resources: SV_SE_RESOURCES,
+        script: Script::Latin,
+    },
+    Language {
+        tag: "es-ES",
+        prefix: "es",
+        label: "settings-language-spanish",
+        resources: ES_ES_RESOURCES,
+        script: Script::Latin,
+    },
+    Language {
+        tag: "pt-BR",
+        prefix: "pt",
+        label: "settings-language-portuguese",
+        resources: PT_BR_RESOURCES,
+        script: Script::Latin,
+    },
+    Language {
+        tag: "ru-RU",
+        prefix: "ru",
+        label: "settings-language-russian",
+        resources: RU_RU_RESOURCES,
+        script: Script::Cyrillic,
+    },
+    Language {
+        tag: "zh-CN",
+        prefix: "zh",
+        label: "settings-language-chinese",
+        resources: ZH_CN_RESOURCES,
+        script: Script::Simplified,
+    },
+    Language {
+        tag: "ja-JP",
+        prefix: "ja",
+        label: "settings-language-japanese",
+        resources: JA_JP_RESOURCES,
+        script: Script::Japanese,
+    },
+];
 
 pub struct Catalog {
     bundle: Bundle,
@@ -15,12 +83,9 @@ pub struct Catalog {
 
 impl Catalog {
     pub(crate) fn for_locale(requested: &str) -> Self {
-        let (locale, override_resources) = match normalized_locale(requested).unwrap_or("en-US") {
-            "sv-SE" => ("sv-SE", SV_SE_RESOURCES),
-            "es-ES" => ("es-ES", ES_ES_RESOURCES),
-            _ => ("en-US", &[][..]),
-        };
-        let locale = locale.parse().expect("embedded locale identifier must be valid");
+        let language = language(normalized_locale(requested).unwrap_or("en-US"));
+        let override_resources = language.resources;
+        let locale = language.tag.parse().expect("embedded locale identifier must be valid");
         let mut bundle = Bundle::new_concurrent(vec![locale]);
         bundle.set_use_isolating(false);
         for source in EN_US_RESOURCES {
@@ -57,15 +122,22 @@ impl Catalog {
     }
 }
 
+fn language(tag: &str) -> &'static Language {
+    LANGUAGES.iter().find(|language| language.tag == tag).unwrap_or(&LANGUAGES[0])
+}
+
 fn normalized_locale(raw: &str) -> Option<&'static str> {
-    let base = raw.trim().split(['.', '@']).next().unwrap_or_default();
-    let language = base.split(['-', '_']).next().unwrap_or_default();
-    match language.to_ascii_lowercase().as_str() {
-        "es" => Some("es-ES"),
-        "sv" => Some("sv-SE"),
-        "en" | "c" | "posix" => Some("en-US"),
-        _ => None,
+    let base = raw.trim().split(['.', '@']).next().unwrap_or_default().to_ascii_lowercase();
+    let mut subtags = base.split(['-', '_']);
+    let prefix = subtags.next().unwrap_or_default();
+    if prefix == "c" || prefix == "posix" {
+        return Some("en-US");
     }
+    let traditional = subtags.clone().any(|tag| matches!(tag, "hant" | "tw" | "hk" | "mo"));
+    if prefix == "zh" && traditional && !subtags.any(|tag| tag == "hans") {
+        return None;
+    }
+    LANGUAGES.iter().find(|language| language.prefix == prefix).map(|language| language.tag)
 }
 
 fn selected_locale(values: [Option<&str>; 5]) -> &'static str {
@@ -100,34 +172,37 @@ static AUTOMATIC: LazyLock<u8> = LazyLock::new(|| {
         .map(|key| std::env::var(key).ok());
     language_index(selected_locale(vars.each_ref().map(|value| value.as_deref())))
 });
-static ENGLISH: LazyLock<Catalog> = LazyLock::new(|| Catalog::for_locale("en-US"));
-static SWEDISH: LazyLock<Catalog> = LazyLock::new(|| Catalog::for_locale("sv-SE"));
-static SPANISH: LazyLock<Catalog> = LazyLock::new(|| Catalog::for_locale("es-ES"));
+static CATALOGS: [OnceLock<Catalog>; LANGUAGES.len()] =
+    [const { OnceLock::new() }; LANGUAGES.len()];
 
 pub fn language_choice(requested: &str) -> &'static str {
     normalized_locale(requested).unwrap_or("auto")
 }
 
 fn language_index(requested: &str) -> u8 {
-    match language_choice(requested) {
-        "en-US" => 1,
-        "sv-SE" => 2,
-        "es-ES" => 3,
-        _ => 0,
-    }
+    LANGUAGES
+        .iter()
+        .position(|language| language.tag == language_choice(requested))
+        .map_or(0, |index| index as u8 + 1)
 }
 
 pub fn set_language(requested: &str) {
     SELECTED.store(language_index(requested), Ordering::Relaxed);
 }
 
-pub fn catalog() -> &'static Catalog {
+fn active_index() -> usize {
     let selected = SELECTED.load(Ordering::Relaxed);
-    match if selected == 0 { *AUTOMATIC } else { selected } {
-        2 => &SWEDISH,
-        3 => &SPANISH,
-        _ => &ENGLISH,
-    }
+    let resolved = if selected == 0 { *AUTOMATIC } else { selected };
+    usize::from(resolved.saturating_sub(1)).min(LANGUAGES.len() - 1)
+}
+
+pub fn active_script() -> Script {
+    LANGUAGES[active_index()].script
+}
+
+pub fn catalog() -> &'static Catalog {
+    let index = active_index();
+    CATALOGS[index].get_or_init(|| Catalog::for_locale(LANGUAGES[index].tag))
 }
 
 pub fn format(key: &str, args: &FluentArgs<'_>) -> String {

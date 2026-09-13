@@ -1,5 +1,5 @@
 settings-launch-launch-card = Uppstart
-settings-launch-launch-card-desc = Väljaren kallstartar på ~150 ms och avslutas helt när den stängs. Detta styr hur de millisekunderna ser ut.
+settings-launch-launch-card-desc = Väljaren startar på ungefär 150 ms och avslutas helt när den stängs. Inställningarna ändrar bara hur den visas under uppstarten.
 settings-launch-animation-label = Animation
 settings-launch-animation-desc = Ingen visar väljaren så snart den finns och är snabbast. Tona ändrar bara opacitet; Stig och Zooma lägger till rörelse.
 settings-launch-animation-none = Ingen

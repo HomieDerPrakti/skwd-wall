@@ -1,0 +1,56 @@
+theme-audition-title = Предпросмотр цветов
+theme-audition-subtitle = Выберите источник цветов, затем сравните его профили на одних и тех же обоях.
+theme-audition-backend = Источник цветов
+theme-audition-backend-on = { $backend } · вкл.
+theme-audition-selected = Выбрано
+theme-audition-preview = Предпросмотр
+theme-audition-loading = Создание предпросмотра по текущим обоям…
+theme-audition-empty = Предпросмотр цветов не получен. Проверьте, что выбранный источник цветов установлен и работает.
+
+settings-theme-profile-desc = Измените текущие цвета и сохраните профиль для обоев, из которых они получены.
+theme-profile-load = Загрузить текущие
+theme-profile-save = Сохранить для этих обоев
+theme-profile-enabled = Использовать этот профиль
+theme-profile-dark = Тёмный
+theme-profile-light = Светлый
+
+settings-playback-pause-title = Автоматическая пауза
+settings-playback-pause-desc = Приостанавливать анимированные обои, когда выполняется любое включённое условие.
+settings-playback-process-enabled = Пауза при запущенных приложениях
+settings-playback-process-desc = Приостанавливать все дисплеи, пока запущен процесс из списка.
+settings-playback-processes = Процессы
+settings-playback-processes-desc = Разделяйте имена исполняемых файлов запятыми. Имена сравниваются без учёта регистра и без суффикса .exe.
+settings-playback-choose-process = Выбрать запущенный процесс
+settings-playback-fullscreen = Пауза в полноэкранном режиме
+settings-playback-fullscreen-desc = Приостанавливать, пока видно полноэкранное окно. Нужна поддержка композитора.
+settings-playback-scope = Дисплеи для паузы по окну
+settings-playback-scope-desc = Выберите, приостанавливает ли условие паузы по окну только его дисплей или все дисплеи.
+settings-playback-all = Все дисплеи
+settings-playback-display = Дисплей с этим окном
+settings-playback-resume = Задержка возобновления
+settings-playback-resume-desc = Ждать после того, как снято последнее условие автоматической паузы. Ручная пауза продолжает действовать.
+settings-playback-detection-off = Включите паузу для полноэкранных или развёрнутых окон, чтобы проверить поддержку композитора.
+settings-playback-detection-ready = Определение состояния окон доступно
+settings-playback-detection-unavailable = Определение состояния окон недоступно в этом композиторе
+settings-playback-paused-process = Приостановлено: запущен { $names }
+settings-playback-paused-fullscreen = Приостановлено: полноэкранное окно
+settings-playback-resuming = Ожидание возобновления
+settings-playback-no-rule = Нет активных правил автоматической паузы
+
+settings-paper-layer-label = Слой обоев
+settings-paper-layer-desc = Слой Wayland для видео и сцен. Используйте «Фон» вместе с правилом place-within-backdrop в Niri, чтобы показывать активные обои за обзором.
+settings-paper-layer-bottom = Нижний (по умолчанию)
+settings-paper-layer-background = Фон
+settings-paper-layer-top = Верхний
+settings-paper-layer-overlay = Наложение
+settings-paper-overview-only-label = Анимировать только в обзоре Niri
+settings-paper-overview-only-desc = Нужны «Фон» и place-within-backdrop. Приостанавливается, пока обзор закрыт.
+settings-playback-paused-overview = Приостановлено, пока обзор Niri закрыт
+
+settings-playback-maximized = Пауза при развёрнутых окнах
+settings-playback-maximized-desc = Приостанавливать, когда композитор сообщает о развёрнутом окне. Нужна поддержка композитора; Niri также сообщает об окнах на скрытых рабочих столах.
+settings-playback-paused-maximized = Приостановлено: развёрнутое окно
+
+settings-playback-full-width = Пауза при колонках во всю ширину (Niri)
+settings-playback-full-width-desc = Приостанавливать, когда активная колонка занимает не менее 90% ширины дисплея. Включает Mod+F с обычными отступами. Другие рабочие столы не учитываются.
+settings-playback-paused-full-width = Приостановлено: колонка во всю ширину

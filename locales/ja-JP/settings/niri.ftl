@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = niri のオーバービューの背後に画像、動画、または Wallpaper Engine のシーンを表示します。ぼかしと暗さはデスクトップの壁紙とは別に設定できます。
+settings-niri-show-label = オーバービューに壁紙を表示
+settings-niri-show-desc = オーバービュー専用の背景を表示します。オーバービューを閉じている間、アニメーション背景は一時停止します。
+settings-niri-blur-label = 背景をぼかす
+settings-niri-blur-desc = デスクトップの壁紙はくっきりさせたまま、オーバービュー用のコピーをぼかします。
+settings-niri-blur-radius-label = ぼかしの半径
+settings-niri-blur-radius-desc = コピーに適用するガウスぼかしの半径です。大きいほど柔らかくなります。
+settings-niri-follow-label = 常に現在の壁紙を使う
+settings-niri-follow-desc = 適用した壁紙に追従します。オフにすると下で別の背景を選べます。
+settings-niri-image-label = 背景のソース
+settings-niri-image-desc = 壁紙で「オーバービューに設定」を選ぶか、画像、動画、または Wallpaper Engine プロジェクトのパスを入力します。空欄にすると最後の壁紙を使います。
+settings-niri-auto-theme-label = 背景に自動でテーマを適用
+settings-niri-auto-theme-desc = gowall テーマのパレットで静止画を再着色します。動画と Wallpaper Engine のシーンは元の色のままです。
+settings-niri-theme-label = 背景のテーマ
+settings-niri-theme-desc = 背景に自動でテーマを適用するときに使うパレットです。
+settings-niri-dim-label = 背景の暗さ
+settings-niri-dim-desc = オーバービューの背景を暗くします。0 = なし、100 = 黒。
+settings-niri-rule-label = 必要な niri の layer-rule
+settings-niri-rule-desc = これを ~/.config/niri/config.kdl に貼り付けてから niri をリロードしてください。
+settings-niri-refresh-label = 今すぐ背景を更新
+settings-niri-refresh-desc = 現在のぼかし、暗さ、テーマの設定で選択中のソースを再読み込みします。
+settings-niri-refresh-action = 更新
+settings-niri-copy-label = layer-rule をクリップボードにコピー
+settings-niri-copy-desc = niri の設定用に上のスニペットをコピーします。
+settings-niri-copy-action = コピー

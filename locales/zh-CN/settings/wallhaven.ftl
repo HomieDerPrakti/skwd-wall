@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = 网格
+settings-wallhaven-columns-label = 列数
+settings-wallhaven-columns-desc = 每行显示的缩略图数量。
+settings-wallhaven-rows-label = 行数
+settings-wallhaven-rows-desc = 同时可见的行数。
+settings-wallhaven-thumb-card = 缩略图
+settings-wallhaven-width-label = 宽度
+settings-wallhaven-width-desc = 缩略图宽度（像素）。
+settings-wallhaven-height-label = 高度
+settings-wallhaven-height-desc = 缩略图高度（像素）。
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = API 密钥
+settings-wallhaven-api-key-desc = 输入 Wallhaven API 密钥以使用账户功能并查看 NSFW 结果。
+settings-wallhaven-api-key-placeholder = Wallhaven API 密钥（用于 NSFW）
+settings-wallhaven-username-label = 用户名
+settings-wallhaven-username-desc = 输入你的 Wallhaven 用户名，以浏览和下载你的收藏。
+settings-wallhaven-username-placeholder = Wallhaven 用户名

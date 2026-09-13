@@ -1,0 +1,9 @@
+help-shortcuts = 快捷键
+help-keyboard = 键盘
+help-mouse = 鼠标
+help-key-esc = Esc
+help-mouse-wheel = 滚轮
+help-mouse-hover = 悬停
+help-close-back-quit = 关闭 / 返回 / 退出
+help-wheel = 浏览 / 滚动
+help-hover = 预览视频

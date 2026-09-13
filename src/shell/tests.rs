@@ -5,10 +5,11 @@ use std::os::linux::net::SocketAddrExt;
 use std::os::unix::net::{SocketAddr, UnixListener, UnixStream};
 
 use super::shell::{
-    NERD_FONT_BYTES, NVIDIA_COMPILER_RECLAIM_ADVICE, UI_FONT_BYTES, attach_reply,
-    cold_nvidia_compiler_mapping, compressed_thumbnail_profile, layer_shell_global_usable,
-    layershell_error_message, layershell_run_error_message, parse_control_command,
-    picker_power_preference, startup_control_command,
+    JAPANESE_UI_FONT_BYTES, NERD_FONT_BYTES, NVIDIA_COMPILER_RECLAIM_ADVICE,
+    SIMPLIFIED_UI_FONT_BYTES, UI_FONT_BYTES, attach_reply, cold_nvidia_compiler_mapping,
+    compressed_thumbnail_profile, layer_shell_global_usable, layershell_error_message,
+    layershell_run_error_message, parse_control_command, picker_power_preference,
+    remove_embedded_ui_faces, startup_control_command, ui_font_bytes,
 };
 
 #[test]
@@ -77,6 +78,69 @@ fn query_reply_channel() {
 fn bundled_fonts() {
     assert!(!UI_FONT_BYTES.is_empty());
     assert!(NERD_FONT_BYTES.len() > 100_000);
+}
+
+#[test]
+fn ui_font_follows_script() {
+    use crate::i18n::Script;
+    assert!(std::ptr::eq(ui_font_bytes(Script::Latin), UI_FONT_BYTES));
+    assert!(std::ptr::eq(ui_font_bytes(Script::Cyrillic), UI_FONT_BYTES));
+    assert!(std::ptr::eq(ui_font_bytes(Script::Simplified), SIMPLIFIED_UI_FONT_BYTES));
+    assert!(std::ptr::eq(ui_font_bytes(Script::Japanese), JAPANESE_UI_FONT_BYTES));
+}
+
+#[test]
+fn ui_face_swap_keeps_system_and_icon_faces() {
+    use iced_wgpu::graphics::text::cosmic_text::fontdb::{Database, Source};
+    let mut db = Database::new();
+    db.load_font_data(UI_FONT_BYTES.to_vec());
+    db.load_font_data(NERD_FONT_BYTES.to_vec());
+    db.load_font_file(concat!(env!("CARGO_MANIFEST_DIR"), "/assets/RobotoCondensed-Bold.ttf"))
+        .expect("load file-backed UI family face");
+    remove_embedded_ui_faces(&mut db);
+    let remaining: Vec<(bool, bool)> = db
+        .faces()
+        .map(|face| {
+            (
+                matches!(face.source, Source::Binary(_)),
+                face.families.iter().any(|(name, _)| name == crate::frontend::ui::UI_FONT_FAMILY),
+            )
+        })
+        .collect();
+    assert!(!remaining.contains(&(true, true)));
+    assert!(remaining.contains(&(false, true)));
+    assert!(remaining.contains(&(true, false)));
+}
+
+#[test]
+fn ui_fonts_cover_their_catalogs() {
+    use iced_wgpu::graphics::text::cosmic_text::{Font, fontdb};
+    for language in crate::i18n::LANGUAGES {
+        let mut db = fontdb::Database::new();
+        db.load_font_data(ui_font_bytes(language.script).to_vec());
+        let face = db.faces().next().expect("embedded UI face");
+        assert!(
+            face.families.iter().any(|(name, _)| name == crate::frontend::ui::UI_FONT_FAMILY),
+            "{}",
+            language.tag
+        );
+        assert_eq!(face.weight, fontdb::Weight::BOLD, "{}", language.tag);
+        assert_eq!(face.stretch, fontdb::Stretch::Condensed, "{}", language.tag);
+        let font = Font::new(&db, face.id, face.weight).expect("parse UI face");
+        let charmap = font.as_swash().charmap();
+        let missing: std::collections::BTreeSet<char> = language
+            .resources
+            .iter()
+            .flat_map(|resource| resource.chars())
+            .filter(|ch| {
+                ch.is_alphanumeric()
+                    || ('\u{3000}'..='\u{303f}').contains(ch)
+                    || ('\u{ff00}'..='\u{ffef}').contains(ch)
+            })
+            .filter(|ch| charmap.map(*ch) == 0)
+            .collect();
+        assert!(missing.is_empty(), "{} {missing:?}", language.tag);
+    }
 }
 
 #[test]

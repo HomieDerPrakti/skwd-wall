@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = 渲染
+settings-wallpaper-engine-rendering-card-desc = 设置内置 Vulkan 渲染器显示创意工坊场景时使用的默认值。
+settings-wallpaper-engine-fps-label = 帧率上限
+settings-wallpaper-engine-fps-desc = 每秒最大帧数。数值越低，CPU/GPU 负载越小。
+settings-wallpaper-engine-scaling-label = 默认缩放
+settings-wallpaper-engine-scaling-desc = 创意工坊场景如何适配每台显示器。“全局默认”跟随全局填充模式。
+settings-wallpaper-engine-scaling-default = 全局默认
+settings-wallpaper-engine-scaling-fill = 填充
+settings-wallpaper-engine-scaling-fit = 适应
+settings-wallpaper-engine-scaling-stretch = 拉伸
+settings-wallpaper-engine-scaling-center = 居中
+settings-wallpaper-engine-scaling-tile = 平铺
+settings-wallpaper-engine-scaling-span = 跨屏
+settings-wallpaper-engine-effects-card = 效果
+settings-wallpaper-engine-particles-label = 禁用粒子
+settings-wallpaper-engine-particles-desc = 跳过场景中的粒子图层。这可以减少 GPU 工作量，但这些场景会失去部分动画。

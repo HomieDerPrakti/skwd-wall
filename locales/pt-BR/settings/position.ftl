@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = Posicione este estilo de seletor, sua barra de filtros e o painel de busca sem afetar os outros.
+settings-position-slices-card = Seletor em fatias
+settings-position-hex-card = Seletor geométrico
+settings-position-wall-card = Seletor em mural
+settings-position-sandy-card = Seletor de areia
+settings-position-hand-card = Seletor de mão de cartas
+settings-position-horizontal-label = Deslocamento horizontal
+settings-position-horizontal-desc = Move o seletor para a esquerda ou para a direita em uma porcentagem de metade da largura da tela. Valores positivos movem para a direita.
+settings-position-vertical-label = Deslocamento vertical
+settings-position-vertical-desc = Move o seletor para cima ou para baixo em uma porcentagem de metade da altura da tela. Valores positivos movem para baixo.

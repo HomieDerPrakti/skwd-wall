@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = Agendamento
+settings-schedule-schedule-card-desc = Regras escolhem o papel de parede e o tema com base em condições como horário, dia da semana, clima, energia e telas. A primeira regra correspondente vence.
+settings-schedule-enable-label = Ativar agendamento
+settings-schedule-enable-desc = Liga ou desliga todas as regras de agendamento sem excluí-las.
+settings-schedule-apply-on-start-label = Aplicar ao iniciar
+settings-schedule-apply-on-start-desc = Aplica a primeira regra correspondente quando o serviço inicia. Um papel de parede escolhido manualmente nesta sessão continua tendo prioridade.
+settings-schedule-editor-label = Editor de agendamento
+settings-schedule-editor-desc = Monte regras com blocos de condição e arraste para definir a prioridade; a primeira correspondência vence. As configurações antigas de dia e noite viram duas regras na primeira abertura.
+settings-schedule-editor-action = Abrir
+settings-schedule-location-card = Localização
+settings-schedule-location-card-desc = Usada para os horários de nascer e pôr do sol e para as condições climáticas.
+settings-schedule-latitude-label = Latitude
+settings-schedule-latitude-desc = Graus decimais, norte positivo (ex.: 59.33).
+settings-schedule-longitude-label = Longitude
+settings-schedule-longitude-desc = Graus decimais, leste positivo (ex.: 18.06).

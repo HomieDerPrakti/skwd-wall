@@ -1,0 +1,12 @@
+settings-launch-launch-card = 启动
+settings-launch-launch-card-desc = 选择器约 150 毫秒即可启动，关闭时会完全退出。这些设置只改变它在启动时的出现方式。
+settings-launch-animation-label = 动画
+settings-launch-animation-desc = “无”会在选择器就绪后立即显示，速度最快。“淡入”只改变不透明度；“上升”和“缩放”会加入移动效果。
+settings-launch-animation-none = 无
+settings-launch-animation-fade = 淡入
+settings-launch-animation-rise = 上升
+settings-launch-animation-zoom = 缩放
+settings-launch-motion-label = 动效
+settings-launch-motion-desc = 选择器界面共用的节奏。可在动效设置中更改“快速”“标准”和“慢速”的速度。
+settings-launch-fade-from-label = 淡入起点
+settings-launch-fade-from-desc = 入场动画开始时的不透明度（百分比）。0 表示从完全透明开始。

@@ -1,7 +1,23 @@
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
-use super::{Catalog, EN_US_RESOURCES, ES_ES_RESOURCES, SV_SE_RESOURCES};
+use super::{Catalog, EN_US_RESOURCES, LANGUAGES};
+
+fn locales() -> impl Iterator<Item = (&'static str, &'static [&'static str])> {
+    LANGUAGES.iter().map(|language| {
+        let resources = if language.tag == "en-US" { EN_US_RESOURCES } else { language.resources };
+        (language.tag, resources)
+    })
+}
+
+fn plural_categories(tag: &str) -> &'static [&'static [i64]] {
+    match tag {
+        "pt-BR" => &[&[0, 1], &[2, 5, 21]],
+        "ru-RU" => &[&[1, 21], &[2, 3, 22], &[0, 5, 11, 25]],
+        "zh-CN" | "ja-JP" => &[&[0, 1, 2, 5, 21]],
+        _ => &[&[1], &[0, 2, 5, 21]],
+    }
+}
 
 fn resource_keys(resources: &[&str]) -> BTreeSet<String> {
     let mut keys = BTreeSet::new();
@@ -63,17 +79,15 @@ fn placeable_variables(block: &str) -> (BTreeSet<String>, BTreeSet<String>) {
     (variables, selectors)
 }
 
-fn plural_variants_differ(block: &str) -> bool {
-    let ones: Vec<&str> =
-        block.lines().filter_map(|line| line.trim().strip_prefix("[one]")).map(str::trim).collect();
-    let others: Vec<&str> = block
-        .lines()
-        .filter_map(|line| line.trim().strip_prefix("*[other]"))
-        .map(str::trim)
-        .collect();
-    assert_eq!(ones.len(), others.len(), "unbalanced plural variants: {block}");
-    assert!(!ones.is_empty(), "no [one] variant: {block}");
-    ones.iter().zip(&others).any(|(one, other)| one != other)
+#[test]
+fn language_table_is_consistent() {
+    let mut prefixes = BTreeSet::new();
+    for language in LANGUAGES {
+        assert!(language.tag.starts_with(language.prefix), "{}", language.tag);
+        assert!(prefixes.insert(language.prefix), "duplicate prefix {}", language.prefix);
+        assert_eq!(super::language_choice(language.tag), language.tag);
+        assert_eq!(language.resources.is_empty(), language.tag == "en-US", "{}", language.tag);
+    }
 }
 
 #[test]
@@ -123,14 +137,20 @@ fn swedish_overrides_english() {
 }
 
 #[test]
-fn saved_names_both_locales() {
+fn saved_names_every_locale() {
     let mut args = fluent::FluentArgs::new();
     args.set("number", "1234");
-    for (locale, playlist, style) in [
+    let cases = [
         ("en-US", "Playlist 1234", "Style 1234"),
         ("sv-SE", "Spellista 1234", "Stil 1234"),
         ("es-ES", "Lista 1234", "Estilo 1234"),
-    ] {
+        ("pt-BR", "Playlist 1234", "Estilo 1234"),
+        ("ru-RU", "Плейлист 1234", "Стиль 1234"),
+        ("zh-CN", "播放列表 1234", "样式 1234"),
+        ("ja-JP", "プレイリスト 1234", "スタイル 1234"),
+    ];
+    assert_eq!(cases.len(), LANGUAGES.len());
+    for (locale, playlist, style) in cases {
         let catalog = Catalog::for_locale(locale);
         assert_eq!(catalog.format("playlists-generated-name", Some(&args)), playlist);
         assert_eq!(catalog.format("settings-selector-preset-generated-name", Some(&args)), style);
@@ -140,26 +160,31 @@ fn saved_names_both_locales() {
 #[test]
 fn locale_keys_match() {
     let english = resource_keys(EN_US_RESOURCES);
-    let swedish = resource_keys(SV_SE_RESOURCES);
-    let spanish = resource_keys(ES_ES_RESOURCES);
-    assert_eq!(english, swedish);
-    assert_eq!(english, spanish);
+    for (tag, resources) in locales() {
+        let keys = resource_keys(resources);
+        let missing: Vec<_> = english.difference(&keys).collect();
+        let extra: Vec<_> = keys.difference(&english).collect();
+        assert!(
+            missing.is_empty() && extra.is_empty(),
+            "{tag} missing {missing:?} extra {extra:?}"
+        );
+    }
 }
 
 #[test]
 fn retired_brand_name_absent() {
-    for resources in [EN_US_RESOURCES, SV_SE_RESOURCES, ES_ES_RESOURCES] {
+    for (tag, resources) in locales() {
         for (key, block) in message_blocks(resources) {
-            assert!(!block.to_ascii_lowercase().contains("folio"), "{key}");
+            assert!(!block.to_ascii_lowercase().contains("folio"), "{tag} {key}");
         }
     }
 }
 
 #[test]
-fn messages_format_both_locales() {
+fn messages_format_every_locale() {
     let keys = resource_keys(EN_US_RESOURCES);
     let mut names = BTreeSet::new();
-    for resources in [EN_US_RESOURCES, SV_SE_RESOURCES, ES_ES_RESOURCES] {
+    for (_, resources) in locales() {
         for (_, block) in message_blocks(resources) {
             names.extend(placeable_variables(&block).0);
         }
@@ -169,49 +194,67 @@ fn messages_format_both_locales() {
     for name in &names {
         args.set(name.as_str(), 2);
     }
-    for locale in ["en-US", "sv-SE", "es-ES"] {
-        let catalog = Catalog::for_locale(locale);
+    for (tag, _) in locales() {
+        let catalog = Catalog::for_locale(tag);
         for key in &keys {
-            assert!(!catalog.format(key, Some(&args)).is_empty(), "{locale} {key}");
+            assert!(!catalog.format(key, Some(&args)).is_empty(), "{tag} {key}");
         }
     }
 }
 
 #[test]
-fn count_selector_singular() {
-    for (locale, resources) in
-        [("en-US", EN_US_RESOURCES), ("sv-SE", SV_SE_RESOURCES), ("es-ES", ES_ES_RESOURCES)]
-    {
-        let catalog = Catalog::for_locale(locale);
-        let mut selector_keys = 0;
-        for (key, block) in message_blocks(resources) {
-            let (variables, selectors) = placeable_variables(&block);
-            if selectors.is_empty() {
-                continue;
-            }
-            selector_keys += 1;
+fn plural_variants_follow_cldr_categories() {
+    let selector_keys: Vec<(String, BTreeSet<String>, BTreeSet<String>)> =
+        message_blocks(EN_US_RESOURCES)
+            .into_iter()
+            .filter_map(|(key, block)| {
+                let (variables, selectors) = placeable_variables(&block);
+                (!selectors.is_empty()).then_some((key, variables, selectors))
+            })
+            .collect();
+    assert!(selector_keys.len() >= 16, "{} selectors", selector_keys.len());
+    for (tag, _) in locales() {
+        let catalog = Catalog::for_locale(tag);
+        let categories = plural_categories(tag);
+        let mut distinguishing = 0;
+        for (key, variables, selectors) in &selector_keys {
             let render = |count: i64| {
                 let mut args = fluent::FluentArgs::new();
-                for name in &variables {
+                for name in variables {
                     if selectors.contains(name) {
                         args.set(name.as_str(), count);
                     } else {
                         args.set(name.as_str(), "x");
                     }
                 }
-                catalog.format(&key, Some(&args))
+                catalog.format(key, Some(&args)).replace(&count.to_string(), "#")
             };
-            let zero = render(0).replace('0', "#");
-            let one = render(1).replace('1', "#");
-            let two = render(2).replace('2', "#");
-            assert_eq!(zero, two, "{locale} {key} zero");
-            if plural_variants_differ(&block) {
-                assert_ne!(one, two, "{locale} {key} one");
-            } else {
-                assert_eq!(one, two, "{locale} {key} same");
+            let rendered: Vec<Vec<String>> = categories
+                .iter()
+                .map(|samples| samples.iter().map(|&count| render(count)).collect())
+                .collect();
+            let shows_count = rendered.iter().flatten().any(|text| text.contains('#'));
+            for (samples, texts) in categories.iter().zip(&rendered) {
+                assert!(
+                    texts.iter().all(|text| text == &texts[0]),
+                    "{tag} {key} {samples:?}: {texts:?}"
+                );
+                if samples.len() > 1 && shows_count {
+                    assert!(
+                        texts[0].contains('#'),
+                        "{tag} {key} {samples:?} hides the count: {}",
+                        texts[0]
+                    );
+                }
+            }
+            let distinct: BTreeSet<&String> = rendered.iter().map(|texts| &texts[0]).collect();
+            if distinct.len() == categories.len() {
+                distinguishing += 1;
             }
         }
-        assert!(selector_keys >= 16, "{locale}: {selector_keys} selectors");
+        if categories.len() > 1 {
+            assert!(distinguishing > 0, "{tag} never distinguishes its plural categories");
+        }
     }
 }
 
@@ -268,6 +311,7 @@ fn source_lookups_resolve() {
         literal_keys_after(&source, "tr_args!(", &mut used);
         if path.starts_with(concat!(env!("CARGO_MANIFEST_DIR"), "/src/i18n")) {
             literal_keys_after(&source, ".format(", &mut used);
+            literal_keys_after(&source, "label: ", &mut used);
         }
         for key in used {
             if !english.contains(&key) {
@@ -390,6 +434,12 @@ fn locale_environment_respects_overrides_and_message_priority() {
         ([Some("de"), None, None, Some("es"), None], "en-US"),
         ([Some(" "), Some(""), None, Some("es"), None], "es-ES"),
         ([None, None, None, Some("estonian"), None], "en-US"),
+        ([None, None, None, Some("pt_BR.UTF-8"), None], "pt-BR"),
+        ([None, None, None, Some("en_US.UTF-8"), Some("ja:en")], "ja-JP"),
+        ([None, None, Some("ru_RU.UTF-8"), Some("zh_CN.UTF-8"), None], "ru-RU"),
+        ([Some("zh_CN.UTF-8"), None, None, Some("ru"), None], "zh-CN"),
+        ([None, None, None, Some("zh_TW.UTF-8"), None], "en-US"),
+        ([None, None, None, Some("en_US.UTF-8"), Some("zh_HK:ja")], "ja-JP"),
     ];
     for (values, expected) in cases {
         assert_eq!(super::selected_locale(values), expected, "{values:?}");
@@ -406,8 +456,35 @@ fn spanish_overrides_english_and_accepts_regional_locales() {
 }
 
 #[test]
+fn added_locales_override_english_and_accept_regional_variants() {
+    for (requested, expected) in [
+        ("pt_BR.UTF-8", "Pausar"),
+        ("pt-PT", "Pausar"),
+        ("ru_RU.UTF-8", "Пауза"),
+        ("RU", "Пауза"),
+        ("zh_CN.UTF-8", "暂停"),
+        ("zh-SG", "暂停"),
+        ("ja_JP.UTF-8", "一時停止"),
+        ("ja", "一時停止"),
+    ] {
+        let catalog = Catalog::for_locale(requested);
+        assert_eq!(catalog.format("filter-bar-pause", None), expected, "{requested}");
+    }
+}
+
+#[test]
 fn static_text_is_cached_per_language() {
-    for (locale, expected) in [("en-US", "Done"), ("sv-SE", "Klar"), ("es-ES", "Hecho")] {
+    let cases = [
+        ("en-US", "Done"),
+        ("sv-SE", "Klar"),
+        ("es-ES", "Hecho"),
+        ("pt-BR", "Concluído"),
+        ("ru-RU", "Готово"),
+        ("zh-CN", "完成"),
+        ("ja-JP", "完了"),
+    ];
+    assert_eq!(cases.len(), LANGUAGES.len());
+    for (locale, expected) in cases {
         let catalog = Catalog::for_locale(locale);
         let first = catalog.text("tags-done");
         assert_eq!(first, expected);
@@ -424,9 +501,20 @@ fn saved_language_choices_normalize_to_supported_options() {
         ("auto", "auto"),
         ("", "auto"),
         ("de-DE", "auto"),
+        ("fr-FR", "auto"),
         ("en", "en-US"),
         ("sv_SE.UTF-8", "sv-SE"),
         (" ES_mx ", "es-ES"),
+        ("pt_BR.UTF-8", "pt-BR"),
+        (" ru ", "ru-RU"),
+        ("zh-CN", "zh-CN"),
+        ("zh_SG.UTF-8", "zh-CN"),
+        ("zh-Hans-HK", "zh-CN"),
+        ("zh_TW.UTF-8", "auto"),
+        ("zh-Hant", "auto"),
+        ("zh_HK", "auto"),
+        ("zh_MO.UTF-8", "auto"),
+        ("ja_JP.UTF-8", "ja-JP"),
     ] {
         assert_eq!(super::language_choice(requested), expected);
     }

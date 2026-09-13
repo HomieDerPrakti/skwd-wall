@@ -21,6 +21,15 @@ settings-library-watch-recovered-desc = Den inbyggda bevakaren och dess överlä
 settings-library-watch-native-label = Inbyggd filbevakning
 settings-library-watch-native-desc = Filsystemshändelser är aktiva för alla biblioteksmappar. Reservavläsningen vilar.
 settings-library-watch-convergence-never = Inte slutförd ännu
-settings-library-watch-convergence-seconds = för { $value } sekunder sedan
-settings-library-watch-convergence-minutes = för { $value } minuter sedan
-settings-library-watch-convergence-hours = för { $value } timmar sedan
+settings-library-watch-convergence-seconds = { $value ->
+    [one] för { $value } sekund sedan
+   *[other] för { $value } sekunder sedan
+    }
+settings-library-watch-convergence-minutes = { $value ->
+    [one] för { $value } minut sedan
+   *[other] för { $value } minuter sedan
+    }
+settings-library-watch-convergence-hours = { $value ->
+    [one] för { $value } timme sedan
+   *[other] för { $value } timmar sedan
+    }

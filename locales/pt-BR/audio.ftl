@@ -1,0 +1,49 @@
+audio-masthead = Áudio / mixer
+audio-index-title = Áudio
+audio-index-desc = Pause papéis de parede por tela. Telas que mostram a mesma fonte compartilham volume e mudo.
+audio-detecting-outputs = Detectando saídas
+audio-state-sound = Som
+audio-state-muted = Mudo
+audio-state-none = Sem áudio
+audio-shared-outputs = Saídas compartilhadas
+audio-live-mix = Áudio atual
+audio-live-mix-summary = { $audible } tocando · { $available } com áudio
+audio-kind-video = Papel de parede em vídeo
+audio-kind-we = Cena do Wallpaper Engine
+audio-kind-static = Papel de parede estático
+audio-kind-none = Nenhuma fonte de papel de parede
+audio-row-sound = ◆  Som
+audio-row-muted = ◇  Mudo
+audio-row-none = -  Sem áudio
+audio-linked-source = Fonte vinculada
+audio-independent-source = Fonte independente
+audio-channel-label = Áudio
+audio-no-channel = Este papel de parede não expõe um canal de áudio.
+audio-outputs-kicker = Áudio / telas
+audio-mixer-heading = Mixer de papéis de parede
+audio-mixer-desc = Pause cada tela de forma independente. Volume e mudo continuam vinculados em papéis de parede compartilhados.
+audio-outputs-summary =
+    { $total } { $total ->
+        [one] saída
+       *[other] saídas
+    } · { $available } com áudio · { $sounding } tocando
+audio-output-channels = Canais de saída
+audio-output-channels-desc = Canais sem som ficam escuros. Telas que mostram a mesma fonte compartilham volume e mudo.
+audio-looking-displays = Procurando telas
+audio-looking-displays-desc = Os controles de áudio aparecerão quando o serviço de papel de parede informar as telas.
+audio-live-state = Estado atual
+audio-live-none = Nenhum áudio de papel de parede está tocando agora.
+audio-live-playing = Os canais destacados estão tocando áudio.
+audio-close-mixer = Fechar mixer
+audio-source-video = Vídeo
+audio-source-wallpaper-engine = Wallpaper Engine
+audio-source-we-id = Wallpaper Engine ({ $id })
+audio-source-static-image = Imagem estática
+audio-wallpaper-label = Papel de parede
+audio-pause-wallpaper = Pausar papel de parede
+audio-resume-wallpaper = Retomar papel de parede
+audio-wallpaper-paused = Pausado manualmente
+audio-wallpaper-held = Pausado por outra regra
+audio-wallpaper-playing = Tocando
+audio-state-paused = Pausado
+audio-playback-error = Não foi possível alterar a reprodução do papel de parede: { $error }

@@ -1,0 +1,12 @@
+settings-launch-launch-card = 起動
+settings-launch-launch-card-desc = ピッカーは約 150 ms で起動し、閉じると完全に終了します。これらの設定は起動時の表示方法だけを変更します。
+settings-launch-animation-label = アニメーション
+settings-launch-animation-desc = 「なし」は準備ができ次第ピッカーを表示し、最も高速です。「フェード」は不透明度のみを変え、「ライズ」と「ズーム」は動きを加えます。
+settings-launch-animation-none = なし
+settings-launch-animation-fade = フェード
+settings-launch-animation-rise = ライズ
+settings-launch-animation-zoom = ズーム
+settings-launch-motion-label = モーション
+settings-launch-motion-desc = ピッカー UI 共通のテンポです。「速い」「標準」「遅い」の重みはモーション設定で変更します。
+settings-launch-fade-from-label = フェード開始値
+settings-launch-fade-from-desc = 表示開始時の不透明度（パーセント）。0 は完全に透明な状態から現れます。

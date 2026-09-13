@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = 调整此选择器样式及其筛选栏和搜索面板的位置，不影响其他样式。
+settings-position-slices-card = 切片选择器
+settings-position-hex-card = 几何选择器
+settings-position-wall-card = 墙面选择器
+settings-position-sandy-card = 流沙选择器
+settings-position-hand-card = 手牌选择器
+settings-position-horizontal-label = 水平偏移
+settings-position-horizontal-desc = 按屏幕半宽的百分比向左或向右移动选择器。正值向右移动。
+settings-position-vertical-label = 垂直偏移
+settings-position-vertical-desc = 按屏幕半高的百分比向上或向下移动选择器。正值向下移动。

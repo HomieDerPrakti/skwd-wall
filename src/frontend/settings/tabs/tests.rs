@@ -1151,7 +1151,9 @@ fn performance_lists_detected_devices_and_retains_unavailable_selection() {
 
 #[test]
 fn language_tab_lists_supported_languages_and_system_default() {
-    for (saved, expected) in [("auto", "auto"), ("sv", "sv-SE"), ("es-ES", "es-ES")] {
+    for (saved, expected) in
+        [("auto", "auto"), ("sv", "sv-SE"), ("es-ES", "es-ES"), ("ja_JP.UTF-8", "ja-JP")]
+    {
         let cfg = cfg().with_text(keys::general::LANGUAGE, saved);
         assert!(
             crate::frontend::settings::visible_tabs(&cfg).iter().any(|(id, _)| *id == "language")
@@ -1165,11 +1167,20 @@ fn language_tab_lists_supported_languages_and_system_default() {
         assert_eq!(current, expected);
         assert_eq!(
             options.iter().map(|(id, _)| id.as_str()).collect::<Vec<_>>(),
-            ["auto", "en-US", "sv-SE", "es-ES"]
+            ["auto", "en-US", "sv-SE", "es-ES", "pt-BR", "ru-RU", "zh-CN", "ja-JP"]
         );
-        assert_eq!(options[1].1, "English");
-        assert_eq!(options[2].1, "Svenska");
-        assert_eq!(options[3].1, "Español");
+        assert_eq!(
+            options[1..].iter().map(|(_, label)| label.as_str()).collect::<Vec<_>>(),
+            [
+                "English",
+                "Svenska",
+                "Español",
+                "Português (Brasil)",
+                "Русский",
+                "简体中文",
+                "日本語"
+            ]
+        );
     }
 }
 

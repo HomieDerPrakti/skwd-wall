@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = Use uma imagem, um vídeo ou uma cena do Wallpaper Engine atrás da visão geral do niri. Desfoque e escureça o fundo independentemente do papel de parede da área de trabalho.
+settings-niri-show-label = Mostrar papel de parede na visão geral
+settings-niri-show-desc = Mostra o fundo separado da visão geral. Fundos animados ficam pausados enquanto a visão geral está fechada.
+settings-niri-blur-label = Desfocar o fundo
+settings-niri-blur-desc = Desfoca a cópia da visão geral e mantém o papel de parede da área de trabalho nítido.
+settings-niri-blur-radius-label = Raio do desfoque
+settings-niri-blur-radius-desc = Raio do desfoque gaussiano aplicado à cópia. Valores maiores deixam mais suave.
+settings-niri-follow-label = Sempre usar o papel de parede atual
+settings-niri-follow-desc = Acompanha o papel de parede que você aplica. Desative para escolher um fundo separado abaixo.
+settings-niri-image-label = Origem do fundo
+settings-niri-image-desc = Escolha Usar na visão geral em um papel de parede ou informe o caminho de uma imagem, um vídeo ou um projeto do Wallpaper Engine. Deixe vazio para usar o último papel de parede.
+settings-niri-auto-theme-label = Aplicar tema automaticamente ao fundo
+settings-niri-auto-theme-desc = Recolore imagens estáticas com uma paleta de tema do gowall. Vídeos e cenas do Wallpaper Engine mantêm as cores originais.
+settings-niri-theme-label = Tema do fundo
+settings-niri-theme-desc = Paleta usada ao aplicar tema automaticamente ao fundo.
+settings-niri-dim-label = Escurecimento do fundo
+settings-niri-dim-desc = Escurece o fundo da visão geral. 0 = nenhum, 100 = preto.
+settings-niri-rule-label = layer-rule do niri necessária
+settings-niri-rule-desc = Cole isto no seu ~/.config/niri/config.kdl e depois recarregue o niri.
+settings-niri-refresh-label = Atualizar o fundo agora
+settings-niri-refresh-desc = Recarrega a origem selecionada com as configurações atuais de desfoque, escurecimento e tema.
+settings-niri-refresh-action = Atualizar
+settings-niri-copy-label = Copiar layer-rule para a área de transferência
+settings-niri-copy-desc = Copia o trecho acima para a configuração do niri.
+settings-niri-copy-action = Copiar
