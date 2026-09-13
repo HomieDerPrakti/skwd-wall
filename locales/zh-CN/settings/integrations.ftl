@@ -25,6 +25,9 @@ settings-integrations-noctalia-hover-desc = 悬停在壁纸上会临时为 Nocta
 settings-integrations-noctalia-bin-label = Noctalia 可执行文件
 settings-integrations-noctalia-bin-desc = 如果 noctalia 可执行文件不在 PATH 中，请填写其路径。
 settings-integrations-dms-card = Dank Material Shell
-settings-integrations-dms-card-desc = 当 DMS 控制颜色时，skwd-wall 会将其 Matugen 配色方案写入 dms-colors.json。DMS 必须使用 Auto (wallpaper) 主题。
+settings-integrations-dms-card-desc = DMS 必须使用 Auto（壁纸）主题才能接收 Skwd 的配色。
 settings-integrations-dms-hover-label = 在 DMS 中悬停预览颜色
 settings-integrations-dms-hover-desc = 悬停在壁纸上会临时重写 dms-colors.json。悬停结束后恢复原始颜色。
+
+settings-integrations-follow-label = 跟随 Skwd 配色
+settings-integrations-follow-desc = 在 Skwd 控制配色时跟随其颜色。关闭后保留当前颜色。

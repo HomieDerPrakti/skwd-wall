@@ -152,6 +152,15 @@ fn control_search_text(control: &Control) -> String {
                 tr("settings-search-control-toggle-off")
             }
         ),
+        Control::ToggleAction { id, value } => format!(
+            "{id:?} {} {}",
+            tr("settings-search-control-toggle"),
+            if *value {
+                tr("settings-search-control-toggle-on")
+            } else {
+                tr("settings-search-control-toggle-off")
+            }
+        ),
         Control::Number { key, path, unit } => {
             format!("{key} {path} {unit} {}", tr("settings-search-control-number"))
         }
@@ -226,6 +235,11 @@ fn control_value(control: &Control, cfg: &dyn SettingsSource) -> String {
                 String::from(tr("settings-control-disabled"))
             }
         }
+        Control::ToggleAction { value, .. } => String::from(if *value {
+            tr("settings-app-themes-on")
+        } else {
+            tr("settings-app-themes-off")
+        }),
         Control::Number { path, unit, .. } => {
             let value = crate::contracts::picker::format_config_number(cfg.number(path));
             if unit.is_empty() { value } else { format!("{value} {unit}") }

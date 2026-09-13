@@ -1,5 +1,6 @@
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ActionId {
+    SetThemeTarget(&'static str, bool),
     RefreshAppThemes,
     SetAppTheme(u8, bool),
     AdoptAppTheme(u8),

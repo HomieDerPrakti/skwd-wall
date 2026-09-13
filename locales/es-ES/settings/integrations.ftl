@@ -25,6 +25,9 @@ settings-integrations-noctalia-hover-desc = Pasar por encima de un fondo recolor
 settings-integrations-noctalia-bin-label = Binario de Noctalia
 settings-integrations-noctalia-bin-desc = Ruta al binario noctalia si no está en PATH.
 settings-integrations-dms-card = Dank Material Shell
-settings-integrations-dms-card-desc = Cuando DMS controla el color, skwd-wall escribe su esquema Matugen en dms-colors.json. DMS debe usar el tema Auto (fondo).
+settings-integrations-dms-card-desc = DMS debe usar Auto (fondo de pantalla) para recibir los colores de Skwd.
 settings-integrations-dms-hover-label = Vista previa de color al pasar por encima en DMS
 settings-integrations-dms-hover-desc = Pasar por encima de un fondo reescribe temporalmente dms-colors.json. Los colores originales vuelven al salir.
+
+settings-integrations-follow-label = Seguir los colores de Skwd
+settings-integrations-follow-desc = Sigue a Skwd cuando controla el color. Desactivado conserva los colores actuales.

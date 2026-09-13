@@ -19,7 +19,9 @@ fn control_ids(control: &Control) -> Vec<String> {
         Control::MotionWeights { weights } => {
             weights.iter().map(|(_, path, _)| format!("path:{path}")).collect()
         }
-        Control::ActionBtn { id, .. } => vec![format!("action:{id:?}")],
+        Control::ActionBtn { id, .. } | Control::ToggleAction { id, .. } => {
+            vec![format!("action:{id:?}")]
+        }
         Control::Presets { mode, .. } => vec![format!("presets:{mode}")],
         Control::Details { rows, .. } | Control::StackBar { rows, .. } => {
             rows.iter().flat_map(|row| control_ids(&row.control)).collect()
@@ -160,7 +162,8 @@ fn controls_match_schema() {
                         }
                         continue;
                     }
-                    Control::ActionBtn { .. }
+                    Control::ToggleAction { .. }
+                    | Control::ActionBtn { .. }
                     | Control::Presets { .. }
                     | Control::Details { .. }
                     | Control::StackBar { .. }
@@ -290,7 +293,8 @@ fn controls_emit_valid_values() {
                             .iter()
                             .map(|(_, path, _)| (path.as_str(), serde_json::json!(1)))
                             .collect(),
-                        Control::ActionBtn { .. }
+                        Control::ToggleAction { .. }
+                        | Control::ActionBtn { .. }
                         | Control::Presets { .. }
                         | Control::Details { .. }
                         | Control::StackBar { .. }

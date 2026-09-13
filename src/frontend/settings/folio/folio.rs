@@ -1359,11 +1359,21 @@ fn compact_action_field(
     fade: f32,
 ) -> Element<'_, Message> {
     let Row { title, desc, control } = setting;
-    let Control::Toggle { path, value } = control else {
-        unreachable!("compact action field requires a toggle");
+    let (value, message, enabled, disabled) = match control {
+        Control::Toggle { path, value } => (
+            value,
+            SettingsMsg::Toggle(path, !value),
+            tr("settings-control-enabled"),
+            tr("settings-control-disabled"),
+        ),
+        Control::ToggleAction { id, value } => (
+            value,
+            SettingsMsg::Run(id),
+            tr("settings-app-themes-on"),
+            tr("settings-app-themes-off"),
+        ),
+        _ => unreachable!("compact action field requires a toggle"),
     };
-    let enabled = tr("settings-control-enabled");
-    let disabled = tr("settings-control-disabled");
     let action_scale = scale * 0.82;
     let action_width = crate::frontend::ui::folio_action_width(enabled, action_scale)
         .max(crate::frontend::ui::folio_action_width(disabled, action_scale));
@@ -1372,7 +1382,7 @@ fn compact_action_field(
     let action = crate::frontend::ui::folio_action(
         if value { enabled } else { disabled },
         value,
-        Some(Message::Settings(SettingsMsg::Toggle(path, !value))),
+        Some(Message::Settings(message)),
         Length::Fixed(action_width),
         action_scale,
         palette,

@@ -25,6 +25,9 @@ settings-integrations-noctalia-hover-desc = Hovering a wallpaper temporarily rec
 settings-integrations-noctalia-bin-label = Noctalia binary
 settings-integrations-noctalia-bin-desc = Path to the noctalia binary if it is not on PATH.
 settings-integrations-dms-card = Dank Material Shell
-settings-integrations-dms-card-desc = When DMS controls colour, skwd-wall writes its Matugen scheme to dms-colors.json. DMS must use the Auto (wallpaper) theme.
+settings-integrations-dms-card-desc = DMS must use Auto (wallpaper) to receive Skwd’s colours.
 settings-integrations-dms-hover-label = Hover colour preview in DMS
 settings-integrations-dms-hover-desc = Hovering a wallpaper temporarily rewrites dms-colors.json. The original colours return when the hover ends.
+
+settings-integrations-follow-label = Follow Skwd colours
+settings-integrations-follow-desc = Follow Skwd while it controls colour. Off keeps the current colours.

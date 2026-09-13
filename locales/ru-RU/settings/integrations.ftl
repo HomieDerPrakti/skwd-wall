@@ -25,6 +25,9 @@ settings-integrations-noctalia-hover-desc = Наведение на обои в�
 settings-integrations-noctalia-bin-label = Исполняемый файл Noctalia
 settings-integrations-noctalia-bin-desc = Путь к исполняемому файлу noctalia, если его нет в PATH.
 settings-integrations-dms-card = Dank Material Shell
-settings-integrations-dms-card-desc = Когда цветами управляет DMS, skwd-wall записывает свою схему Matugen в dms-colors.json. В DMS должна быть выбрана тема Auto (wallpaper).
+settings-integrations-dms-card-desc = Для получения цветов Skwd в DMS выберите Auto (обои).
 settings-integrations-dms-hover-label = Предпросмотр цветов в DMS при наведении
 settings-integrations-dms-hover-desc = Наведение на обои временно перезаписывает dms-colors.json. Когда курсор уходит, исходные цвета возвращаются.
+
+settings-integrations-follow-label = Следовать цветам Skwd
+settings-integrations-follow-desc = Следовать Skwd, когда он управляет цветами. Выключение сохраняет текущие цвета.

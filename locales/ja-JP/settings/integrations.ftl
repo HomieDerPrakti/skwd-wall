@@ -25,6 +25,9 @@ settings-integrations-noctalia-hover-desc = 壁紙にカーソルを合わせる
 settings-integrations-noctalia-bin-label = Noctalia の実行ファイル
 settings-integrations-noctalia-bin-desc = noctalia の実行ファイルが PATH にない場合のパスです。
 settings-integrations-dms-card = Dank Material Shell
-settings-integrations-dms-card-desc = DMS が色を管理している場合、skwd-wall は Matugen の配色を dms-colors.json に書き込みます。DMS では Auto (wallpaper) テーマを使う必要があります。
+settings-integrations-dms-card-desc = Skwd の配色を受け取るには、DMS で Auto（壁紙）テーマを使用してください。
 settings-integrations-dms-hover-label = DMS でホバー時に色をプレビュー
 settings-integrations-dms-hover-desc = 壁紙にカーソルを合わせると、dms-colors.json が一時的に書き換えられます。カーソルを離すと元の色に戻ります。
+
+settings-integrations-follow-label = Skwd の配色に合わせる
+settings-integrations-follow-desc = Skwd が配色を制御している間はその色に合わせます。オフにすると現在の色を保持します。

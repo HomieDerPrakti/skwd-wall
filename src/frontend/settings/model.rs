@@ -9,6 +9,10 @@ pub enum Control {
         path: String,
         value: bool,
     },
+    ToggleAction {
+        id: ActionId,
+        value: bool,
+    },
     Number {
         key: String,
         path: String,
@@ -85,7 +89,7 @@ impl Control {
     }
 
     pub fn is_compact_action(&self) -> bool {
-        matches!(self, Self::Toggle { .. })
+        matches!(self, Self::Toggle { .. } | Self::ToggleAction { .. })
     }
 
     pub fn is_compact_field(&self) -> bool {

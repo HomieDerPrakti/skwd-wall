@@ -1268,3 +1268,29 @@ fn hand_mode_exposes_every_hand_knob_in_the_picker_page() {
         assert!(paths.iter().any(|path| path == key), "missing {key}");
     }
 }
+
+#[test]
+fn shell_follow_switches_reflect_independent_targets() {
+    for targets in [vec![], vec!["noctalia"], vec!["dms"], vec!["noctalia", "dms"]] {
+        let mut source = cfg().with_array_len(keys::theme::TARGETS, targets.len());
+        for (index, provider) in targets.iter().enumerate() {
+            source = source.with_text(&format!("{}.{index}", keys::theme::TARGETS), provider);
+        }
+        let cards = build_tab("integrations", &source, &[], &[], "", &[]);
+        let switches: Vec<_> = cards
+            .iter()
+            .flat_map(|(_, rows)| rows)
+            .filter_map(|row| match row.control {
+                Control::ToggleAction { id: ActionId::SetThemeTarget(provider, next), value } => {
+                    assert_eq!(row.title, crate::i18n::tr("settings-integrations-follow-label"));
+                    assert_eq!(value, targets.contains(&provider));
+                    assert_eq!(next, !value);
+                    assert!(row.control.is_compact_action());
+                    Some(provider)
+                }
+                _ => None,
+            })
+            .collect();
+        assert_eq!(switches, ["noctalia", "dms"]);
+    }
+}

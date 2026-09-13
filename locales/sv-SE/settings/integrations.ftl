@@ -25,6 +25,9 @@ settings-integrations-noctalia-hover-desc = Att hovra över en bakgrundsbild fä
 settings-integrations-noctalia-bin-label = Noctalia-binär
 settings-integrations-noctalia-bin-desc = Sökväg till noctalia-binären om den inte finns på PATH.
 settings-integrations-dms-card = Dank Material Shell
-settings-integrations-dms-card-desc = När DMS styr färgerna skriver skwd-wall sitt Matugen-schema till dms-colors.json. DMS måste använda temat Auto (bakgrundsbild).
+settings-integrations-dms-card-desc = DMS måste använda Auto (bakgrundsbild) för att ta emot Skwds färger.
 settings-integrations-dms-hover-label = Färgförhandsvisning vid hovring i DMS
 settings-integrations-dms-hover-desc = Att hovra över en bakgrundsbild skriver tillfälligt om dms-colors.json. Originalfärgerna återkommer när hovringen slutar.
+
+settings-integrations-follow-label = Följ Skwds färger
+settings-integrations-follow-desc = Följ Skwd när det styr färgerna. Av behåller de aktuella färgerna.

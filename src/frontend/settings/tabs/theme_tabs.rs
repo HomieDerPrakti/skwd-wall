@@ -333,6 +333,16 @@ pub(super) fn tab_theme(builder: &mut Builder<'_>, backends: &[String]) {
     }
 }
 
+fn theme_target(builder: &mut Builder<'_>, provider: &'static str) {
+    let value = (0..builder.cfg.array_len(keys::theme::TARGETS))
+        .any(|index| builder.cfg.text(&format!("{}.{index}", keys::theme::TARGETS)) == provider);
+    builder.row(
+        tr("settings-integrations-follow-label"),
+        tr("settings-integrations-follow-desc"),
+        Control::ToggleAction { id: ActionId::SetThemeTarget(provider, !value), value },
+    );
+}
+
 pub(super) fn tab_integrations(builder: &mut Builder<'_>) {
     let cfg = builder.cfg;
     let lock_mode = cfg.text(keys::plasma::LOCK_SCREEN_MODE);
@@ -373,6 +383,7 @@ pub(super) fn tab_integrations(builder: &mut Builder<'_>) {
         tr("settings-integrations-noctalia-card"),
         tr("settings-integrations-noctalia-card-desc"),
     );
+    theme_target(builder, "noctalia");
     builder.dropdown(
         tr("settings-integrations-noctalia-mode-label"),
         tr("settings-integrations-noctalia-mode-desc"),
@@ -397,6 +408,7 @@ pub(super) fn tab_integrations(builder: &mut Builder<'_>) {
         "noctalia",
     );
     builder.card(tr("settings-integrations-dms-card"), tr("settings-integrations-dms-card-desc"));
+    theme_target(builder, "dms");
     builder.toggle(
         tr("settings-integrations-dms-hover-label"),
         tr("settings-integrations-dms-hover-desc"),

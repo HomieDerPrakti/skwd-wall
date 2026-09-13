@@ -842,3 +842,55 @@ fn hard_overlay_releases_inset() {
     let _ = update(&mut app, Message::Noop);
     assert!(app.panels.settings.inset_target > 0.0);
 }
+
+#[test]
+fn shell_follow_switches_preserve_driver_and_persist_before_retheme() {
+    use crate::frontend::settings::{ActionId, SettingsMsg};
+    for authority in ["skwd", "noctalia", "dms"] {
+        let directory = tempfile::tempdir().unwrap();
+        let config_path = directory.path().join("config.json");
+        let mut config = Config::from_data(json!({"theme": {
+            "authority": authority, "targets": ["caelestia"], "policy": "wallpaper"
+        }}));
+        config.config_path.clone_from(&config_path);
+        config.persist();
+        let observed = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let observed_at_call = std::sync::Arc::clone(&observed);
+        let mut app = App::with_config_using(config, move |_| {
+            crate::infrastructure::ipc::DaemonClient::recording_with_observer(move |method, _| {
+                if method == "wall.retheme" {
+                    let root: Value =
+                        serde_json::from_str(&std::fs::read_to_string(&config_path).unwrap())
+                            .unwrap();
+                    observed_at_call.lock().unwrap().push(root["theme"].clone());
+                }
+            })
+        });
+        for (provider, enabled) in [
+            ("noctalia", true),
+            ("noctalia", true),
+            ("dms", true),
+            ("noctalia", false),
+            ("noctalia", false),
+            ("dms", false),
+            ("unknown", true),
+        ] {
+            let _ = update(
+                &mut app,
+                Message::Settings(SettingsMsg::Run(ActionId::SetThemeTarget(provider, enabled))),
+            );
+        }
+        let observed = observed.lock().unwrap();
+        assert_eq!(observed.len(), 4);
+        for (theme, targets) in observed.iter().zip([
+            json!(["caelestia", "noctalia"]),
+            json!(["caelestia", "noctalia", "dms"]),
+            json!(["caelestia", "dms"]),
+            json!(["caelestia"]),
+        ]) {
+            assert_eq!(theme["targets"], targets);
+            assert_eq!(theme["authority"], authority);
+            assert_eq!(theme["policy"], "wallpaper");
+        }
+    }
+}

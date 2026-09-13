@@ -753,7 +753,7 @@ fn activate_settings_control(app: &mut App) -> Task<Message> {
             };
             if disabled.contains(value) { Task::none() } else { settings_pick(app, &path, value) }
         }
-        Control::ActionBtn { id, .. } => settings_run(app, id),
+        Control::ActionBtn { id, .. } | Control::ToggleAction { id, .. } => settings_run(app, id),
         Control::Presets { mode, items } => {
             let Some(choice) = app.panels.settings.focused_choice else {
                 app.panels.settings.focused_choice = Some(
@@ -1093,6 +1093,26 @@ pub(super) fn settings_run(app: &mut App, id: ActionId) -> Task<Message> {
     app.panels.settings.armed = None;
     app.invalidate_settings();
     match id {
+        ActionId::SetThemeTarget(provider, enabled) => {
+            if !matches!(provider, "noctalia" | "dms") {
+                return Task::none();
+            }
+            let mut targets = app.config.array_values(skwd_config::keys::theme::TARGETS);
+            if targets.iter().any(|value| value.as_str() == Some(provider)) == enabled {
+                return Task::none();
+            }
+            targets.retain(|value| value.as_str() != Some(provider));
+            if enabled {
+                targets.push(json!(provider));
+            }
+            super::settings_policy::save_value(
+                app,
+                skwd_config::keys::theme::TARGETS,
+                &json!(targets),
+            );
+            app.init_settings_inputs();
+            app.daemon.client.call("wall.retheme", json!({}));
+        }
         ActionId::RefreshAppThemes => {
             if app.daemon.pending.values().any(|pending| matches!(pending, Pending::AppThemeSet)) {
                 return Task::none();

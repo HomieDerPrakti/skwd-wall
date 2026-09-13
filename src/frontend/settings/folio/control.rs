@@ -363,6 +363,23 @@ pub(super) fn widget<'a>(
                 .max(button_width(tr("settings-control-disabled"), scale)),
             motion,
         ),
+        Control::ToggleAction { id, value } => fixed_button(
+            if value {
+                tr("settings-app-themes-on").into()
+            } else {
+                tr("settings-app-themes-off").into()
+            },
+            value,
+            false,
+            Some(Message::Settings(SettingsMsg::Run(id))),
+            keyboard_focused,
+            scale,
+            palette,
+            fade,
+            button_width(tr("settings-app-themes-on"), scale)
+                .max(button_width(tr("settings-app-themes-off"), scale)),
+            motion,
+        ),
         Control::Number { key, unit, .. } => {
             let value = values.get(&key).map_or("", String::as_str);
             let message_key = key.clone();
