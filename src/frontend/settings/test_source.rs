@@ -17,6 +17,7 @@ pub(crate) struct FakeSettingsSource {
     devices: Vec<crate::contracts::capabilities::GraphicsDevice>,
     niri: bool,
     on_battery: bool,
+    bindings: InputMap,
 }
 
 impl Default for FakeSettingsSource {
@@ -36,6 +37,7 @@ impl Default for FakeSettingsSource {
             devices: Vec::new(),
             niri: false,
             on_battery: false,
+            bindings: InputMap::default(),
         }
     }
 }
@@ -76,6 +78,11 @@ impl FakeSettingsSource {
 
     pub(crate) fn with_saved_theme(mut self, name: &str) -> Self {
         self.saved_themes.push(name.to_string());
+        self
+    }
+
+    pub(crate) fn with_bindings(mut self, bindings: InputMap) -> Self {
+        self.bindings = bindings;
         self
     }
 }
@@ -194,7 +201,7 @@ impl SettingsSource for FakeSettingsSource {
     }
 
     fn bindings(&self) -> InputMap {
-        InputMap::default()
+        self.bindings.clone()
     }
 
     fn graphics_devices(&self) -> Vec<crate::contracts::capabilities::GraphicsDevice> {

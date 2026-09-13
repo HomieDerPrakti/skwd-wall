@@ -93,6 +93,7 @@ pub(crate) fn action_message(action: crate::domain::input::InputAction) -> Messa
         InputAction::SceneProperties => Message::OpenSceneProps,
         InputAction::Settings => Message::ToggleSettings,
         InputAction::Help => Message::ToggleHelp,
+        InputAction::ThemePanel => Message::ToggleThemePanel,
         InputAction::ColorPrev => Message::SetColorFilter(i64::MIN),
         InputAction::ColorNext => Message::SetColorFilter(i64::MAX),
         InputAction::FilterBar => Message::ToggleFilterBar,

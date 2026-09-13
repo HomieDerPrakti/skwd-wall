@@ -249,6 +249,22 @@ fn section(
     }
 }
 
+fn segmented_rows(cards: Vec<(Card, Vec<Row>)>) -> Vec<Row> {
+    let mut rows = Vec::new();
+    for (card, mut segment_rows) in cards {
+        if segment_rows.is_empty() {
+            continue;
+        }
+        rows.push(Row {
+            title: card.title.to_string(),
+            desc: card.subtitle.to_string(),
+            control: Control::Segment,
+        });
+        rows.append(&mut segment_rows);
+    }
+    rows
+}
+
 fn prefixed(mut rows: Vec<Row>, prefix: &str) -> Vec<Row> {
     for row in &mut rows {
         row.title = format!("{prefix} {}", row.title);
@@ -276,7 +292,7 @@ fn compose_picker(
     let mut out = Vec::new();
     let mut general = collect(cfg, |builder| tab_general(builder, themes, outputs));
     let mut selector = collect(cfg, tab_selector);
-    let mut keys = collect(cfg, tab_keybinds);
+    let keys = collect(cfg, tab_keybinds);
 
     let mut general_rows = take_card(&mut general, tr("settings-general-general-card"));
     let mut layout = take_card(&mut selector, tr("settings-selector-layout-card"));
@@ -321,19 +337,11 @@ fn compose_picker(
         tag_panel,
     );
 
-    let mut controls = Vec::new();
-    for title in [
-        tr("settings-keybinds-custom-card"),
-        tr("settings-keybinds-fixed-card"),
-        tr("settings-keybinds-reset-card"),
-    ] {
-        controls.extend(take_card(&mut keys, title));
-    }
     section(
         &mut out,
         tr("settings-section-controls"),
-        tr("settings-keybinds-custom-card-desc"),
-        controls,
+        tr("settings-keybinds-controls-card-desc"),
+        segmented_rows(keys),
     );
     out
 }

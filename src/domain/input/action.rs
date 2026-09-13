@@ -10,6 +10,7 @@ pub enum InputAction {
     Playlists,
     Settings,
     Help,
+    ThemePanel,
     TagCloud,
     TagMode,
     FilterBar,
@@ -27,7 +28,7 @@ pub enum InputAction {
 }
 
 impl InputAction {
-    pub const ALL: [Self; 24] = [
+    pub const ALL: [Self; 25] = [
         Self::Select,
         Self::Apply,
         Self::Flip,
@@ -38,6 +39,7 @@ impl InputAction {
         Self::Playlists,
         Self::Settings,
         Self::Help,
+        Self::ThemePanel,
         Self::TagCloud,
         Self::TagMode,
         Self::FilterBar,
@@ -66,6 +68,7 @@ impl InputAction {
             Self::Playlists => "p",
             Self::Settings => "shift+s",
             Self::Help => "?",
+            Self::ThemePanel => "c",
             Self::TagCloud => "shift+down",
             Self::TagMode => "t",
             Self::FilterBar => "shift+up",

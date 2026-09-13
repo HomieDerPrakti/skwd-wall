@@ -1640,6 +1640,20 @@ fn field<'a>(
         );
     }
     let Row { title, desc, control } = setting;
+    if matches!(control, Control::Segment) {
+        return column![
+            text(title)
+                .font(crate::frontend::ui::UI_FONT)
+                .size(22.0 * legible_type_scale(scale))
+                .color(with_alpha(palette.surface_text, fade)),
+            label(desc, TYPE_SMALL, scale, with_alpha(palette.surface_text, 0.56 * fade))
+                .line_height(iced::widget::text::LineHeight::Relative(1.38)),
+            folio_horizontal_rule(with_alpha(palette.outline, FOLIO_RULE_ALPHA * fade)),
+        ]
+        .spacing(9.0 * scale)
+        .padding(Padding { top: 10.0 * scale, ..Padding::ZERO })
+        .into();
+    }
     if let Control::Details { id, summary, rows } = control {
         let expanded = focus.expanded_details.contains(&id);
         let body = detail_rows(

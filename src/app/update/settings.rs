@@ -408,6 +408,21 @@ fn current_keyboard_control(app: &App) -> Option<Control> {
     pages.get(page)?.get(app.panels.settings.focused_control).map(|row| row.control.clone())
 }
 
+fn settings_control_positions(
+    pages: &[Vec<crate::frontend::settings::Row>],
+) -> Vec<(usize, usize)> {
+    pages
+        .iter()
+        .enumerate()
+        .flat_map(|(page, rows)| {
+            rows.iter()
+                .enumerate()
+                .filter(|(_, row)| row.control.is_focusable())
+                .map(move |(control, _)| (page, control))
+        })
+        .collect()
+}
+
 fn choice_count(control: &Control) -> usize {
     match control {
         Control::Dropdown { options, .. } | Control::Chips { options, .. } => options.len(),
@@ -535,11 +550,10 @@ fn move_settings_control(app: &mut App, delta: isize) -> Task<Message> {
     if pages.is_empty() {
         return Task::none();
     }
-    let mut controls = pages
-        .iter()
-        .enumerate()
-        .flat_map(|(page, rows)| (0..rows.len()).map(move |control| (page, control)));
-    let positions: Vec<(usize, usize)> = controls.by_ref().collect();
+    let positions = settings_control_positions(&pages);
+    if positions.is_empty() {
+        return Task::none();
+    }
     let current = positions
         .iter()
         .position(|&(page, control)| {
@@ -574,24 +588,29 @@ fn select_settings_section(app: &mut App, section: usize) -> Task<Message> {
 
 fn clamp_keyboard_control(app: &mut App) {
     let pages = settings_control_pages(app);
-    if pages.is_empty() {
+    let positions = settings_control_positions(&pages);
+    if positions.is_empty() {
         app.panels.settings.control_page = 0;
         app.panels.settings.focused_control = 0;
         return;
     }
-    app.panels.settings.control_page =
-        app.panels.settings.control_page.min(pages.len().saturating_sub(1));
-    let count = pages[app.panels.settings.control_page].len();
-    app.panels.settings.focused_control =
-        app.panels.settings.focused_control.min(count.saturating_sub(1));
+    let current = (app.panels.settings.control_page, app.panels.settings.focused_control);
+    let (page, control) = positions
+        .iter()
+        .copied()
+        .find(|position| *position >= current)
+        .unwrap_or_else(|| *positions.last().unwrap());
+    app.panels.settings.control_page = page;
+    app.panels.settings.focused_control = control;
 }
 
 fn move_settings_tab_focus(app: &mut App, backwards: bool) {
     let pages = settings_control_pages(app);
+    let positions = settings_control_positions(&pages);
     match app.panels.settings.focus {
         SettingsFocus::Index if backwards => {
-            if let Some((page, controls)) = pages.iter().enumerate().next_back() {
-                focus_keyboard_control(app, page, controls.len().saturating_sub(1));
+            if let Some(&(page, control)) = positions.last() {
+                focus_keyboard_control(app, page, control);
             } else {
                 app.panels.settings.focus = SettingsFocus::Sections;
             }
@@ -599,33 +618,35 @@ fn move_settings_tab_focus(app: &mut App, backwards: bool) {
         SettingsFocus::Index => app.panels.settings.focus = SettingsFocus::Sections,
         SettingsFocus::Sections if backwards => app.panels.settings.focus = SettingsFocus::Index,
         SettingsFocus::Sections => {
-            if pages.is_empty() {
-                app.panels.settings.focus = SettingsFocus::Index;
+            if let Some(&(page, control)) = positions.first() {
+                focus_keyboard_control(app, page, control);
             } else {
-                focus_keyboard_control(app, 0, 0);
+                app.panels.settings.focus = SettingsFocus::Index;
             }
         }
         SettingsFocus::Controls => {
-            if pages.is_empty() {
+            if positions.is_empty() {
                 app.panels.settings.focus =
                     if backwards { SettingsFocus::Sections } else { SettingsFocus::Index };
                 return;
             }
-            let page = app.panels.settings.control_page.min(pages.len() - 1);
-            let control =
-                app.panels.settings.focused_control.min(pages[page].len().saturating_sub(1));
+            let current = positions
+                .iter()
+                .position(|&(page, control)| {
+                    page == app.panels.settings.control_page
+                        && control == app.panels.settings.focused_control
+                })
+                .unwrap_or(0);
             if backwards {
-                if control > 0 {
-                    focus_keyboard_control(app, page, control - 1);
-                } else if page > 0 {
-                    focus_keyboard_control(app, page - 1, pages[page - 1].len().saturating_sub(1));
+                if let Some(&(page, control)) =
+                    current.checked_sub(1).and_then(|i| positions.get(i))
+                {
+                    focus_keyboard_control(app, page, control);
                 } else {
                     app.panels.settings.focus = SettingsFocus::Sections;
                 }
-            } else if control + 1 < pages[page].len() {
-                focus_keyboard_control(app, page, control + 1);
-            } else if page + 1 < pages.len() {
-                focus_keyboard_control(app, page + 1, 0);
+            } else if let Some(&(page, control)) = positions.get(current + 1) {
+                focus_keyboard_control(app, page, control);
             } else {
                 app.panels.settings.focus = SettingsFocus::Index;
             }
@@ -786,7 +807,9 @@ fn activate_settings_control(app: &mut App) -> Task<Message> {
             app.retick();
             Task::none()
         }
-        Control::Static | Control::Code { .. } | Control::Preview => Task::none(),
+        Control::Segment | Control::Static | Control::Code { .. } | Control::Preview => {
+            Task::none()
+        }
     }
 }
 

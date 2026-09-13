@@ -13,6 +13,7 @@ fn key_overrides_decode() {
             "flip": "banana+q",
             "effects": "ctrl+e",
             "select": "middle-click",
+            "themePanel": "ctrl+c",
         }
     }));
     let bindings = load_bindings(&config);
@@ -31,5 +32,9 @@ fn key_overrides_decode() {
     assert_eq!(
         bindings.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Middle }),
         Some(InputAction::Select)
+    );
+    assert_eq!(
+        bindings.lookup_key(&KeyId::Char("c".into()), Mods::new(true, false, false)),
+        Some(InputAction::ThemePanel)
     );
 }

@@ -129,6 +129,8 @@ pub fn build_bar_with_tasks(
         width = content_w.max(1.0);
     }
 
+    let primary_len = items.len();
+    let primary_width = width;
     let mut swatch_at = theme_rows(
         &mut items,
         theme,
@@ -140,6 +142,10 @@ pub fn build_bar_with_tasks(
         &mut rows_h,
         &mut width,
     );
+    let primary_offset = (width - primary_width) * 0.5;
+    for item in &mut items[..primary_len] {
+        item.x += primary_offset;
+    }
 
     let menu_len = menu_rows(folder_menu_open, has_folders, folder_options.len(), theme);
     let height = rows_h + menu_space(&mut items, &mut swatch_at, menu_len, scale, menu_up);

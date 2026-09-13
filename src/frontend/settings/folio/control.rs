@@ -623,7 +623,7 @@ pub(super) fn widget<'a>(
             with_alpha(palette.surface_text, 0.68 * fade),
         )
         .into(),
-        Control::Static => text("").into(),
+        Control::Segment | Control::Static => text("").into(),
         Control::Code { snippet } => label(
             snippet,
             crate::frontend::ui::TYPE_SMALL,

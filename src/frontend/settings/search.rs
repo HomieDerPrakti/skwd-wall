@@ -52,6 +52,9 @@ pub fn search_settings(
         };
         for (section, (card, rows)) in cards.into_iter().enumerate() {
             for (row, setting) in rows.into_iter().enumerate() {
+                if matches!(setting.control, Control::Segment) {
+                    continue;
+                }
                 let title = normalized(&setting.title);
                 let section_title = normalized(card.title);
                 let tab_text = normalized(tab_label);
@@ -218,6 +221,7 @@ fn control_search_text(control: &Control) -> String {
             )
         }
         Control::AppTheme { app } => format!("{} {} {}", app.name, app.state, app.detail),
+        Control::Segment => String::new(),
         Control::Static => String::from(tr("settings-search-control-static")),
         Control::Code { snippet } => {
             format!("{snippet} {}", tr("settings-search-control-code"))
@@ -264,6 +268,7 @@ fn control_value(control: &Control, cfg: &dyn SettingsSource) -> String {
             .find(|(_, active)| *active)
             .map_or_else(|| String::from(tr("settings-control-none")), |(name, _)| name.clone()),
         Control::Details { summary, .. } | Control::StackBar { summary, .. } => summary.clone(),
+        Control::Segment => String::new(),
         Control::Static => String::from(tr("settings-control-status")),
         Control::Code { .. } => String::from(tr("settings-control-code")),
         Control::Preview => String::from(tr("settings-control-preview")),

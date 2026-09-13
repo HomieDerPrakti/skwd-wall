@@ -405,16 +405,27 @@ pub(super) fn tab_postprocessing(builder: &mut Builder<'_>) {
 
 pub(super) fn tab_keybinds(builder: &mut Builder<'_>) {
     let cfg = builder.cfg;
-    builder.card(tr("settings-keybinds-custom-card"), tr("settings-keybinds-custom-card-desc"));
     let bindings = cfg.bindings();
-    for descriptor in crate::contracts::picker::KEY_BINDINGS {
-        builder.key_binding(
-            tr(descriptor.title_key),
-            descriptor.path,
-            descriptor.action.default_binding(),
+    for group in crate::contracts::picker::KeyBindingGroup::ALL {
+        builder.card(tr(group.title_key()), tr(group.description_key()));
+        for descriptor in
+            crate::contracts::picker::KEY_BINDINGS.into_iter().filter(|entry| entry.group == group)
+        {
+            builder.key_binding(
+                tr(descriptor.title_key),
+                descriptor.path,
+                descriptor.action.default_binding(),
+            );
+        }
+    }
+    let conflicts = bindings.conflicts();
+    if !conflicts.is_empty() {
+        builder.card(
+            tr("settings-keybinds-conflicts-card"),
+            tr("settings-keybinds-conflicts-card-desc"),
         );
     }
-    for (first, second) in bindings.conflicts() {
+    for (first, second) in conflicts {
         let title = |action| {
             crate::contracts::picker::KEY_BINDINGS
                 .into_iter()
@@ -436,7 +447,7 @@ pub(super) fn tab_keybinds(builder: &mut Builder<'_>) {
         tr("settings-keybinds-mouse-hover-desc"),
         Control::Static,
     );
-    builder.card(tr("settings-keybinds-reset-card"), "");
+    builder.card(tr("settings-keybinds-reset-card"), tr("settings-keybinds-reset-desc"));
     builder.action(
         tr("settings-keybinds-reset-label"),
         tr("settings-keybinds-reset-desc"),

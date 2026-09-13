@@ -94,6 +94,7 @@ fn defaults_reachable() {
     );
     assert_eq!(map.lookup_key(&KeyId::Char("p".into()), Mods::new(true, false, false)), None);
     assert_eq!(map.lookup_key(&KeyId::Enter, Mods::NONE), Some(InputAction::Apply));
+    assert_eq!(map.lookup_key(&KeyId::Char("c".into()), Mods::NONE), Some(InputAction::ThemePanel));
     assert_eq!(map.lookup_key(&KeyId::Tab, Mods::NONE), Some(InputAction::Autocomplete));
     assert_eq!(map.lookup_key(&KeyId::Left, Mods::NONE), Some(InputAction::NavLeft));
     assert_eq!(
@@ -160,7 +161,12 @@ fn card_actions_need_target() {
     ] {
         assert!(action.targets_card(), "{action:?}");
     }
-    for action in [InputAction::Playlists, InputAction::Settings, InputAction::NavLeft] {
+    for action in [
+        InputAction::Playlists,
+        InputAction::Settings,
+        InputAction::ThemePanel,
+        InputAction::NavLeft,
+    ] {
         assert!(!action.targets_card(), "{action:?}");
     }
 }

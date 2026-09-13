@@ -62,6 +62,7 @@ pub enum Control {
         preview: Option<String>,
         rows: Vec<Row>,
     },
+    Segment,
     Static,
     Code {
         snippet: &'static str,
@@ -97,7 +98,14 @@ impl Control {
     }
 
     pub fn is_wide_field(&self) -> bool {
-        matches!(self, Self::StackBar { .. } | Self::Code { .. } | Self::AppTheme { .. })
+        matches!(
+            self,
+            Self::StackBar { .. } | Self::Segment | Self::Code { .. } | Self::AppTheme { .. }
+        )
+    }
+
+    pub fn is_focusable(&self) -> bool {
+        !matches!(self, Self::Segment)
     }
 }
 

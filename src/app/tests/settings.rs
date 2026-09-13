@@ -716,6 +716,29 @@ fn settings_search_inline_keybind() {
 }
 
 #[test]
+fn workbench_keyboard_skips_control_segments() {
+    use crate::frontend::settings::{Control, SettingsFocus, SettingsKey, SettingsMsg, build_tab};
+
+    let mut app = test_app();
+    let _ = update(&mut app, Message::ToggleSettings);
+    let _ = update(&mut app, Message::SetSettingsTab(String::from("picker")));
+    let _ = update(&mut app, Message::Settings(SettingsMsg::SelectSection(4)));
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Key(SettingsKey::FocusNext { backwards: false })),
+    );
+    assert_eq!(app.panels.settings.focus, SettingsFocus::Controls);
+
+    let cards = build_tab("picker", &app.config, &[], &[], "", &[]);
+    let rows = &cards[4].1;
+    assert!(matches!(rows[0].control, Control::Segment));
+    for _ in 0..rows.len() {
+        assert!(rows[app.panels.settings.focused_control].control.is_focusable());
+        let _ = update(&mut app, Message::Settings(SettingsMsg::Key(SettingsKey::Down)));
+    }
+}
+
+#[test]
 fn workbench_enter_commits_escape_restores() {
     use crate::frontend::settings::{SettingsKey, SettingsMsg};
 

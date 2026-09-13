@@ -493,7 +493,26 @@ fn theme_sub_bar() {
         color_index: 2,
         ..Default::default()
     };
-    let base = bar_with(&BarShow::all());
+    let base = build_bar(
+        &Filters::default(),
+        &[],
+        false,
+        0,
+        0,
+        1.0,
+        false,
+        true,
+        false,
+        false,
+        false,
+        None,
+        "",
+        &BarShow::all(),
+        1600.0,
+        false,
+        false,
+        None,
+    );
     let with_theme = build_bar(
         &Filters::default(),
         &[],
@@ -515,6 +534,12 @@ fn theme_sub_bar() {
         Some(&theme),
     );
     assert!(with_theme.height > base.height);
+    assert!(with_theme.width > base.width);
+    let primary_offset = (with_theme.width - base.width) * 0.5;
+    for (closed, open) in base.items.iter().zip(&with_theme.items) {
+        assert!((open.x - closed.x - primary_offset).abs() < 0.01);
+        assert!((open.y - closed.y).abs() < 0.01);
+    }
     let toggle = with_theme
         .items
         .iter()

@@ -36,11 +36,30 @@ fn noctalia_mode_overrides_in_integrations() {
 #[test]
 fn picker_controls_bindings() {
     let cards = build_tab("picker", &cfg(), &[], &[], "", &[]);
+    let titles: Vec<_> = cards.iter().map(|(card, _)| card.title).collect();
+    assert_eq!(&titles[4..], ["Controls"]);
     let controls = &cards
         .iter()
         .find(|(card, _)| card.title == "Controls")
         .expect("picker controls section")
         .1;
+    let segments: Vec<_> = controls
+        .iter()
+        .filter(|row| matches!(row.control, Control::Segment))
+        .map(|row| row.title.as_str())
+        .collect();
+    assert_eq!(
+        segments,
+        [
+            "Wallpaper actions",
+            "Panels",
+            "Filters & tags",
+            "Folders",
+            "Navigation",
+            "Fixed controls",
+            "Reset controls",
+        ]
+    );
     let bindings: Vec<_> = controls
         .iter()
         .filter_map(|row| match &row.control {
@@ -50,6 +69,27 @@ fn picker_controls_bindings() {
         .collect();
     assert_eq!(bindings.len(), crate::contracts::picker::KEY_BINDINGS.len());
     assert_eq!(bindings[0], (skwd_config::keys::keybind::SELECT, "click"));
+    assert!(bindings.contains(&(skwd_config::keys::keybind::THEME_PANEL, "c")));
+}
+
+#[test]
+fn shortcut_conflicts_get_their_own_segment() {
+    let cfg = cfg().with_bindings(crate::domain::input::InputMap::from_bindings([
+        (crate::domain::input::InputAction::Playlists, String::from("c")),
+        (crate::domain::input::InputAction::ThemePanel, String::from("c")),
+    ]));
+    let cards = build_tab("picker", &cfg, &[], &[], "", &[]);
+    let rows = &cards.iter().find(|(card, _)| card.title == "Controls").unwrap().1;
+    let conflicts = rows
+        .iter()
+        .position(|row| row.title == "Conflicts" && matches!(row.control, Control::Segment))
+        .expect("conflict segment");
+    let fixed = rows
+        .iter()
+        .position(|row| row.title == "Fixed controls" && matches!(row.control, Control::Segment))
+        .expect("fixed controls segment");
+    assert_eq!(conflicts + 2, fixed);
+    assert!(matches!(rows[conflicts + 1].control, Control::Static));
 }
 
 #[test]
@@ -1095,6 +1135,7 @@ fn controls_no_ghosts() {
     for row in rows {
         let kind = match &row.control {
             Control::KeyBinding { path, default, .. } => format!("binding {path} = {default}"),
+            Control::Segment => String::from("segment"),
             Control::Static => String::from("static"),
             Control::ActionBtn { .. } => String::from("action"),
             other => format!("{other:?}"),
@@ -1112,6 +1153,11 @@ fn controls_no_ghosts() {
             .filter(|row| matches!(row.control, Control::Static))
             .all(|row| !row.desc.trim().is_empty()),
         "a static row must carry its own explanation, not an empty value slot"
+    );
+    assert!(
+        rows.iter()
+            .filter(|row| matches!(row.control, Control::Segment))
+            .all(|row| { !row.title.trim().is_empty() && !row.desc.trim().is_empty() })
     );
     assert!(rows.iter().any(|row| matches!(row.control, Control::ActionBtn { .. })));
 }

@@ -4,7 +4,7 @@ mod settings;
 mod theme;
 pub mod theme_setting;
 
-pub use keybindings::KEY_BINDINGS;
+pub use keybindings::{KEY_BINDINGS, KeyBindingGroup};
 pub use mode::Mode;
 pub use settings::{
     BrowserGrid, HandAxis, HandCut, HandMove, HandVariance, SANDY_SWAP_STYLES,

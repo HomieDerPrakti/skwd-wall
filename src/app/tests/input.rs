@@ -93,6 +93,10 @@ fn key_event_routing() {
         Some(Message::OpenPlaylists)
     ));
     assert!(matches!(
+        key_message(&km, &keyboard::Key::Character("c".into()), none),
+        Some(Message::ToggleThemePanel)
+    ));
+    assert!(matches!(
         key_message(&km, &keyboard::Key::Character("f".into()), none),
         Some(Message::KeyFavourite)
     ));
@@ -102,6 +106,27 @@ fn key_event_routing() {
         key_message(&km, &keyboard::Key::Character("?".into()), shift),
         Some(Message::ToggleHelp)
     ));
+}
+
+#[test]
+fn colour_panel_shortcut_toggles_the_bottom_bar_panel() {
+    let mut app = test_app();
+    app.chrome.filter_bar_visible = false;
+    assert!(!app.theme.bar_open);
+    assert!(!app.chrome.filter_bar_visible);
+
+    let _ = update(
+        &mut app,
+        Message::KeyPressed(keyboard::Key::Character("c".into()), keyboard::Modifiers::default()),
+    );
+    assert!(app.theme.bar_open);
+    assert!(app.chrome.filter_bar_visible);
+
+    let _ = update(
+        &mut app,
+        Message::KeyPressed(keyboard::Key::Character("c".into()), keyboard::Modifiers::default()),
+    );
+    assert!(!app.theme.bar_open);
 }
 
 #[test]
