@@ -28,6 +28,7 @@ pub(crate) fn adopt_first_window(
         return iced::Task::none();
     }
     app.runtime_state.overlay = Some(id);
+    app.runtime_state.picker_output = crate::shell::picker_output(id);
     app.scene.viewport = (width, height);
     if app.config.set_screen_width(width) {
         app.snap_layout();

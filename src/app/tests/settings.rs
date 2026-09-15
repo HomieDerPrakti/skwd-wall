@@ -755,6 +755,11 @@ fn workbench_enter_commits_escape_restores() {
         Message::Settings(SettingsMsg::Key(SettingsKey::FocusNext { backwards: false })),
     );
 
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Key(SettingsKey::FocusNext { backwards: false })),
+    );
+
     let key = skwd_config::keys::general::UI_SCALE;
     let original = app.config.num_path(key);
     let original_input = app.panels.settings.inputs.get(key).cloned().unwrap();

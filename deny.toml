@@ -61,7 +61,7 @@ unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 allow-git = [
-    "https://github.com/liixini/skwd-iced-layershell.git",
+    "ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git",
     "https://github.com/liixini/skwd-iced-wgpu.git",
 ]
 

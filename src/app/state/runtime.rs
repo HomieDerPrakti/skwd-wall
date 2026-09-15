@@ -8,6 +8,7 @@ use crate::infrastructure::runtime::{FrameClock, Wake};
 use super::DemoSession;
 
 pub(crate) struct AppRuntimeState {
+    pub(crate) picker_output: Option<String>,
     pub(crate) overlay: Option<iced::window::Id>,
     pub(crate) toast: Option<(String, Instant)>,
     pub(crate) metrics: Metrics,
@@ -24,6 +25,7 @@ pub(crate) struct AppRuntimeState {
 impl AppRuntimeState {
     pub(crate) fn new(frame_clock: FrameClock, wake_tx: UnboundedSender<Wake>) -> Self {
         Self {
+            picker_output: None,
             overlay: None,
             toast: None,
             metrics: Metrics::new(),

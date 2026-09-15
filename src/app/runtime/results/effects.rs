@@ -52,10 +52,11 @@ impl App {
             self.discard_effect_preview(&path);
         }
         if apply && !output.is_empty() {
-            self.daemon.client.call(
-                "wall.apply",
-                json!({ "type": wall_proto::kind::STATIC, "path": output, "no_transition": true }),
-            );
+            let mut params =
+                json!({ "type": wall_proto::kind::STATIC, "path": output, "no_transition": true });
+            if self.scope_picker_apply(&mut params) {
+                self.daemon.client.call("wall.apply", params);
+            }
         }
     }
 

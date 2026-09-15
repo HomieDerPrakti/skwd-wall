@@ -367,8 +367,11 @@ pub(super) fn browser_apply(app: &mut App, id: String) -> Task<Message> {
     });
     match item {
         Some((Some(path), _, _request)) => {
-            let params =
+            let mut params =
                 crate::infrastructure::browser::encode_apply(&ApplyTarget::Path { kind, path });
+            if !app.scope_picker_apply(&mut params) {
+                return Task::none();
+            }
             app.daemon.client.call("wall.apply", params);
             if app.config.close_on_selection() {
                 app.clear_browser_previews();
@@ -400,7 +403,11 @@ pub(super) fn browser_apply_steam(app: &mut App, id: String) -> Task<Message> {
         start_pending_download(app, id, call);
         return Task::none();
     }
-    let params = crate::infrastructure::browser::encode_apply(&ApplyTarget::WallpaperEngine { id });
+    let mut params =
+        crate::infrastructure::browser::encode_apply(&ApplyTarget::WallpaperEngine { id });
+    if !app.scope_picker_apply(&mut params) {
+        return Task::none();
+    }
     app.daemon.client.call("wall.apply", params);
     if app.config.close_on_selection() {
         app.clear_browser_previews();

@@ -45,3 +45,7 @@ settings-general-include-we-label = Include Wallpaper Engine
 settings-general-include-we-desc = Allow Wallpaper Engine items in the random pool.
 settings-general-favourites-only-label = Favourites only
 settings-general-favourites-only-desc = Restrict the random pool to favourited wallpapers.
+
+settings-general-apply-picker-monitor-label = Apply only on the picker monitor
+settings-general-apply-picker-monitor-desc = Apply wallpapers to the monitor where this picker opened. Choose displays can still target other monitors.
+status-picker-monitor-unavailable = The picker monitor is unavailable. Reopen the picker or use Choose displays.

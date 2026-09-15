@@ -78,7 +78,7 @@ iced_layershell = { version = "0.19.1", default-features = false }
 wayland-client = "0.31"
 
 [patch.crates-io]
-iced_layershell = { git = "https://github.com/liixini/skwd-iced-layershell.git", rev = "b528b4850d9f7f6a26bea56ca62c684cd412743d" }
+iced_layershell = { git = "ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git", rev = "07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0" }
 iced_wgpu = { git = "https://github.com/liixini/skwd-iced-wgpu.git", rev = "2ab8bbebec0e31ee24fb919b97cfcbab94ab9ad8" }
 
 [profile.release]

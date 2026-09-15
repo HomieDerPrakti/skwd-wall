@@ -333,3 +333,46 @@ fn saved_layout_keys_survive_compact_window() {
     assert_eq!(app.scene.gp.thumb_w, 260.0);
     assert_eq!(app.scene.gp.thumb_h, 124.0);
 }
+
+#[test]
+fn picker_monitor_apply_scopes_every_wallpaper_kind() {
+    for kind in ["static", "video", "we"] {
+        let mut app = test_app();
+        app.config.save_key(skwd_config::keys::general::APPLY_ON_PICKER_MONITOR, json!(true));
+        app.runtime_state.picker_output = Some("DP-2".into());
+        let mut item = wall("wallpaper", kind, 1, 0);
+        item["we_id"] = json!("42");
+        seed(&mut app, &[item]);
+        let _ = update(&mut app, Message::ApplyCurrent);
+        let calls = drain_calls(&app);
+        let apply = calls.iter().find(|(method, _)| method == "wall.apply").unwrap();
+        assert_eq!(apply.1["output"], "DP-2");
+        assert!(apply.1.get("screens").is_none());
+        assert!(apply.1.get("override_locks").is_none());
+        assert_eq!(app.daemon.last_wallpaper.as_ref().unwrap()["output"], "DP-2");
+    }
+}
+
+#[test]
+fn picker_monitor_apply_default_keeps_existing_targets() {
+    let mut app = test_app();
+    app.runtime_state.picker_output = Some("DP-2".into());
+    seed(&mut app, &[wall("wallpaper", "static", 1, 0)]);
+    let _ = update(&mut app, Message::ApplyCurrent);
+    let calls = drain_calls(&app);
+    let apply = calls.iter().find(|(method, _)| method == "wall.apply").unwrap();
+    assert!(apply.1.get("output").is_none());
+}
+
+#[test]
+fn picker_monitor_apply_requires_known_monitor() {
+    let mut app = test_app();
+    app.config.save_key(skwd_config::keys::general::APPLY_ON_PICKER_MONITOR, json!(true));
+    app.config.save_key(skwd_config::keys::selector::START_POSITION, json!("applied"));
+    app.config.save_key(skwd_config::keys::selector::LAST_APPLIED_KEY, json!("previous"));
+    seed(&mut app, &[wall("wallpaper", "static", 1, 0)]);
+    let _ = update(&mut app, Message::ApplyCurrent);
+    assert!(drain_calls(&app).iter().all(|(method, _)| method != "wall.apply"));
+    assert_eq!(app.config.str_path(skwd_config::keys::selector::LAST_APPLIED_KEY), "previous");
+    assert!(app.runtime_state.toast.is_some());
+}

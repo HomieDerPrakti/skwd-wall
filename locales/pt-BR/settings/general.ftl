@@ -45,3 +45,7 @@ settings-general-include-we-label = Incluir Wallpaper Engine
 settings-general-include-we-desc = Permite itens do Wallpaper Engine no conjunto aleatório.
 settings-general-favourites-only-label = Somente favoritos
 settings-general-favourites-only-desc = Limita o conjunto aleatório aos papéis de parede favoritos.
+
+settings-general-apply-picker-monitor-label = Aplicar apenas no monitor do seletor
+settings-general-apply-picker-monitor-desc = Aplica papéis de parede no monitor onde o seletor foi aberto. Escolher telas ainda permite selecionar outros monitores.
+status-picker-monitor-unavailable = O monitor do seletor está indisponível. Abra o seletor novamente ou use Escolher telas.

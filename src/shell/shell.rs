@@ -514,3 +514,15 @@ fn run_winit() -> Result<(), String> {
         .run()
         .map_err(|err| err.to_string())
 }
+
+pub fn picker_output(id: iced::window::Id) -> Option<String> {
+    #[cfg(target_os = "linux")]
+    {
+        iced_layershell::output_name(id)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = id;
+        None
+    }
+}

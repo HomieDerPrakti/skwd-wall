@@ -971,6 +971,8 @@ fn display_commands_drive_picker() {
             .collect::<Vec<_>>()
     };
 
+    app.config.save_key(skwd_config::keys::general::APPLY_ON_PICKER_MONITOR, json!(true));
+    app.runtime_state.picker_output = Some("DP-2".into());
     command(&mut app, "display toggle 0");
     assert!(state(&app)["displays"].is_null());
 

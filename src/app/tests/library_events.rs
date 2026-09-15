@@ -439,3 +439,26 @@ fn applied_event_refreshes_outputs() {
     assert!(drain_calls(&app).iter().any(|(method, _)| method == "wall.outputs"));
     assert!(app.daemon.pending.values().any(|pending| *pending == Pending::Outputs));
 }
+
+#[test]
+fn picker_monitor_apply_scopes_completed_downloads() {
+    for (source, kind) in
+        [(Source::Steam, "we"), (Source::Wallhaven, "static"), (Source::Youtube, "video")]
+    {
+        let mut app = test_app();
+        app.config.save_key(skwd_config::keys::general::APPLY_ON_PICKER_MONITOR, json!(true));
+        app.runtime_state.picker_output = Some("DP-2".into());
+        let mut browser = Browser::new(source);
+        browser.session.items.push(browser_item("download1"));
+        browser.session.pending_apply = Some("download1".into());
+        app.source_browser.browser = Some(browser);
+        app.on_event(
+            "skwd.wall.download",
+            &json!({"id":"download1", "status":"done", "path":"/dl/wallpaper.png"}),
+        );
+        let calls = drain_calls(&app);
+        let apply = calls.iter().find(|(method, _)| method == "wall.apply").unwrap();
+        assert_eq!(apply.1["output"], "DP-2");
+        assert_eq!(apply.1["type"], kind);
+    }
+}

@@ -1022,3 +1022,64 @@ fn hand_wheel_closes_the_flip_and_moves_on() {
     assert_eq!(app.scene.current, 2);
     assert!(!app.scene.flip_open());
 }
+
+#[test]
+fn choose_displays_shortcut_can_be_rebound_and_reset() {
+    use crate::domain::input::{InputAction, KeyId, Mods, MouseButton, MouseSpec};
+    use crate::frontend::settings::SettingsMsg;
+    let mut app = test_app();
+    seed(&mut app, &[wall("wallpaper", "static", 1, 0)]);
+    let _ = update(&mut app, Message::ToggleSettings);
+    let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCapture("keys.effects".into())));
+    assert_eq!(app.panels.settings.keybind_capture.as_ref().unwrap().title_key, "keybind-effects");
+    let _ = update(
+        &mut app,
+        Message::KeyPressed(keyboard::Key::Character("m".into()), keyboard::Modifiers::SHIFT),
+    );
+    let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureApply));
+    assert_eq!(app.config.str_path("keys.effects"), "shift+m");
+    assert_eq!(
+        app.input.bindings.lookup_key(&KeyId::Char("m".into()), Mods::new(false, false, true)),
+        Some(InputAction::Effects)
+    );
+    assert_ne!(
+        app.input.bindings.lookup_mouse(MouseSpec {
+            mods: Mods::new(true, false, false),
+            button: MouseButton::Left
+        }),
+        Some(InputAction::Effects)
+    );
+    let _ = update(&mut app, Message::ToggleSettings);
+    let _ = update(
+        &mut app,
+        Message::KeyPressed(keyboard::Key::Character("m".into()), keyboard::Modifiers::SHIFT),
+    );
+    assert_eq!(
+        app.panels.effects.as_ref().unwrap().mode(),
+        crate::frontend::effects::EffectsMode::Displays
+    );
+    app.panels.effects = None;
+    let _ = update(&mut app, Message::ToggleSettings);
+    let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCapture("keys.effects".into())));
+    let _ = update(&mut app, Message::SetMods(Mods::new(false, true, false)));
+    let _ =
+        update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureClick(MouseButton::Middle)));
+    let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureApply));
+    assert_eq!(app.config.str_path("keys.effects"), "alt+middle-click");
+    assert_eq!(
+        app.input.bindings.lookup_mouse(MouseSpec {
+            mods: Mods::new(false, true, false),
+            button: MouseButton::Middle
+        }),
+        Some(InputAction::Effects)
+    );
+    let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCapture("keys.effects".into())));
+    let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureDefault));
+    assert_eq!(
+        app.input.bindings.lookup_mouse(MouseSpec {
+            mods: Mods::new(true, false, false),
+            button: MouseButton::Left
+        }),
+        Some(InputAction::Effects)
+    );
+}

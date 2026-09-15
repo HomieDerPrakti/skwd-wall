@@ -45,3 +45,7 @@ settings-general-include-we-label = Включать Wallpaper Engine
 settings-general-include-we-desc = Разрешить элементы Wallpaper Engine в случайном наборе.
 settings-general-favourites-only-label = Только избранное
 settings-general-favourites-only-desc = Ограничить случайный набор избранными обоями.
+
+settings-general-apply-picker-monitor-label = Применять только на мониторе окна выбора
+settings-general-apply-picker-monitor-desc = Применяет обои на мониторе, где открылось окно выбора. Действие «Выбрать дисплеи» позволяет указать другие мониторы.
+status-picker-monitor-unavailable = Монитор окна выбора недоступен. Откройте окно заново или используйте «Выбрать дисплеи».

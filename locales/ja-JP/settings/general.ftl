@@ -45,3 +45,7 @@ settings-general-include-we-label = Wallpaper Engine を含める
 settings-general-include-we-desc = Wallpaper Engine のアイテムをランダムプールに含めます。
 settings-general-favourites-only-label = お気に入りのみ
 settings-general-favourites-only-desc = ランダムプールをお気に入りの壁紙に限定します。
+
+settings-general-apply-picker-monitor-label = ピッカーのモニターだけに適用
+settings-general-apply-picker-monitor-desc = ピッカーを開いたモニターに壁紙を適用します。「ディスプレイを選択」で別のモニターも選べます。
+status-picker-monitor-unavailable = ピッカーのモニターを利用できません。ピッカーを開き直すか、「ディスプレイを選択」を使ってください。

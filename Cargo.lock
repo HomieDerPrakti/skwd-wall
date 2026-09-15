@@ -1249,7 +1249,7 @@ dependencies = [
 [[package]]
 name = "iced_layershell"
 version = "0.19.1"
-source = "git+https://github.com/liixini/skwd-iced-layershell.git?rev=b528b4850d9f7f6a26bea56ca62c684cd412743d#b528b4850d9f7f6a26bea56ca62c684cd412743d"
+source = "git+ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git?rev=07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0#07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0"
 dependencies = [
  "enumflags2",
  "futures",
@@ -1677,8 +1677,7 @@ dependencies = [
 [[package]]
 name = "layershellev"
 version = "0.19.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69fbd3ced50d91a5a118e3e00f49c72040ea6b48b78b159a3936104fc2632925"
+source = "git+ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git?rev=07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0#07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0"
 dependencies = [
  "calloop 0.14.4",
  "calloop-wayland-source 0.4.1",

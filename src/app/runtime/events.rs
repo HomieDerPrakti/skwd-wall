@@ -248,7 +248,10 @@ impl App {
             .browser_for_download_mut(&update.id)
             .and_then(|br| download_update(br, &update));
         if let Some(target) = apply {
-            let params = crate::infrastructure::browser::encode_apply(&target);
+            let mut params = crate::infrastructure::browser::encode_apply(&target);
+            if !self.scope_picker_apply(&mut params) {
+                return;
+            }
             self.daemon.client.call("wall.apply", params);
             if self.config.close_on_selection() {
                 self.clear_browser_previews();

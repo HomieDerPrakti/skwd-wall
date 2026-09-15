@@ -7,8 +7,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = {
     "iced_layershell": (
-        "https://github.com/liixini/skwd-iced-layershell.git",
-        "b528b4850d9f7f6a26bea56ca62c684cd412743d",
+        "ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git",
+        "07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0",
     ),
     "iced_wgpu": (
         "https://github.com/liixini/skwd-iced-wgpu.git",
@@ -17,6 +17,7 @@ SOURCES = {
 }
 PRIVATE_CHECKOUTS = {
     "liixini/skwd-deck",
+    "liixini/skwd-iced-layershell",
     "liixini/skwd-lens",
     "liixini/skwd-verify",
 }
@@ -29,7 +30,7 @@ def load_toml(path):
 
 
 class PrivateSourcePolicyTests(unittest.TestCase):
-    def test_manifest_uses_only_full_immutable_public_pins(self):
+    def test_manifest_uses_only_full_immutable_pins(self):
         patches = load_toml(ROOT / "Cargo.toml")["patch"]["crates-io"]
         self.assertEqual(set(patches), set(SOURCES))
         for package, (url, revision) in SOURCES.items():
@@ -59,12 +60,19 @@ class PrivateSourcePolicyTests(unittest.TestCase):
     def test_vendored_forks_cannot_return(self):
         self.assertFalse((ROOT / "vendor").exists())
 
-    def test_forgejo_workflow_uses_public_fork_sources(self):
+    def test_forgejo_workflow_resolves_immutable_fork_sources(self):
         workflow = (ROOT / ".forgejo" / "workflows" / "verify.yml").read_text()
         for name, (url, revision) in SOURCES.items():
             self.assertIn(url, (ROOT / "Cargo.toml").read_text())
             self.assertIn(revision, (ROOT / "Cargo.toml").read_text())
-            self.assertNotIn(f"repository: liixini/skwd-{name.replace('_', '-')}", workflow)
+            if name == "iced_layershell":
+                self.assertIn("repository: liixini/skwd-iced-layershell", workflow)
+                self.assertIn(f"ref: {revision}", workflow)
+                self.assertIn("GIT_CONFIG_COUNT=1", workflow)
+                self.assertIn("url.file://$GITHUB_WORKSPACE/suite/skwd-iced-layershell.insteadOf", workflow)
+                self.assertIn(f"GIT_CONFIG_VALUE_0={url}", workflow)
+            else:
+                self.assertNotIn(f"repository: liixini/skwd-{name.replace('_', '-')}", workflow)
         verify_revision = "6f7ec2f89007fc29fd350bb9a496b203676985c0"
         self.assertIn("repository: liixini/skwd-verify", workflow)
         self.assertIn(f"ref: {verify_revision}", workflow)

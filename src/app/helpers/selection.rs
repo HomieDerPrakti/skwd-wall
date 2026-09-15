@@ -44,13 +44,17 @@ pub(crate) fn apply_task(app: &mut App, filtered_index: usize) -> Task<Message> 
     app.scene.set_current(filtered_index, app.library_session.filtered.len());
     let item = &app.library_session.library.catalog().items[catalog_index as usize];
     let neighbors = collect_neighbors(app, &item.path);
-    let params = apply_params(item, neighbors);
+    let mut params = apply_params(item, neighbors);
     info!("apply {} ({})", item.name, item.kind.as_str());
+    let applied_key = item.key.clone();
+    if !app.scope_picker_apply(&mut params) {
+        return Task::none();
+    }
     if matches!(
         app.config.str_path(skwd_config::keys::selector::START_POSITION).as_str(),
         "applied" | "browsing"
     ) {
-        app.config.save_key(skwd_config::keys::selector::LAST_APPLIED_KEY, json!(item.key));
+        app.config.save_key(skwd_config::keys::selector::LAST_APPLIED_KEY, json!(applied_key));
     }
     app.daemon.client.call("wall.apply", params.clone());
     app.daemon.last_wallpaper = Some(params);
@@ -105,5 +109,28 @@ fn push_neighbor(app: &App, filtered_index: usize, path: &str, picks: &mut Vec<S
         .path;
     if !other.is_empty() && other != path {
         picks.push(other.clone());
+    }
+}
+
+impl App {
+    pub(crate) fn scope_picker_apply(&mut self, params: &mut serde_json::Value) -> bool {
+        if !self.config.flag_default_config(skwd_config::keys::general::APPLY_ON_PICKER_MONITOR) {
+            return true;
+        }
+        if self.runtime_state.picker_output.is_none() {
+            self.runtime_state.picker_output =
+                self.runtime_state.overlay.and_then(crate::shell::picker_output);
+        }
+        let Some(output) =
+            self.runtime_state.picker_output.as_deref().filter(|name| !name.is_empty())
+        else {
+            self.show_toast(crate::i18n::tr("status-picker-monitor-unavailable"));
+            return false;
+        };
+        params["output"] = json!(output);
+        if let Some(fields) = params.as_object_mut() {
+            fields.remove("screens");
+        }
+        true
     }
 }

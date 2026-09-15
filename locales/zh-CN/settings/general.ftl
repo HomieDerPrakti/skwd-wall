@@ -45,3 +45,7 @@ settings-general-include-we-label = 包含 Wallpaper Engine
 settings-general-include-we-desc = 允许 Wallpaper Engine 项目进入随机池。
 settings-general-favourites-only-label = 仅收藏
 settings-general-favourites-only-desc = 将随机池限制为已收藏的壁纸。
+
+settings-general-apply-picker-monitor-label = 仅应用到选择器所在的显示器
+settings-general-apply-picker-monitor-desc = 将壁纸应用到打开选择器的显示器。仍可通过“选择显示器”指定其他显示器。
+status-picker-monitor-unavailable = 选择器所在的显示器不可用。请重新打开选择器，或使用“选择显示器”。

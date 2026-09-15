@@ -45,3 +45,7 @@ settings-general-include-we-label = Inkludera Wallpaper Engine
 settings-general-include-we-desc = Tillåt Wallpaper Engine-objekt i slumppoolen.
 settings-general-favourites-only-label = Endast favoriter
 settings-general-favourites-only-desc = Begränsa slumppoolen till favoritmarkerade bakgrundsbilder.
+
+settings-general-apply-picker-monitor-label = Använd bara väljarens skärm
+settings-general-apply-picker-monitor-desc = Använd bakgrunden på skärmen där väljaren öppnades. Välj skärmar kan fortfarande rikta den till andra skärmar.
+status-picker-monitor-unavailable = Väljarens skärm är inte tillgänglig. Öppna väljaren igen eller använd Välj skärmar.

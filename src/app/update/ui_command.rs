@@ -81,6 +81,7 @@ pub(crate) fn ui_state_json(app: &App) -> String {
     });
     json!({
         "demo_protocol": 15,
+        "picker_output": app.runtime_state.picker_output.clone().or_else(|| app.runtime_state.overlay.and_then(crate::shell::picker_output)),
         "mode": mode,
         "count": app.library_session.filtered.len(),
         "current": app.scene.current,

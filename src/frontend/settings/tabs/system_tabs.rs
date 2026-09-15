@@ -26,6 +26,11 @@ pub(super) fn tab_general(
         keys::system::MONITOR,
         choices,
     );
+    builder.toggle(
+        tr("settings-general-apply-picker-monitor-label"),
+        tr("settings-general-apply-picker-monitor-desc"),
+        keys::general::APPLY_ON_PICKER_MONITOR,
+    );
     builder.num_setting(
         tr("settings-general-ui-scale-label"),
         tr("settings-general-ui-scale-desc"),
