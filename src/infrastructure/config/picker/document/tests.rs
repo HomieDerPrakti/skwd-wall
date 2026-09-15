@@ -133,3 +133,52 @@ fn global_apply_button_migrates_without_overwriting_source_choices() {
         assert_eq!(reopened.browser_apply_button(Source::Steam), previous);
     }
 }
+
+#[test]
+fn save_key_keeps_symlink() {
+    let dir = tempfile::tempdir().unwrap();
+    let dots = dir.path().join("dots");
+    std::fs::create_dir(&dots).unwrap();
+    let target = dots.join("config.json");
+    std::fs::write(&target, b"{}").unwrap();
+    let link = dir.path().join("config.json");
+    std::os::unix::fs::symlink(&target, &link).unwrap();
+    let mut config = Config::from_data(json!({}));
+    config.config_path = link.clone();
+
+    config.save_key(skwd_config::keys::launch::ANIMATION, json!("slide"));
+    config.save_key(skwd_config::keys::launch::ANIMATION, json!("fade"));
+
+    assert!(std::fs::symlink_metadata(&link).unwrap().file_type().is_symlink());
+    assert_eq!(std::fs::read_link(&link).unwrap(), target);
+    let saved: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&target).unwrap()).unwrap();
+    assert_eq!(saved["launch"]["animation"], "fade");
+    assert_eq!(std::fs::metadata(&target).unwrap().permissions().mode() & 0o7777, 0o600);
+    let leftovers = std::fs::read_dir(&dots)
+        .unwrap()
+        .filter_map(Result::ok)
+        .any(|entry| entry.file_name().to_string_lossy().ends_with(".tmp"));
+    assert!(!leftovers);
+}
+
+#[test]
+fn persist_keeps_relative_symlink_into_dotfiles() {
+    let dir = tempfile::tempdir().unwrap();
+    let home = dir.path().join("home");
+    let dots = dir.path().join("dotfiles");
+    std::fs::create_dir_all(&home).unwrap();
+    std::fs::create_dir_all(&dots).unwrap();
+    std::fs::write(dots.join("config.json"), b"{\"launch\":{\"animation\":\"slide\"}}").unwrap();
+    let link = home.join("config.json");
+    std::os::unix::fs::symlink("../dotfiles/config.json", &link).unwrap();
+    let mut config = Config::from_data(json!({"launch": {"animation": "fade"}}));
+    config.config_path = link.clone();
+
+    config.persist();
+
+    assert_eq!(std::fs::read_link(&link).unwrap(), std::path::Path::new("../dotfiles/config.json"));
+    let saved: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(dots.join("config.json")).unwrap()).unwrap();
+    assert_eq!(saved["launch"]["animation"], "fade");
+}

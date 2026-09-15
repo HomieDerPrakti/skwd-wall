@@ -40,7 +40,7 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: liixini/skwd-deck
-          ref: 9128ba3c341cacef146de0d816cb89c64bc0b87b
+          ref: f333e42cfaa3d0b2b8c44e160e0e3c60860068bf
           path: suite/skwd-deck
           token: ${{ secrets.SKWD_SUITE_READ_TOKEN }}
           persist-credentials: false
