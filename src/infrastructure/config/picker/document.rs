@@ -115,8 +115,11 @@ impl Config {
         false
     }
 
-    pub fn set_screen_width(&mut self, width: f32) {
-        self.small = width <= 1600.0;
+    pub fn set_screen_width(&mut self, width: f32) -> bool {
+        let small = width <= 1600.0;
+        let changed = self.small != small;
+        self.small = small;
+        changed
     }
 
     pub fn on_battery_power(&self) -> bool {

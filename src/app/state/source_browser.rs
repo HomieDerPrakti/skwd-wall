@@ -85,6 +85,11 @@ impl BrowserWallState {
         self.fit_layout();
     }
 
+    pub(crate) fn set_base_grid(&mut self, grid: GridParams) {
+        self.base_grid = grid;
+        self.fit_layout();
+    }
+
     fn fit_layout(&mut self) {
         let (width, height) = self.scene.viewport;
         let (width, height) = (width.max(1.0), height.max(1.0));

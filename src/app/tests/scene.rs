@@ -280,3 +280,56 @@ fn hand_layout_params_follow_config() {
     assert!((params.extra.hand.speed - 1.5).abs() < 1e-6);
     assert!((params.extra.hand.offset_y - 0.2).abs() < 1e-6);
 }
+
+fn compact_app(selector: &serde_json::Value) -> App {
+    let dir = std::env::temp_dir().join(format!(
+        "skwd-compact-{}-{}",
+        std::process::id(),
+        TEST_DIR_SEQ.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+    ));
+    std::fs::create_dir_all(&dir).unwrap();
+    let mut config = Config::from_data(json!({
+        "paths": { "cache": dir.join("cache").to_string_lossy(), "wallpaper": "/wp",
+            "videoWallpaper": "/vids" },
+        "components": { "wallpaperSelector": selector }
+    }));
+    config.config_path = dir.join("config.json");
+    App::with_config_using(config, |_| crate::infrastructure::ipc::DaemonClient::recording())
+}
+
+fn open_window(app: &mut App, width: f32, height: f32) {
+    let _ = update(app, Message::WindowOpened { id: iced::window::Id::unique(), width, height });
+}
+
+#[test]
+fn compact_defaults_follow_first_window() {
+    let mut app = compact_app(&json!({}));
+    assert_eq!(app.scene.sp.slice_h, 520.0);
+    open_window(&mut app, 1366.0, 768.0);
+    assert_eq!(app.scene.sp.slice_h, 360.0);
+    assert_eq!(app.scene.sp.visible_count, 8);
+    assert_eq!(app.scene.sp.slice_w, 90.0);
+    assert_eq!(app.scene.gp.thumb_w, 220.0);
+    assert_eq!(app.scene.hp.r, 100.0);
+    assert_eq!(app.scene.xp.sandy.slice_w, 68.0);
+    assert_eq!(app.config.slice_height(), 360.0);
+}
+
+#[test]
+fn regular_defaults_stay_on_wide_window() {
+    let mut app = compact_app(&json!({}));
+    open_window(&mut app, 1920.0, 1080.0);
+    assert_eq!(app.scene.sp.slice_h, 520.0);
+    assert_eq!(app.scene.sp.visible_count, 12);
+    assert_eq!(app.scene.gp.thumb_w, 300.0);
+}
+
+#[test]
+fn saved_layout_keys_survive_compact_window() {
+    let mut app = compact_app(&json!({ "sliceHeight": 400.0, "gridThumbWidth": 260.0 }));
+    open_window(&mut app, 1366.0, 768.0);
+    assert_eq!(app.scene.sp.slice_h, 400.0);
+    assert_eq!(app.scene.sp.visible_count, 8);
+    assert_eq!(app.scene.gp.thumb_w, 260.0);
+    assert_eq!(app.scene.gp.thumb_h, 124.0);
+}

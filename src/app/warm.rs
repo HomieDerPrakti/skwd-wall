@@ -29,7 +29,9 @@ pub(crate) fn adopt_first_window(
     }
     app.runtime_state.overlay = Some(id);
     app.scene.viewport = (width, height);
-    app.config.set_screen_width(width);
+    if app.config.set_screen_width(width) {
+        app.snap_layout();
+    }
     app.theme.suspended = false;
     note_show_requested();
     app.scene.begin_open_fade();

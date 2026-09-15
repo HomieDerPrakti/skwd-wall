@@ -121,6 +121,15 @@ impl App {
         self.retick();
     }
 
+    pub(in crate::app) fn snap_layout(&mut self) {
+        let layout = layout_params(&self.config);
+        self.scene.set_params(layout.slices, layout.grid, layout.hex, layout.extra, false);
+        self.source_browser.wall.set_base_grid(browser_wall_params(&self.config));
+        if self.panels.settings.open {
+            self.init_settings_inputs();
+        }
+    }
+
     pub(in crate::app) fn reload_bindings(&mut self) {
         self.input.bindings = crate::infrastructure::config::load_bindings(&self.config);
     }

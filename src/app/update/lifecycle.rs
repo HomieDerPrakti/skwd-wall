@@ -52,7 +52,9 @@ pub(super) fn tick(app: &mut App, now: Instant, w: f32, h: f32) -> Task<Message>
     }
     if (w, h) != app.scene.viewport {
         app.scene.viewport = (w, h);
-        app.config.set_screen_width(w);
+        if app.config.set_screen_width(w) {
+            app.apply_layout();
+        }
     }
     app.run_tick(now);
     let mut tasks: Vec<Task<Message>> = Vec::new();
