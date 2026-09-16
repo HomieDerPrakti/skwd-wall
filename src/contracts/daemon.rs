@@ -343,5 +343,7 @@ pub struct PlaybackStatus {
     pub all_displays: bool,
     pub automatic_paused: bool,
     pub resume_pending: bool,
+    pub other_audio_supported: bool,
+    pub audio_ducked: bool,
     pub available_processes: Vec<String>,
 }

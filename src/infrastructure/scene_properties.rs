@@ -27,6 +27,7 @@ fn row(property: WeProperty) -> SceneProperty {
             .map(|option| SceneChoice { label: option.label, value: option.value })
             .collect(),
         order: property.order,
+        condition: property.condition,
     }
 }
 

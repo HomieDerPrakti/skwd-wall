@@ -540,12 +540,18 @@ fn compose_playback(
         tr("settings-paper-video-engine-card-desc"),
         take_card(&mut paper, tr("settings-paper-video-engine-card")),
     );
-    section(
-        &mut out,
-        tr("settings-section-audio"),
-        tr("settings-general-audio-card-desc"),
-        take_card(&mut general, tr("settings-general-audio-card")),
-    );
+    let mut audio = take_card(&mut general, tr("settings-general-audio-card"));
+    if let Some(status) = playback.filter(|_| cfg.flag(keys::playback::MUTE_ON_OTHER_AUDIO)) {
+        let title = if status.audio_ducked {
+            tr("settings-general-other-audio-ducked")
+        } else if status.other_audio_supported {
+            tr("settings-general-other-audio-listening")
+        } else {
+            tr("settings-general-other-audio-unavailable")
+        };
+        audio.push(Row { title: title.to_string(), desc: String::new(), control: Control::Static });
+    }
+    section(&mut out, tr("settings-section-audio"), tr("settings-general-audio-card-desc"), audio);
 
     if cfg.flag_default_true(keys::features::STEAM) {
         let mut rendering =

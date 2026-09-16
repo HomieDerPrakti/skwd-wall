@@ -139,7 +139,7 @@ fn reading<'a>(
 
     let mut body = column![].spacing(SECTION_SPACING * scale);
     let mut index = 0_usize;
-    for property in &panel.rows {
+    for property in panel.shown_rows() {
         if property.is_group() {
             body = body.push(
                 container(label(property.label.as_str(), 12.0, scale, palette.primary))

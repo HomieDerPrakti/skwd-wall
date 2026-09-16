@@ -75,3 +75,39 @@ fn display_formatting() {
     assert_eq!(parse_vector("not numbers"), None);
     assert_eq!(parse_vector(""), None);
 }
+
+#[test]
+fn conditions_follow_the_engine_expression_shapes() {
+    let rows = vec![
+        SceneProperty {
+            name: "language".into(),
+            value: ScenePropertyValue::Number(2.0),
+            ..SceneProperty::default()
+        },
+        SceneProperty {
+            name: "clock".into(),
+            value: ScenePropertyValue::Flag(true),
+            ..SceneProperty::default()
+        },
+        SceneProperty {
+            name: "date".into(),
+            value: ScenePropertyValue::Flag(false),
+            ..SceneProperty::default()
+        },
+    ];
+    let shown = |condition: &str| {
+        SceneProperty { condition: Some(condition.into()), ..SceneProperty::default() }.shown(&rows)
+    };
+    assert!(shown("language.value == 2"));
+    assert!(!shown("language.value == 1"));
+    assert!(shown("Language.value === 2 && clock.value"));
+    assert!(shown("clock.value == true && date.value == false"));
+    assert!(!shown("clock.value && date.value"));
+    assert!(shown("(language.value == 1 || language.value == 2) && !date.value"));
+    assert!(shown("language.value != 1 && language.value >= 2"));
+    assert!(shown("clock.value===true"));
+    assert!(shown("unknown.value == 5"));
+    assert!(shown("language.value == 2 &&"));
+    assert!(shown(""));
+    assert!(SceneProperty::default().shown(&rows));
+}

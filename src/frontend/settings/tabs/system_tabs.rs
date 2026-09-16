@@ -60,6 +60,11 @@ pub(super) fn tab_general(
         keys::wallpaper::VOLUME,
         "%",
     );
+    builder.toggle(
+        tr("settings-general-other-audio-label"),
+        tr("settings-general-other-audio-desc"),
+        keys::playback::MUTE_ON_OTHER_AUDIO,
+    );
     builder.card(
         tr("settings-general-auto-recolour-card"),
         tr("settings-general-auto-recolour-card-desc"),

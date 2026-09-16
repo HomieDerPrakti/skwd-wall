@@ -1248,6 +1248,7 @@ fn automatic_pause_controls_have_one_playback_owner() {
         keys::playback::MAXIMIZED,
         keys::playback::FULLSCREEN_SCOPE,
         keys::playback::RESUME_DELAY,
+        keys::playback::MUTE_ON_OTHER_AUDIO,
         keys::paper::IDLE_PAUSE_SECONDS,
     ];
     let cards = build_tab("playback", &config, &[], &[], "", &[]);
@@ -1347,4 +1348,51 @@ fn shell_follow_switches_reflect_independent_targets() {
             .collect();
         assert_eq!(switches, ["noctalia", "dms"]);
     }
+}
+
+#[test]
+fn other_audio_status_row_follows_daemon_playback_state() {
+    let audio_rows = |cfg: &FakeSettingsSource,
+                      status: &crate::contracts::daemon::PlaybackStatus| {
+        build_tab_with_runtime_status(
+            "playback",
+            cfg,
+            &[],
+            &[],
+            "",
+            &[],
+            &[],
+            &[],
+            &std::collections::HashMap::new(),
+            None,
+            Some(status),
+            None,
+        )
+        .into_iter()
+        .find(|(card, _)| card.title == "Audio")
+        .expect("audio section")
+        .1
+    };
+    let enabled = cfg().with_flag(keys::playback::MUTE_ON_OTHER_AUDIO, true);
+    for (supported, ducked, expected) in [
+        (false, false, "Sound server detection unavailable"),
+        (true, false, "Listening for sound from other applications"),
+        (true, true, "Wallpaper audio paused: another application is playing sound"),
+    ] {
+        let status = crate::contracts::daemon::PlaybackStatus {
+            other_audio_supported: supported,
+            audio_ducked: ducked,
+            ..Default::default()
+        };
+        let rows = audio_rows(&enabled, &status);
+        let row = rows.last().expect("status row");
+        assert!(row.title.starts_with(expected), "{}", row.title);
+        assert!(matches!(row.control, Control::Static));
+        assert!(rows.iter().any(|row| matches!(
+            &row.control,
+            Control::Toggle { path, value: true } if path == keys::playback::MUTE_ON_OTHER_AUDIO
+        )));
+    }
+    let rows = audio_rows(&cfg(), &crate::contracts::daemon::PlaybackStatus::default());
+    assert!(rows.iter().all(|row| !matches!(row.control, Control::Static)));
 }

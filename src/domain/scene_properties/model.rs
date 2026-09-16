@@ -93,9 +93,21 @@ pub struct SceneProperty {
     pub step: Option<f64>,
     pub choices: Vec<SceneChoice>,
     pub order: i64,
+    pub condition: Option<String>,
 }
 
 impl SceneProperty {
+    #[must_use]
+    pub fn shown(&self, rows: &[SceneProperty]) -> bool {
+        let Some(condition) = self.condition.as_deref() else {
+            return true;
+        };
+        super::condition::evaluate(condition, |name| {
+            rows.iter().find(|row| row.name.eq_ignore_ascii_case(name)).map(|row| row.value.clone())
+        })
+        .unwrap_or(true)
+    }
+
     #[must_use]
     pub fn editable(&self) -> bool {
         matches!(

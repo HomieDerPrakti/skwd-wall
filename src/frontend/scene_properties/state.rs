@@ -58,6 +58,11 @@ impl SceneProperties {
     }
 
     #[must_use]
+    pub fn shown_rows(&self) -> Vec<&SceneProperty> {
+        self.rows.iter().filter(|row| row.shown(&self.rows)).collect()
+    }
+
+    #[must_use]
     pub fn editable_count(&self) -> usize {
         self.rows.iter().filter(|row| row.editable()).count()
     }
