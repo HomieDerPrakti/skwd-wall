@@ -1,4 +1,4 @@
-use iced::widget::{column, container, row, scrollable, text};
+use iced::widget::{column, container, scrollable, text};
 use iced::{Alignment, Color, Element, Length};
 
 use super::state::{ScenePropMsg, SceneProperties};
@@ -7,7 +7,7 @@ use crate::domain::scene_properties::{SceneProperty, ScenePropertyKind, format_n
 use crate::frontend::theme::Palette;
 use crate::frontend::ui::{
     FOLIO_INDEX_WIDTH, TYPE_SMALL, folio_action, folio_action_wrap, folio_field, folio_ghost_field,
-    folio_index_shell, folio_masthead, folio_scroll_padding, folio_sheet, folio_slider, label,
+    folio_index_shell, folio_masthead, folio_scroll_padding, folio_sheet, folio_slider, label, row,
     with_alpha,
 };
 use crate::i18n::{tr, tr_args};

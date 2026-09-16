@@ -1,0 +1,49 @@
+audio-masthead = آڈیو / مکسر
+audio-index-title = آڈیو
+audio-index-desc = ڈسپلے کے مطابق وال پیپر روکیں۔ ایک ہی ماخذ دکھانے والے ڈسپلے والیوم اور میوٹ کی ترتیبات مشترک رکھتے ہیں۔
+audio-detecting-outputs = آؤٹ پٹس کی شناخت ہو رہی ہے
+audio-state-sound = آواز
+audio-state-muted = میوٹ
+audio-state-none = آڈیو نہیں
+audio-shared-outputs = مشترکہ آؤٹ پٹس
+audio-live-mix = موجودہ آڈیو
+audio-live-mix-summary = { $audible } چل رہے ہیں · { $available } آڈیو کے ساتھ
+audio-kind-video = ویڈیو وال پیپر
+audio-kind-we = Wallpaper Engine سین
+audio-kind-static = ساکن وال پیپر
+audio-kind-none = کوئی وال پیپر ماخذ نہیں
+audio-row-sound = ◆  آواز
+audio-row-muted = ◇  میوٹ
+audio-row-none = -  آڈیو نہیں
+audio-linked-source = منسلک ماخذ
+audio-independent-source = آزاد ماخذ
+audio-channel-label = آڈیو
+audio-no-channel = یہ وال پیپر کوئی آڈیو چینل فراہم نہیں کرتا۔
+audio-outputs-kicker = آڈیو / ڈسپلے
+audio-mixer-heading = وال پیپر مکسر
+audio-mixer-desc = ہر ڈسپلے کو الگ الگ روکیں۔ مشترکہ وال پیپرز کے لیے والیوم اور میوٹ منسلک رہتے ہیں۔
+audio-outputs-summary =
+    { $total } { $total ->
+        [one] آؤٹ پٹ
+       *[other] آؤٹ پٹس
+    } · { $available } آڈیو کے ساتھ · { $sounding } چل رہے ہیں
+audio-output-channels = آؤٹ پٹ چینلز
+audio-output-channels-desc = میوٹ چینل تاریک رہتے ہیں۔ ایک ہی ماخذ دکھانے والے ڈسپلے والیوم اور میوٹ کی ترتیبات مشترک رکھتے ہیں۔
+audio-looking-displays = ڈسپلے تلاش کیے جا رہے ہیں
+audio-looking-displays-desc = جب وال پیپر سروس اپنے ڈسپلے رپورٹ کرے گی تو آڈیو کنٹرول یہاں ظاہر ہوں گے۔
+audio-live-state = موجودہ حالت
+audio-live-none = اس وقت کوئی وال پیپر آڈیو نہیں چل رہا۔
+audio-live-playing = نمایاں چینل آڈیو چلا رہے ہیں۔
+audio-close-mixer = مکسر بند کریں
+audio-source-video = ویڈیو
+audio-source-wallpaper-engine = Wallpaper Engine
+audio-source-we-id = Wallpaper Engine ({ $id })
+audio-source-static-image = ساکن تصویر
+audio-wallpaper-label = وال پیپر
+audio-pause-wallpaper = وال پیپر روکیں
+audio-resume-wallpaper = وال پیپر دوبارہ چلائیں
+audio-wallpaper-paused = دستی طور پر روکا گیا
+audio-wallpaper-held = کسی اور اصول نے روکا
+audio-wallpaper-playing = چل رہا ہے
+audio-state-paused = رکا ہوا
+audio-playback-error = وال پیپر پلے بیک تبدیل نہیں ہو سکا: { $error }

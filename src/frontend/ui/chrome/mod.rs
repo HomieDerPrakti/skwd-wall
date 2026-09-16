@@ -6,6 +6,8 @@ mod selection;
 mod signature;
 
 #[cfg(test)]
+pub(crate) use back::back_layout_for;
+#[cfg(test)]
 use back::back_rise;
 pub use back::{BackLayout, back_bounds, back_contains, back_layout};
 pub use canvas::ChromeCanvas;

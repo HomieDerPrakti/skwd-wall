@@ -5,7 +5,7 @@ use std::collections::{HashMap, HashSet};
 
 use iced::widget::canvas::{self, Frame, Path, Stroke};
 use iced::widget::{
-    button, column, container, image, mouse_area, row, scrollable, stack, text, text_input,
+    button, column, container, image, mouse_area, scrollable, stack, text, text_input,
 };
 use iced::{Alignment, Background, Color, Element, Length, Padding, Point, Rectangle};
 
@@ -15,8 +15,8 @@ use crate::frontend::animation::{MotionProfile, Tween};
 use crate::frontend::components::with_alpha;
 use crate::frontend::theme::Palette;
 use crate::frontend::ui::{
-    FOLIO_INDEX_WIDTH, FOLIO_RULE_ALPHA, TYPE_SMALL, folio_horizontal_rule, label,
-    legible_type_scale, sentence_case,
+    FOLIO_INDEX_WIDTH, FOLIO_RULE_ALPHA, TYPE_SMALL, end, folio_horizontal_rule, label,
+    legible_type_scale, logical_padding, mirror_x, row, rtl, sentence_case, start,
 };
 use crate::i18n::tr;
 
@@ -533,9 +533,9 @@ pub fn picker_layout_workbench<'a>(
     container(panel)
         .width(Length::Fill)
         .height(Length::Fill)
-        .align_x(iced::alignment::Horizontal::Left)
+        .align_x(start())
         .align_y(iced::alignment::Vertical::Center)
-        .padding(Padding { top: 0.0, right: 0.0, bottom: 0.0, left: 18.0 * scale })
+        .padding(logical_padding(0.0, 0.0, 0.0, 18.0 * scale))
         .into()
 }
 
@@ -676,9 +676,15 @@ fn navigation<'a>(
             let active = key == selected_tab;
             let category = button(
                 row![
-                    text(if active { "▾" } else { "▸" })
-                        .font(crate::frontend::ui::UI_FONT)
-                        .size(10.0 * legible_type_scale(scale)),
+                    text(if active {
+                        "▾"
+                    } else if rtl() {
+                        "◂"
+                    } else {
+                        "▸"
+                    })
+                    .font(crate::frontend::ui::UI_FONT)
+                    .size(10.0 * legible_type_scale(scale)),
                     text(sentence_case(label))
                         .font(crate::frontend::ui::UI_FONT)
                         .size(12.5 * legible_type_scale(scale)),
@@ -908,7 +914,7 @@ fn section_branch<'a>(
     container(row![guide, children].spacing(9.0 * scale))
         .width(Length::Fill)
         .height(Length::Fixed(branch_height(sections.len(), scale, reveal)))
-        .padding(Padding { top: 2.0 * scale, right: 0.0, bottom: 4.0 * scale, left: 17.0 * scale })
+        .padding(logical_padding(2.0 * scale, 0.0, 4.0 * scale, 17.0 * scale))
         .clip(true)
         .into()
 }
@@ -1500,7 +1506,7 @@ fn compact_group_field<'a>(
             label(summary, TYPE_SMALL, scale, with_alpha(palette.primary, fade))
                 .width(Length::Fixed(wallpaper_width))
                 .wrapping(iced::widget::text::Wrapping::None)
-                .align_x(iced::alignment::Horizontal::Right),
+                .align_x(end()),
         ]
         .spacing(12.0 * scale)
         .align_y(Alignment::Center)
@@ -1512,7 +1518,7 @@ fn compact_group_field<'a>(
             label(summary, TYPE_SMALL, scale, with_alpha(palette.primary, fade),)
                 .width(Length::Fixed((available_width * 0.42).max(90.0 * scale)))
                 .wrapping(iced::widget::text::Wrapping::None)
-                .align_x(iced::alignment::Horizontal::Right),
+                .align_x(end()),
         ]
         .spacing(10.0 * scale)
         .align_y(Alignment::Center)
@@ -1917,7 +1923,8 @@ impl canvas::Program<Message> for Blueprint {
         let mut frame = Frame::new(renderer, bounds.size());
         let line = with_alpha(self.palette.outline, 0.075 * self.fade);
         let accent = with_alpha(self.palette.primary, 0.09 * self.fade);
-        let centre = Point::new(bounds.width * 0.72, bounds.height * 0.56);
+        let centre =
+            Point::new(mirror_x(bounds.width * 0.72, 0.0, bounds.width), bounds.height * 0.56);
         for radius in [90.0, 176.0, 264.0] {
             frame.stroke(
                 &Path::circle(centre, radius),

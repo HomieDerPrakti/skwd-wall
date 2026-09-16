@@ -1,5 +1,8 @@
+use iced::Alignment;
+
 use crate::frontend::animation::{smoothstep, window};
 use crate::frontend::scene::BackPanel;
+use crate::frontend::ui::{mirror_x_for, rtl, start_for};
 use crate::i18n::tr;
 
 #[derive(Debug, Clone, Copy)]
@@ -13,6 +16,7 @@ enum ActionKind {
 }
 
 pub struct BackLayout {
+    pub rtl: bool,
     pub card: (f32, f32, f32, f32),
     pub masthead: (f32, f32, f32, f32),
     pub sheet: (f32, f32, f32, f32),
@@ -146,8 +150,68 @@ fn action_specs(panel: &BackPanel, max_width: f32) -> Vec<(ActionKind, f32)> {
     specs
 }
 
+impl BackLayout {
+    pub(super) fn lead(&self, left: f32, right: f32) -> f32 {
+        if self.rtl { right } else { left }
+    }
+
+    pub(super) fn lead_edge(&self, rectangle: (f32, f32, f32, f32), inset: f32) -> f32 {
+        if self.rtl { rectangle.0 + rectangle.2 - inset } else { rectangle.0 + inset }
+    }
+
+    pub(super) fn trail_edge(&self, rectangle: (f32, f32, f32, f32), inset: f32) -> f32 {
+        if self.rtl { rectangle.0 + inset } else { rectangle.0 + rectangle.2 - inset }
+    }
+
+    pub(super) fn lead_align(&self) -> Alignment {
+        start_for(self.rtl).into()
+    }
+}
+
 pub fn back_layout(panel: &BackPanel) -> BackLayout {
-    if panel.embedded { embedded_layout(panel) } else { external_layout(panel) }
+    back_layout_for(panel, rtl())
+}
+
+pub fn back_layout_for(panel: &BackPanel, rtl: bool) -> BackLayout {
+    let layout = if panel.embedded { embedded_layout(panel) } else { external_layout(panel) };
+    if rtl { mirrored(layout) } else { layout }
+}
+
+fn mirrored(layout: BackLayout) -> BackLayout {
+    let (card_x, _, card_width, _) = layout.card;
+    let flip = |x: f32, width: f32| card_x + mirror_x_for(true, x - card_x, width, card_width);
+    let rect = |r: (f32, f32, f32, f32)| (flip(r.0, r.2), r.1, r.2, r.3);
+    let rects = |rs: Vec<(f32, f32, f32, f32)>| rs.into_iter().map(rect).collect();
+    BackLayout {
+        rtl: true,
+        card: layout.card,
+        masthead: rect(layout.masthead),
+        sheet: rect(layout.sheet),
+        action_deck: rect(layout.action_deck),
+        content_left: flip(layout.content_right, 0.0),
+        content_right: flip(layout.content_left, 0.0),
+        title_left: flip(layout.title_right, 0.0),
+        title_right: flip(layout.title_left, 0.0),
+        action_left: flip(layout.action_right, 0.0),
+        action_right: flip(layout.action_left, 0.0),
+        kicker_cy: layout.kicker_cy,
+        fav: (flip(layout.fav.0, 0.0), layout.fav.1, layout.fav.2),
+        title_cy: layout.title_cy,
+        title_size: layout.title_size,
+        facts: rects(layout.facts),
+        facts_rule_y: layout.facts_rule_y,
+        tags_label_cy: layout.tags_label_cy,
+        tags: rects(layout.tags),
+        tag_overflow: layout.tag_overflow.map(|o| (flip(o.0, o.2), o.1, o.2, o.3, o.4)),
+        add: rect(layout.add),
+        actions_label_cy: layout.actions_label_cy,
+        playlist: rect(layout.playlist),
+        effects: layout.effects.map(rect),
+        scene_properties: layout.scene_properties.map(rect),
+        reset_thumbnail: layout.reset_thumbnail.map(rect),
+        overview: layout.overview.map(rect),
+        delete: rect(layout.delete),
+    }
 }
 
 fn embedded_layout(panel: &BackPanel) -> BackLayout {
@@ -240,6 +304,7 @@ fn embedded_wide_layout(panel: &BackPanel) -> BackLayout {
     let ActionRects { playlist, effects, scene_properties, reset_thumbnail, overview, delete } =
         assign_actions(specs, action_rectangles);
     BackLayout {
+        rtl: false,
         card: (card_left, card_top, card_width, card_height),
         masthead,
         sheet: (sheet_left, sheet_top, sheet_width, sheet_height),
@@ -358,6 +423,7 @@ fn embedded_stacked_layout(panel: &BackPanel) -> BackLayout {
     let ActionRects { playlist, effects, scene_properties, reset_thumbnail, overview, delete } =
         assign_actions(specs, action_rectangles);
     BackLayout {
+        rtl: false,
         card: (card_left, card_top, card_width, card_height),
         masthead,
         sheet: (sheet_left, sheet_top, sheet_width, sheet_height),
@@ -474,6 +540,7 @@ fn external_layout(panel: &BackPanel) -> BackLayout {
     let ActionRects { playlist, effects, scene_properties, reset_thumbnail, overview, delete } =
         assign_actions(specs, action_rectangles);
     BackLayout {
+        rtl: false,
         card: (card_left, card_top, card_width, card_height),
         masthead,
         sheet,

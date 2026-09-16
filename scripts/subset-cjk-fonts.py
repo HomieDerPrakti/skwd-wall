@@ -12,12 +12,12 @@ from fontTools.ttLib import TTCollection, TTFont, newTable
 from fontTools.ttLib.scaleUpem import scale_upem
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = Path("/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc")
+CJK_SOURCE = Path("/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc")
+NOTO_DIR = Path("/usr/share/fonts/noto")
 UI_FONT = ROOT / "assets" / "RobotoCondensed-Bold.ttf"
 LANGUAGE_LABELS = ROOT / "locales" / "en-US" / "settings" / "language.ftl"
-LATIN_OUTPUT = "RobotoCondensed-Bold-UI.ttf"
 
-SHARED_RANGES = [
+CJK_SHARED_RANGES = [
     (0x3000, 0x303F),
     (0x3040, 0x309F),
     (0x30A0, 0x30FF),
@@ -26,9 +26,33 @@ SHARED_RANGES = [
     (0xFFE0, 0xFFE6),
 ]
 
-TARGETS = [
-    ("zh-CN", 2, "settings-language-chinese", "RobotoCondensed-Bold-SC.ttf"),
-    ("ja-JP", 0, "settings-language-japanese", "RobotoCondensed-Bold-JP.ttf"),
+CJK_FACES = [
+    ("SC", 2, ["zh-CN"], ["settings-language-chinese"]),
+    ("JP", 0, ["ja-JP"], ["settings-language-japanese"]),
+]
+
+SHAPED_FACES = [
+    (
+        "AR",
+        "NotoSansArabicUI-Bold.ttf",
+        ["ar-SA", "ur-PK"],
+        ["settings-language-arabic", "settings-language-urdu"],
+        [(0x0600, 0x06FF), (0x0750, 0x077F), (0x08A0, 0x08FF), (0x200C, 0x200F)],
+    ),
+    (
+        "BN",
+        "NotoSansBengaliUI-Bold.ttf",
+        ["bn-BD"],
+        ["settings-language-bengali"],
+        [(0x0980, 0x09FF), (0x200C, 0x200D)],
+    ),
+    (
+        "HI",
+        "NotoSansDevanagariUI-Bold.ttf",
+        ["hi-IN"],
+        ["settings-language-hindi"],
+        [(0x0900, 0x097F), (0x200C, 0x200D)],
+    ),
 ]
 
 MAXP_FIELDS = (
@@ -43,14 +67,13 @@ MAXP_FIELDS = (
 )
 
 
-def catalog_codepoints(locale):
+def catalog_codepoints(locales):
     found = set()
-    for path in sorted((ROOT / "locales" / locale).rglob("*.ftl")):
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if line.startswith("#"):
-                continue
-            text = re.sub(r"^[A-Za-z0-9-]+\s*=", "", line)
-            found |= {ord(ch) for ch in text if ord(ch) > 0x2000}
+    for locale in locales:
+        for path in sorted((ROOT / "locales" / locale).rglob("*.ftl")):
+            for line in path.read_text(encoding="utf-8").splitlines():
+                text = re.sub(r"^[A-Za-z0-9-]+\s*=", "", line)
+                found |= {ord(ch) for ch in text if ord(ch) > 0x7F}
     return found
 
 
@@ -59,22 +82,31 @@ def baseline_codepoints(locale):
     return {int(line, 16) for line in path.read_text().split()}
 
 
-def label_codepoints(key):
+def label_codepoints(keys):
+    labels = {}
     for line in LANGUAGE_LABELS.read_text(encoding="utf-8").splitlines():
         name, _, value = line.partition("=")
-        if name.strip() == key:
-            return {ord(ch) for ch in value.strip()}
-    sys.exit(f"missing {key} in {LANGUAGE_LABELS}")
+        labels[name.strip()] = value.strip()
+    found = set()
+    for key in keys:
+        if key not in labels:
+            sys.exit(f"missing {key} in {LANGUAGE_LABELS}")
+        found |= {ord(ch) for ch in labels[key]}
+    return found
 
 
-def subset(full, codepoints, output):
+def ranges(pairs):
+    return {cp for start, end in pairs for cp in range(start, end + 1)}
+
+
+def subset(full, codepoints, output, layout):
     subprocess.run(
         [
             "pyftsubset",
             str(full),
             f"--unicodes={','.join(f'{cp:04X}' for cp in sorted(codepoints))}",
             f"--output-file={output}",
-            "--layout-features=",
+            f"--layout-features={layout}",
             "--no-hinting",
             "--desubroutinize",
         ],
@@ -118,6 +150,34 @@ def quadratic(source, template, output):
     return output
 
 
+class CjkSource:
+    def __init__(self, collection, index, work, template):
+        self.full = work / f"cjk-{index}-full.otf"
+        collection.fonts[index].save(self.full)
+        self.work = work
+        self.template = template
+
+    def part(self, codepoints, name):
+        cff = subset(self.full, codepoints, self.work / f"{name}.otf", "")
+        return quadratic(cff, self.template, self.work / f"{name}.ttf")
+
+
+class ShapedSource:
+    def __init__(self, path, work, template):
+        if not path.is_file():
+            sys.exit(f"missing source font {path}; install noto-fonts")
+        self.full = path
+        self.work = work
+        self.upem = template["head"].unitsPerEm
+
+    def part(self, codepoints, name):
+        output = subset(self.full, codepoints, self.work / f"{name}.ttf", "*")
+        font = TTFont(output)
+        scale_upem(font, self.upem)
+        font.save(output)
+        return output
+
+
 def merge(parts, output):
     Merger().merge([str(UI_FONT), *map(str, parts)]).save(output)
     size = output.stat().st_size // 1024
@@ -126,28 +186,46 @@ def merge(parts, output):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--source", type=Path, default=SOURCE)
+    parser.add_argument("--cjk-source", type=Path, default=CJK_SOURCE)
+    parser.add_argument("--noto-dir", type=Path, default=NOTO_DIR)
     args = parser.parse_args()
-    if not args.source.is_file():
-        sys.exit(f"missing source font {args.source}; install noto-cjk")
+    if not args.cjk_source.is_file():
+        sys.exit(f"missing source font {args.cjk_source}; install noto-cjk")
 
     template = TTFont(UI_FONT)
-    covered = set(template.getBestCmap())
-    shared = {cp for start, end in SHARED_RANGES for cp in range(start, end + 1)}
-    collection = TTCollection(args.source)
+    base = set(template.getBestCmap())
     work = ROOT / "target" / "font-subset"
     work.mkdir(parents=True, exist_ok=True)
+    collection = TTCollection(args.cjk_source)
 
-    labels = []
-    for locale, face, label, name in TARGETS:
-        full = work / f"{locale}-full.otf"
-        collection.fonts[face].save(full)
-        wanted = (shared | baseline_codepoints(locale) | catalog_codepoints(locale)) - covered
-        cjk = subset(full, wanted, work / f"{locale}-subset.otf")
-        merge([quadratic(cjk, template, work / f"{locale}.ttf")], ROOT / "assets" / name)
-        own = subset(full, label_codepoints(label) - covered, work / f"{locale}-label.otf")
-        labels.append(quadratic(own, template, work / f"{locale}-label.ttf"))
-    merge(labels, ROOT / "assets" / LATIN_OUTPUT)
+    sources = {}
+    wanted = {}
+    labels = {}
+    shared = ranges(CJK_SHARED_RANGES)
+    for face, index, locales, label_keys in CJK_FACES:
+        sources[face] = CjkSource(collection, index, work, template)
+        wanted[face] = shared | baseline_codepoints(locales[0]) | catalog_codepoints(locales)
+        labels[face] = label_codepoints(label_keys)
+    for face, file, locales, label_keys, blocks in SHAPED_FACES:
+        sources[face] = ShapedSource(args.noto_dir / file, work, template)
+        wanted[face] = ranges(blocks) | catalog_codepoints(locales)
+        labels[face] = label_codepoints(label_keys)
+
+    for face in ["UI", *sources]:
+        covered = set(base)
+        parts = []
+        if face in sources:
+            part = sources[face].part(wanted[face] - covered, f"{face}-script")
+            parts.append(part)
+            covered |= set(TTFont(part).getBestCmap())
+        for script, codepoints in labels.items():
+            missing = codepoints - covered
+            if not missing:
+                continue
+            part = sources[script].part(missing, f"{face}-label-{script}")
+            parts.append(part)
+            covered |= set(TTFont(part).getBestCmap())
+        merge(parts, ROOT / "assets" / f"RobotoCondensed-Bold-{face}.ttf")
 
 
 if __name__ == "__main__":

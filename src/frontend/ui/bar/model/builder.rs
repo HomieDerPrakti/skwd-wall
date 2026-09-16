@@ -2,6 +2,7 @@ use crate::domain::library::filter::Filters;
 use crate::i18n::tr;
 
 use super::super::super::misc::text_width;
+use super::super::super::rtl;
 use super::super::super::theme_bar::ThemeBar;
 use super::super::action::BarAction;
 use super::super::catalog::{
@@ -149,12 +150,39 @@ pub fn build_bar_with_tasks(
 
     let menu_len = menu_rows(folder_menu_open, has_folders, folder_options.len(), theme);
     let height = rows_h + menu_space(&mut items, &mut swatch_at, menu_len, scale, menu_up);
-    BarModel { items, width, height: height.max(1.0), menu_up, swatch_at }
+    let mut model =
+        BarModel { items, width, height: height.max(1.0), menu_up, swatch_at, rtl: false };
+    mirror_model(&mut model, rtl(), width, scale);
+    model
 }
+
+pub(in crate::frontend::ui::bar) fn mirror_model(
+    model: &mut BarModel,
+    rtl: bool,
+    extent: f32,
+    scale: f32,
+) {
+    model.rtl = rtl;
+    if !rtl {
+        return;
+    }
+    for item in &mut model.items {
+        item.x = extent - item.x - item.w;
+        item.skew = -item.skew;
+    }
+    if let Some((swatch_x, _)) = model.swatch_at.as_mut() {
+        *swatch_x = extent - *swatch_x - SWATCH_CELLS as f32 * 14.0 * scale;
+    }
+}
+
+pub(in crate::frontend::ui::bar) const SWATCH_CELLS: usize = 6;
 
 pub fn verticalize_bar(model: &mut BarModel, max_height: f32, scale: f32) {
     let gap = 3.0 * scale;
     let item_h = 24.0 * scale;
+    for item in &mut model.items {
+        item.skew = item.skew.abs();
+    }
     let rail_w =
         model.items.iter().map(|item| (item.w - item.skew).max(1.0)).fold(84.0 * scale, f32::max);
     let max_height = max_height.max(item_h);
@@ -186,6 +214,7 @@ pub fn verticalize_bar(model: &mut BarModel, max_height: f32, scale: f32) {
     model.width = columns as f32 * rail_w + columns.saturating_sub(1) as f32 * gap;
     model.height = if columns == 1 { y.max(item_h) } else { max_height };
     model.menu_up = false;
+    mirror_model(model, model.rtl, model.width, scale);
 }
 
 fn task_items(

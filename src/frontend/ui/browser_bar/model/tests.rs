@@ -1,7 +1,7 @@
 use crate::frontend::browser::{Browser, Source};
 
 use super::builder::browser_bar_items;
-use super::cache::browser_bar_items_compact;
+use super::cache::{browser_bar_items_compact, compact_reflow};
 
 #[test]
 fn provider_bars_fit_floor() {
@@ -70,4 +70,25 @@ fn wallhaven_compact_headings() {
         headings,
         ["01  Content", "02  Order", "03  Safety and colour", "04  Format", "05  Limit",]
     );
+}
+
+#[test]
+fn compact_reflow_mirrors_in_rail() {
+    let max_width = 254.0;
+    for source in Source::ALL {
+        let browser = Browser::new(source);
+        let ltr = compact_reflow(&browser, 1.0, max_width, false);
+        let rtl = compact_reflow(&browser, 1.0, max_width, true);
+        assert_eq!(ltr.len(), rtl.len());
+        for ((left, _), (right, _)) in ltr.iter().zip(&rtl) {
+            assert_eq!(left.y, right.y);
+            assert_eq!(left.w, right.w);
+            assert!((right.x - (max_width - left.x - left.w)).abs() < 0.01, "{}", source.label());
+            assert!(right.x >= -0.01 && right.x + right.w <= max_width + 0.01);
+        }
+        if let Some(((first, _), (mirrored, _))) = ltr.get(1).zip(rtl.get(1)) {
+            assert!((first.x).abs() < 0.01);
+            assert!((mirrored.x + mirrored.w - max_width).abs() < 0.01, "{}", source.label());
+        }
+    }
 }

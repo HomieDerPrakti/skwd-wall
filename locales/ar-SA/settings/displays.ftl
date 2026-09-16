@@ -1,0 +1,10 @@
+settings-displays-card = الخلفيات الحالية
+settings-displays-card-desc = هذه هي الخلفيات التي تبلّغ عنها خدمة الخلفيات حاليًا. التغييرات هنا تُطبّق على شاشة واحدة في كل مرة.
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = غير متصلة · { $width } × { $height }
+settings-displays-placement-label = الموضع
+settings-displays-placement-desc = اختر ما إذا كانت الخلفية تملأ الشاشة أو تلائمها أو تتمدد أو تتوسّط أو تتكرر أو تمتد عبرها.
+settings-displays-lock-label = قفل
+settings-displays-lock-desc = تحديث خلفية هذه الشاشة عبر المنتقي المتعدد فقط.
+settings-displays-empty-label = جارٍ اكتشاف الشاشات
+settings-displays-empty-desc = ستظهر الخلفيات الحالية عندما تبلّغ خدمة الخلفيات عن شاشاتها.

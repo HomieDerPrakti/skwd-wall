@@ -12,7 +12,8 @@ fn locales() -> impl Iterator<Item = (&'static str, &'static [&'static str])> {
 
 fn plural_categories(tag: &str) -> &'static [&'static [i64]] {
     match tag {
-        "pt-BR" => &[&[0, 1], &[2, 5, 21]],
+        "pt-BR" | "fr-FR" | "bn-BD" | "hi-IN" => &[&[0, 1], &[2, 5, 21]],
+        "ar-SA" => &[&[0], &[1], &[2], &[3, 10], &[11, 25, 99], &[100, 103, 1000]],
         "ru-RU" => &[&[1, 21], &[2, 3, 22], &[0, 5, 11, 25]],
         "zh-CN" | "ja-JP" => &[&[0, 1, 2, 5, 21]],
         _ => &[&[1], &[0, 2, 5, 21]],
@@ -91,6 +92,14 @@ fn language_table_is_consistent() {
 }
 
 #[test]
+fn right_to_left_follows_script() {
+    for language in LANGUAGES {
+        assert_eq!(language.rtl, language.script == super::Script::Arabic, "{}", language.tag);
+    }
+    assert!(LANGUAGES.iter().filter(|language| language.rtl).count() == 2);
+}
+
+#[test]
 fn static_text_interned() {
     let first = super::tr("tags-filter-title");
     let second = super::tr("tags-filter-title");
@@ -148,6 +157,11 @@ fn saved_names_every_locale() {
         ("ru-RU", "Плейлист 1234", "Стиль 1234"),
         ("zh-CN", "播放列表 1234", "样式 1234"),
         ("ja-JP", "プレイリスト 1234", "スタイル 1234"),
+        ("ar-SA", "قائمة تشغيل 1234", "النمط 1234"),
+        ("fr-FR", "Liste de lecture 1234", "Style 1234"),
+        ("bn-BD", "প্লেলিস্ট 1234", "স্টাইল 1234"),
+        ("ur-PK", "پلے لسٹ 1234", "انداز 1234"),
+        ("hi-IN", "प्लेलिस्ट 1234", "स्टाइल 1234"),
     ];
     assert_eq!(cases.len(), LANGUAGES.len());
     for (locale, playlist, style) in cases {
@@ -427,7 +441,11 @@ fn locale_environment_respects_overrides_and_message_priority() {
         ([None, Some("POSIX"), None, Some("es"), None], "en-US"),
         ([None, Some("de_DE.UTF-8"), Some("es"), Some("sv"), None], "en-US"),
         ([None, None, Some("sv_SE.UTF-8"), Some("es"), None], "sv-SE"),
-        ([None, None, None, Some("en_US.UTF-8"), Some("fr:es_MX:sv")], "es-ES"),
+        ([None, None, None, Some("en_US.UTF-8"), Some("fr:es_MX:sv")], "fr-FR"),
+        ([None, None, None, Some("en_US.UTF-8"), Some("de:es_MX:sv")], "es-ES"),
+        ([None, None, Some("ar_EG.UTF-8"), None, None], "ar-SA"),
+        ([None, None, None, Some("bn_IN.UTF-8"), None], "bn-BD"),
+        ([None, None, None, Some("ur_IN.UTF-8"), Some("hi")], "hi-IN"),
         ([None, None, None, Some("es_ES.UTF-8"), Some("C:sv")], "en-US"),
         ([Some("sv-SE"), Some("C"), None, Some("es"), None], "sv-SE"),
         ([Some(" ES_mx.UTF-8 "), Some("C"), None, None, None], "es-ES"),
@@ -466,6 +484,16 @@ fn added_locales_override_english_and_accept_regional_variants() {
         ("zh-SG", "暂停"),
         ("ja_JP.UTF-8", "一時停止"),
         ("ja", "一時停止"),
+        ("ar_EG.UTF-8", "إيقاف مؤقت"),
+        ("ar", "إيقاف مؤقت"),
+        ("fr_CA.UTF-8", "Pause"),
+        ("fr-BE", "Pause"),
+        ("bn_IN.UTF-8", "বিরতি"),
+        ("bn", "বিরতি"),
+        ("ur_IN.UTF-8", "روکیں"),
+        ("ur", "روکیں"),
+        ("hi_IN.UTF-8", "रोकें"),
+        ("hi", "रोकें"),
     ] {
         let catalog = Catalog::for_locale(requested);
         assert_eq!(catalog.format("filter-bar-pause", None), expected, "{requested}");
@@ -482,6 +510,11 @@ fn static_text_is_cached_per_language() {
         ("ru-RU", "Готово"),
         ("zh-CN", "完成"),
         ("ja-JP", "完了"),
+        ("ar-SA", "تم"),
+        ("fr-FR", "Terminé"),
+        ("bn-BD", "সম্পন্ন"),
+        ("ur-PK", "ہو گیا"),
+        ("hi-IN", "हो गया"),
     ];
     assert_eq!(cases.len(), LANGUAGES.len());
     for (locale, expected) in cases {
@@ -501,7 +534,12 @@ fn saved_language_choices_normalize_to_supported_options() {
         ("auto", "auto"),
         ("", "auto"),
         ("de-DE", "auto"),
-        ("fr-FR", "auto"),
+        ("fr-FR", "fr-FR"),
+        ("fr_CA.UTF-8", "fr-FR"),
+        ("ar", "ar-SA"),
+        ("bn_IN", "bn-BD"),
+        ("ur_IN.UTF-8", "ur-PK"),
+        ("hi-IN", "hi-IN"),
         ("en", "en-US"),
         ("sv_SE.UTF-8", "sv-SE"),
         (" ES_mx ", "es-ES"),

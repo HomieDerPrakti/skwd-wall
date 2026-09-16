@@ -4,6 +4,7 @@ use super::action::BarAction;
 use super::canvas::FilterBar;
 use super::catalog::{MENU_MAX_ROWS, MENU_ROW_H};
 use super::model::{BarItem, BarModel, BarVisualStyle};
+use super::view::item_visual_bounds;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MenuKind {
@@ -24,8 +25,9 @@ pub(in crate::frontend::ui) fn item_contains(item: &BarItem, x: f32, y: f32) -> 
         return false;
     }
     let fraction = (y - item.y) / item.h;
-    let left = item.x + item.skew * (1.0 - fraction);
-    let right = item.x + item.w - item.skew * fraction;
+    let lean = if item.skew >= 0.0 { 1.0 - fraction } else { fraction };
+    let left = item.x + item.skew.abs() * lean;
+    let right = item.x + item.w - item.skew.abs() * (1.0 - lean);
     x >= left && x <= right
 }
 
@@ -92,8 +94,9 @@ impl FilterBar<'_> {
             MenuKind::Backends => 150.0 * self.scale,
         }
         .min(self.model.width.max(120.0));
+        let x = if self.model.rtl { anchor.x + anchor.w - width } else { anchor.x };
         Some(Rectangle {
-            x: anchor.x.min(self.model.width - width).max(0.0),
+            x: x.min(self.model.width - width).max(0.0),
             y: if self.model.menu_up { 0.0 } else { self.model.height - height },
             width,
             height,
@@ -145,9 +148,7 @@ fn visual_item_contains(item: &BarItem, style: BarVisualStyle, x: f32, y: f32) -
     if style == BarVisualStyle::Slices {
         item_contains(item, x, y)
     } else {
-        y >= item.y
-            && y <= item.y + item.h
-            && x >= item.x
-            && x <= item.x + (item.w - item.skew).max(1.0)
+        let (visual_x, visual_w) = item_visual_bounds(item, style);
+        y >= item.y && y <= item.y + item.h && x >= visual_x && x <= visual_x + visual_w
     }
 }

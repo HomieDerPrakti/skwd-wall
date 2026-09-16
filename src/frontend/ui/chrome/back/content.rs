@@ -71,11 +71,14 @@ pub(super) fn draw_fields(
         frame,
         mid_text(
             crate::i18n::tr_args!("card-back-kicker", kind => &kind),
-            Point::new(layout.content_left, layout.kicker_cy + kicker_delta_y),
+            Point::new(
+                layout.lead(layout.content_left, layout.content_right),
+                layout.kicker_cy + kicker_delta_y,
+            ),
             with_alpha(palette.primary, fade * kicker_amount),
             10.0,
             UI_FONT,
-            Alignment::Start,
+            layout.lead_align(),
         ),
     );
     let (title_amount, title_delta_y) = back_rise(progress, 0.65);
@@ -88,18 +91,21 @@ pub(super) fn draw_fields(
                 layout.title_size,
                 (layout.title_right - title_left).max(48.0),
             ),
-            Point::new(title_left, layout.title_cy + title_delta_y),
+            Point::new(
+                layout.lead(title_left, layout.title_right),
+                layout.title_cy + title_delta_y,
+            ),
             with_alpha(palette.surface_text, fade * title_amount),
             layout.title_size,
             UI_FONT,
-            Alignment::Start,
+            layout.lead_align(),
         ),
     );
 
-    for (index, ((label, value), &(x, y, _, height))) in
-        panel.fields.iter().zip(layout.facts.iter()).enumerate()
+    for (index, ((label, value), &fact)) in panel.fields.iter().zip(layout.facts.iter()).enumerate()
     {
         let (amount, delta_y) = back_rise(progress, 1.15 + index as f32 * 0.18);
+        let (x, y, height) = (layout.lead_edge(fact, 0.0), fact.1, fact.3);
         geometry.fill_text(
             frame,
             mid_text(
@@ -108,7 +114,7 @@ pub(super) fn draw_fields(
                 with_alpha(palette.primary, 0.72 * fade * amount),
                 8.5,
                 UI_FONT,
-                Alignment::Start,
+                layout.lead_align(),
             ),
         );
         geometry.fill_text(
@@ -119,7 +125,7 @@ pub(super) fn draw_fields(
                 with_alpha(palette.surface_text, 0.9 * fade * amount),
                 12.0,
                 UI_FONT,
-                Alignment::Start,
+                layout.lead_align(),
             ),
         );
     }
@@ -149,11 +155,14 @@ pub(super) fn draw_tags(
         frame,
         mid_text(
             crate::i18n::tr_args!("card-back-tags-label", count => panel.tags.len()),
-            Point::new(layout.content_left, layout.tags_label_cy + label_delta_y),
+            Point::new(
+                layout.lead(layout.content_left, layout.content_right),
+                layout.tags_label_cy + label_delta_y,
+            ),
             with_alpha(palette.surface_text, 0.52 * fade * label_amount),
             8.5,
             UI_FONT,
-            Alignment::Start,
+            layout.lead_align(),
         ),
     );
     for (index, (tag, &(x, y, width, height))) in
@@ -185,18 +194,18 @@ pub(super) fn draw_tags(
             frame,
             mid_text(
                 tag.to_uppercase(),
-                Point::new(x + 11.0, y + height / 2.0),
+                Point::new(layout.lead_edge((x, y, width, height), 11.0), y + height / 2.0),
                 with_alpha(palette.surface_text, 0.84 * alpha),
                 9.0,
                 UI_FONT,
-                Alignment::Start,
+                layout.lead_align(),
             ),
         );
         geometry.fill_text(
             frame,
             mid_text(
                 String::from("×"),
-                Point::new(x + width - 11.0, y + height / 2.0),
+                Point::new(layout.trail_edge((x, y, width, height), 11.0), y + height / 2.0),
                 with_alpha(palette.primary, 0.82 * alpha),
                 11.0,
                 UI_FONT,

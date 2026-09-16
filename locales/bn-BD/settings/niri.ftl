@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = niri-র ওভারভিউয়ের পেছনে একটি ছবি, ভিডিও বা Wallpaper Engine সিন ব্যবহার করুন। ডেস্কটপ ওয়ালপেপার থেকে আলাদাভাবে এটি ঝাপসা ও আবছা করুন।
+settings-niri-show-label = ওভারভিউতে ওয়ালপেপার দেখান
+settings-niri-show-desc = আলাদা ওভারভিউ ব্যাকড্রপ দেখান। ওভারভিউ বন্ধ থাকলে অ্যানিমেটেড ব্যাকড্রপ থেমে থাকে।
+settings-niri-blur-label = ব্যাকড্রপ ঝাপসা করুন
+settings-niri-blur-desc = ডেস্কটপ ওয়ালপেপার স্পষ্ট রেখে ওভারভিউয়ের কপিটি ঝাপসা করুন।
+settings-niri-blur-radius-label = ব্লার ব্যাসার্ধ
+settings-niri-blur-radius-desc = কপিতে প্রয়োগ করা গাউসিয়ান ব্লারের ব্যাসার্ধ। বেশি হলে আরও নরম।
+settings-niri-follow-label = সবসময় বর্তমান ওয়ালপেপার ব্যবহার করুন
+settings-niri-follow-desc = আপনি যে ওয়ালপেপার প্রয়োগ করেন সেটি অনুসরণ করুন। নিচে আলাদা ব্যাকড্রপ বেছে নিতে এটি বন্ধ করুন।
+settings-niri-image-label = ব্যাকড্রপ সোর্স
+settings-niri-image-desc = কোনো ওয়ালপেপারে ব্যাকড্রপ হিসেবে সেট করুন বেছে নিন, অথবা একটি ছবি, ভিডিও বা Wallpaper Engine প্রজেক্টের পাথ লিখুন। শেষ ওয়ালপেপার ব্যবহার করতে খালি রাখুন।
+settings-niri-auto-theme-label = ব্যাকড্রপ স্বয়ংক্রিয়ভাবে থিম করুন
+settings-niri-auto-theme-desc = স্থির ছবিগুলোকে একটি gowall থিম প্যালেট দিয়ে নতুন রং দিন। ভিডিও ও Wallpaper Engine সিন তাদের আসল রং রাখে।
+settings-niri-theme-label = ব্যাকড্রপ থিম
+settings-niri-theme-desc = ব্যাকড্রপ স্বয়ংক্রিয়ভাবে থিম করার সময় ব্যবহৃত প্যালেট।
+settings-niri-dim-label = ব্যাকড্রপ আবছা করা
+settings-niri-dim-desc = ওভারভিউ ব্যাকড্রপ অন্ধকার করুন। 0 = কিছু না, 100 = কালো।
+settings-niri-rule-label = প্রয়োজনীয় niri layer-rule
+settings-niri-rule-desc = এটি আপনার ~/.config/niri/config.kdl ফাইলে পেস্ট করুন, তারপর niri রিলোড করুন।
+settings-niri-refresh-label = এখনই ব্যাকড্রপ রিফ্রেশ করুন
+settings-niri-refresh-desc = বর্তমান ব্লার, আবছা করা ও থিম সেটিংস দিয়ে নির্বাচিত সোর্স আবার লোড করুন।
+settings-niri-refresh-action = রিফ্রেশ
+settings-niri-copy-label = layer-rule ক্লিপবোর্ডে কপি করুন
+settings-niri-copy-desc = niri-র কনফিগের জন্য উপরের স্নিপেটটি কপি করে।
+settings-niri-copy-action = কপি

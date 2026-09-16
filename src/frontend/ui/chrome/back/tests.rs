@@ -76,3 +76,14 @@ fn generated_thumbnail_action_fits_all_card_presentations() {
         }
     }
 }
+
+#[test]
+fn actions_rule_and_rail_divider_follow_the_leading_edge() {
+    assert_eq!(super::actions::actions_rule(false, 100.0, 300.0), (174.0, 300.0));
+    assert_eq!(super::actions::actions_rule(true, 100.0, 300.0), (100.0, 226.0));
+    let sheet = Rectangle::new(Point::new(40.0, 60.0), Size::new(300.0, 500.0));
+    let (from, to) = super::background::rail_divider(sheet, false);
+    assert_eq!((from, to), (Point::new(340.0, 60.0), Point::new(340.0, 560.0)));
+    let (from, to) = super::background::rail_divider(sheet, true);
+    assert_eq!((from, to), (Point::new(40.0, 60.0), Point::new(40.0, 560.0)));
+}

@@ -95,6 +95,7 @@ pub struct BarModel {
     pub height: f32,
     pub menu_up: bool,
     pub swatch_at: Option<(f32, f32)>,
+    pub rtl: bool,
 }
 
 pub(super) fn dropdown_width(current: &str, scale: f32) -> f32 {

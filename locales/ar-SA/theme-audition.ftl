@@ -1,0 +1,56 @@
+theme-audition-title = معاينة الألوان
+theme-audition-subtitle = اختر مصدر ألوان، ثم قارن ملفاته التعريفية باستخدام الخلفية نفسها.
+theme-audition-backend = مصدر الألوان
+theme-audition-backend-on = { $backend } · مفعّل
+theme-audition-selected = محدد
+theme-audition-preview = معاينة
+theme-audition-loading = جارٍ إنشاء المعاينات من الخلفية الحالية…
+theme-audition-empty = لم تُعد أي معاينات ألوان. تحقق من أن مصدر الألوان المحدد مثبّت ويعمل.
+
+settings-theme-profile-desc = حرّر الألوان الحالية واحفظ ملفًا تعريفيًا للخلفية التي توفرها.
+theme-profile-load = تحميل الحالي
+theme-profile-save = حفظ لهذه الخلفية
+theme-profile-enabled = استخدام هذا الملف التعريفي
+theme-profile-dark = داكن
+theme-profile-light = فاتح
+
+settings-playback-pause-title = الإيقاف المؤقت التلقائي
+settings-playback-pause-desc = أوقف الخلفيات المتحركة مؤقتًا عند تحقق أي شرط مفعّل.
+settings-playback-process-enabled = الإيقاف المؤقت أثناء تشغيل تطبيقات
+settings-playback-process-desc = أوقف كل الشاشات مؤقتًا أثناء تشغيل عملية مدرجة.
+settings-playback-processes = العمليات
+settings-playback-processes-desc = افصل أسماء الملفات التنفيذية بفواصل. تُطابق الأسماء دون حساسية لحالة الأحرف أو اللاحقة .exe.
+settings-playback-choose-process = اختر عملية قيد التشغيل
+settings-playback-fullscreen = الإيقاف المؤقت عند ملء الشاشة
+settings-playback-fullscreen-desc = أوقف مؤقتًا أثناء ظهور نافذة بملء الشاشة. يتطلب دعم المركّب.
+settings-playback-scope = شاشات الإيقاف المؤقت بالنوافذ
+settings-playback-scope-desc = اختر ما إذا كان شرط الإيقاف المؤقت بالنافذة يوقف شاشتها أم كل الشاشات.
+settings-playback-all = كل الشاشات
+settings-playback-display = الشاشة التي تحتوي النافذة
+settings-playback-resume = تأخير الاستئناف
+settings-playback-resume-desc = الانتظار بعد زوال آخر شرط إيقاف مؤقت تلقائي. يبقى الإيقاف اليدوي ساريًا.
+settings-playback-detection-off = فعّل الإيقاف المؤقت عند ملء الشاشة أو تكبير النافذة للتحقق من دعم المركّب.
+settings-playback-detection-ready = اكتشاف حالة النوافذ متاح
+settings-playback-detection-unavailable = اكتشاف حالة النوافذ غير متاح على هذا المركّب
+settings-playback-paused-process = موقوف مؤقتًا: { $names } قيد التشغيل
+settings-playback-paused-fullscreen = موقوف مؤقتًا: نافذة بملء الشاشة
+settings-playback-resuming = في انتظار الاستئناف
+settings-playback-no-rule = لا توجد قاعدة إيقاف مؤقت تلقائي نشطة
+
+settings-paper-layer-label = طبقة الخلفية
+settings-paper-layer-desc = طبقة Wayland للفيديو والمشاهد. استخدم طبقة الخلفية مع قاعدة place-within-backdrop في Niri لعرض الخلفية النشطة خلف النظرة العامة.
+settings-paper-layer-bottom = السفلية (الافتراضي)
+settings-paper-layer-background = الخلفية
+settings-paper-layer-top = العلوية
+settings-paper-layer-overlay = التراكب
+settings-paper-overview-only-label = التحريك في النظرة العامة في Niri فقط
+settings-paper-overview-only-desc = يتطلب طبقة الخلفية وقاعدة place-within-backdrop. يتوقف مؤقتًا عند إغلاق النظرة العامة.
+settings-playback-paused-overview = موقوف مؤقتًا أثناء إغلاق النظرة العامة في Niri
+
+settings-playback-maximized = الإيقاف المؤقت عند تكبير النوافذ
+settings-playback-maximized-desc = أوقف مؤقتًا عندما يبلّغ المركّب عن نافذة مكبّرة. يتطلب دعم المركّب؛ يبلّغ Niri أيضًا عن النوافذ في مساحات العمل المخفية.
+settings-playback-paused-maximized = موقوف مؤقتًا: نافذة مكبّرة
+
+settings-playback-full-width = الإيقاف المؤقت عند الأعمدة بكامل العرض (Niri)
+settings-playback-full-width-desc = أوقف مؤقتًا عندما يغطي العمود المبلّط النشط 90% على الأقل من عرض شاشته. يشمل Mod+F مع الفجوات العادية. لا تُحتسب مساحات العمل الأخرى.
+settings-playback-paused-full-width = موقوف مؤقتًا: عمود بكامل العرض

@@ -1,10 +1,11 @@
 use iced::widget::{
-    Space, Stack, button, canvas, column, container, mouse_area, row, scrollable, stack, text,
+    Space, Stack, button, canvas, column, container, mouse_area, scrollable, stack, text,
     text_input,
 };
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::frontend::scene::layout::Mode;
+use crate::frontend::ui::row;
 
 #[allow(clippy::wildcard_imports)]
 use super::super::*;
@@ -467,8 +468,11 @@ pub(super) fn tag_mode_panel(app: &App) -> Element<'_, Message> {
     let panel_bd = crate::frontend::ui::with_alpha(pal.primary, 0.5);
     let panel = container(
         column(vec![
-            row(top_row).spacing(6.0).align_y(Alignment::Center).into(),
-            row(input_row).spacing(6.0).align_y(Alignment::Center).into(),
+            crate::frontend::ui::Flow::new(top_row).spacing(6.0).align_y(Alignment::Center).into(),
+            crate::frontend::ui::Flow::new(input_row)
+                .spacing(6.0)
+                .align_y(Alignment::Center)
+                .into(),
         ])
         .spacing(8.0),
     )

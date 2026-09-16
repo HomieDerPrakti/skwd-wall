@@ -1,9 +1,9 @@
-use iced::widget::{button, column, container, image, row, scrollable, text};
+use iced::widget::{button, column, container, image, scrollable, text};
 use iced::{Alignment, Background, ContentFit, Element, Length, Padding};
 
 use crate::app::Message;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{UI_FONT, folio_rule, label, with_alpha};
+use crate::frontend::ui::{UI_FONT, folio_rule, label, logical_padding, row, with_alpha};
 use crate::i18n::{tr, tr_args};
 
 use super::filter::source_colors;
@@ -750,12 +750,12 @@ fn reading_surface<'a>(
         page = page.push(feature);
     }
     page = page.push(settings).push(routing);
-    let editor = scrollable(container(page).width(Length::Fill).padding(Padding {
-        top: 30.0 * scale,
-        right: 30.0 * scale,
-        bottom: 44.0 * scale,
-        left: 34.0 * scale,
-    }))
+    let editor = scrollable(container(page).width(Length::Fill).padding(logical_padding(
+        30.0 * scale,
+        30.0 * scale,
+        44.0 * scale,
+        34.0 * scale,
+    )))
     .id(iced::widget::Id::new("folio-playlist-editor"))
     .direction(iced::widget::scrollable::Direction::Vertical(
         iced::widget::scrollable::Scrollbar::hidden(),

@@ -1,4 +1,4 @@
-use iced::widget::{button, column, container, mouse_area, row, scrollable, text};
+use iced::widget::{button, column, container, mouse_area, scrollable, text};
 use iced::{Alignment, Background, Element, Length, Padding, mouse};
 
 use crate::app::Message;
@@ -7,7 +7,9 @@ use crate::domain::schedule::{
 };
 use crate::frontend::schedule_editor::{BLOCK_KINDS, Editing, SchedMsg, ScheduleEditor};
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{UI_FONT, folio_horizontal_rule, label, legible_type_scale, with_alpha};
+use crate::frontend::ui::{
+    UI_FONT, folio_horizontal_rule, label, legible_type_scale, logical_padding, row, with_alpha,
+};
 use crate::i18n::{tr, tr_args};
 
 const SCHEDULE_INDEX_WIDTH: f32 = 360.0;
@@ -503,12 +505,7 @@ impl ScheduleEditor {
         )
         .width(Length::Fill)
         .height(Length::Fill)
-        .padding(Padding {
-            top: 28.0 * scale,
-            right: 23.0 * scale,
-            bottom: 23.0 * scale,
-            left: 25.0 * scale,
-        })
+        .padding(logical_padding(28.0 * scale, 23.0 * scale, 23.0 * scale, 25.0 * scale))
         .style(move |_| {
             crate::frontend::ui::box_style(
                 with_alpha(palette.background, 0.92),
@@ -1047,12 +1044,7 @@ impl ScheduleEditor {
                         crate::frontend::ui::folio_button_style(selected, false, palette, status)
                     }),
             )
-            .padding(Padding {
-                top: 0.0,
-                right: 0.0,
-                bottom: 0.0,
-                left: depth as f32 * 13.0 * scale
-            }),
+            .padding(logical_padding(0.0, 0.0, 0.0, depth as f32 * 13.0 * scale)),
         ]
         .spacing(4.0 * scale);
         if let ConditionKind::Group { operator, children } = &node.kind {
@@ -1097,12 +1089,12 @@ impl ScheduleEditor {
                     scale * 0.9,
                     palette,
                 ))
-                .padding(Padding {
-                    top: 3.0 * scale,
-                    right: 0.0,
-                    bottom: 2.0 * scale,
-                    left: (depth as f32 + 1.0) * 13.0 * scale,
-                }),
+                .padding(logical_padding(
+                    3.0 * scale,
+                    0.0,
+                    2.0 * scale,
+                    (depth as f32 + 1.0) * 13.0 * scale,
+                )),
             );
         }
         branch.into()

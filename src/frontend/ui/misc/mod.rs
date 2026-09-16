@@ -1,3 +1,4 @@
+mod dir;
 mod fade_frame;
 mod feedback;
 mod folio;
@@ -6,6 +7,10 @@ mod overlay;
 mod style;
 mod typography;
 
+pub(crate) use dir::row;
+pub use dir::{Flow, end, logical_padding, mirror_x, mirror_x_for, rtl, start, start_for};
+#[cfg(test)]
+pub use dir::{end_for, logical_padding_for, ordered};
 pub use fade_frame::FadeFrame;
 pub use feedback::Spinner;
 pub use folio::{

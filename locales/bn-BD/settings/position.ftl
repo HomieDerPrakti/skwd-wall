@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = অন্যগুলোকে প্রভাবিত না করে এই পিকার স্টাইল এবং এর ফিল্টার বার ও অনুসন্ধান প্যানেলের অবস্থান ঠিক করুন।
+settings-position-slices-card = স্লাইস পিকার
+settings-position-hex-card = জ্যামিতিক পিকার
+settings-position-wall-card = ওয়াল পিকার
+settings-position-sandy-card = বালু পিকার
+settings-position-hand-card = কার্ড হ্যান্ড পিকার
+settings-position-horizontal-label = অনুভূমিক অফসেট
+settings-position-horizontal-desc = স্ক্রিনের অর্ধেক প্রস্থের শতাংশ হিসেবে পিকার বামে বা ডানে সরান। ধনাত্মক মান ডানে সরায়।
+settings-position-vertical-label = উল্লম্ব অফসেট
+settings-position-vertical-desc = স্ক্রিনের অর্ধেক উচ্চতার শতাংশ হিসেবে পিকার উপরে বা নিচে সরান। ধনাত্মক মান নিচে সরায়।

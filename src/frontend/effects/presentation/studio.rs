@@ -1,9 +1,9 @@
-use iced::widget::{container, row, stack, text};
+use iced::widget::{container, stack, text};
 use iced::{Background, Color, Element, Length};
 
 use crate::app::Message;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::with_alpha;
+use crate::frontend::ui::{row, with_alpha};
 
 use super::super::PreviewRenderer;
 use super::super::state::Effects;

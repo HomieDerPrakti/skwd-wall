@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = الشبكة
+settings-wallhaven-columns-label = الأعمدة
+settings-wallhaven-columns-desc = عدد المصغرات في كل صف.
+settings-wallhaven-rows-label = الصفوف
+settings-wallhaven-rows-desc = عدد الصفوف الظاهرة في آن واحد.
+settings-wallhaven-thumb-card = المصغرة
+settings-wallhaven-width-label = العرض
+settings-wallhaven-width-desc = عرض المصغرة بالبكسل.
+settings-wallhaven-height-label = الارتفاع
+settings-wallhaven-height-desc = ارتفاع المصغرة بالبكسل.
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = مفتاح API
+settings-wallhaven-api-key-desc = أدخل مفتاح API لـ Wallhaven للوصول إلى ميزات الحساب ونتائج NSFW.
+settings-wallhaven-api-key-placeholder = مفتاح API لـ Wallhaven (لنتائج NSFW)
+settings-wallhaven-username-label = اسم المستخدم
+settings-wallhaven-username-desc = أدخل اسم مستخدمك في Wallhaven للتصفح والتنزيل من مجموعاتك.
+settings-wallhaven-username-placeholder = اسم مستخدم Wallhaven

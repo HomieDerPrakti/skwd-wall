@@ -1,8 +1,9 @@
-use iced::widget::{column, container, row, scrollable, text};
+use iced::widget::{column, container, scrollable, text};
 use iced::{Alignment, Element, Length};
 
 use crate::app::Message;
 use crate::frontend::theme::Palette;
+use crate::frontend::ui::row;
 use crate::i18n::tr;
 
 use super::model::{CardPicker, CardPickerMsg};

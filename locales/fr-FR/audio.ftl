@@ -1,0 +1,49 @@
+audio-masthead = Audio / mixeur
+audio-index-title = Audio
+audio-index-desc = Mettez en pause les fonds d'écran par écran. Les écrans affichant la même source partagent le volume et la sourdine.
+audio-detecting-outputs = Détection des sorties
+audio-state-sound = Son
+audio-state-muted = Sourdine
+audio-state-none = Pas d'audio
+audio-shared-outputs = Sorties partagées
+audio-live-mix = Audio en cours
+audio-live-mix-summary = { $audible } en lecture · { $available } avec audio
+audio-kind-video = Fond d'écran vidéo
+audio-kind-we = Scène Wallpaper Engine
+audio-kind-static = Fond d'écran statique
+audio-kind-none = Aucune source de fond d'écran
+audio-row-sound = ◆  Son
+audio-row-muted = ◇  Sourdine
+audio-row-none = -  Pas d'audio
+audio-linked-source = Source liée
+audio-independent-source = Source indépendante
+audio-channel-label = Audio
+audio-no-channel = Ce fond d'écran n'expose aucun canal audio.
+audio-outputs-kicker = Audio / écrans
+audio-mixer-heading = Mixeur des fonds d'écran
+audio-mixer-desc = Mettez chaque écran en pause indépendamment. Le volume et la sourdine restent liés pour les fonds d'écran partagés.
+audio-outputs-summary =
+    { $total } { $total ->
+        [one] sortie
+       *[other] sorties
+    } · { $available } avec audio · { $sounding } en lecture
+audio-output-channels = Canaux de sortie
+audio-output-channels-desc = Les canaux en sourdine restent sombres. Les écrans affichant la même source partagent le volume et la sourdine.
+audio-looking-displays = Recherche des écrans
+audio-looking-displays-desc = Les commandes audio apparaîtront quand le service de fond d'écran signalera ses écrans.
+audio-live-state = État actuel
+audio-live-none = Aucun audio de fond d'écran n'est en cours de lecture.
+audio-live-playing = Les canaux en surbrillance diffusent de l'audio.
+audio-close-mixer = Fermer le mixeur
+audio-source-video = Vidéo
+audio-source-wallpaper-engine = Wallpaper Engine
+audio-source-we-id = Wallpaper Engine ({ $id })
+audio-source-static-image = Image statique
+audio-wallpaper-label = Fond d'écran
+audio-pause-wallpaper = Mettre le fond d'écran en pause
+audio-resume-wallpaper = Reprendre le fond d'écran
+audio-wallpaper-paused = Mis en pause manuellement
+audio-wallpaper-held = Mis en pause par une autre règle
+audio-wallpaper-playing = En lecture
+audio-state-paused = En pause
+audio-playback-error = Impossible de modifier la lecture du fond d'écran : { $error }

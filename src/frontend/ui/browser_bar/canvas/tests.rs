@@ -56,3 +56,14 @@ fn actions_emit_browser_feature_intents() {
     ));
     assert!(matches!(BrowserBar::message(&BrowserAct::Label), BrowserIntent::Capture));
 }
+
+#[test]
+fn hit_mirrored_skew_geometry() {
+    let items = vec![(item(150.0, 50.0, -10.0, 0), BrowserAct::Close)];
+    assert_eq!(BrowserBar::hit(&items, Point::new(151.0, 0.0)), Some(0));
+    assert_eq!(BrowserBar::hit(&items, Point::new(189.0, 0.0)), Some(0));
+    assert_eq!(BrowserBar::hit(&items, Point::new(191.0, 0.0)), None);
+    assert_eq!(BrowserBar::hit(&items, Point::new(159.0, 20.0)), None);
+    assert_eq!(BrowserBar::hit(&items, Point::new(161.0, 20.0)), Some(0));
+    assert_eq!(BrowserBar::hit(&items, Point::new(199.0, 20.0)), Some(0));
+}

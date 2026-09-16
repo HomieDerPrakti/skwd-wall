@@ -6,13 +6,15 @@ use crate::i18n::tr;
 
 use super::super::super::bar::BarItem;
 use super::super::super::misc::text_width;
+use super::super::super::{mirror_x_for, rtl};
 use super::builder::browser_bar_items;
 use super::types::BrowserAct;
 
-fn browser_bar_key(browser: &Browser, scale: f32, max_width: f32) -> u64 {
+fn browser_bar_key(browser: &Browser, scale: f32, max_width: f32, rtl: bool) -> u64 {
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
     scale.to_bits().hash(&mut hasher);
     max_width.to_bits().hash(&mut hasher);
+    rtl.hash(&mut hasher);
     browser.source.key().hash(&mut hasher);
     browser.request.catalog.max_duration.hash(&mut hasher);
     browser.request.catalog.unsplash.order_by.hash(&mut hasher);
@@ -53,18 +55,24 @@ pub(crate) fn browser_bar_items_compact(
     scale: f32,
     max_width: f32,
 ) -> Rc<Vec<(BarItem, BrowserAct)>> {
-    let key = browser_bar_key(browser, scale, max_width);
+    let rtl = rtl();
+    let key = browser_bar_key(browser, scale, max_width, rtl);
     if let Some((previous_key, items)) = browser.view.bar_items.borrow().as_ref()
         && *previous_key == key
     {
         return items.clone();
     }
-    let items = Rc::new(compact_reflow(browser, scale, max_width));
+    let items = Rc::new(compact_reflow(browser, scale, max_width, rtl));
     *browser.view.bar_items.borrow_mut() = Some((key, items.clone()));
     items
 }
 
-fn compact_reflow(browser: &Browser, scale: f32, max_width: f32) -> Vec<(BarItem, BrowserAct)> {
+pub(super) fn compact_reflow(
+    browser: &Browser,
+    scale: f32,
+    max_width: f32,
+    rtl: bool,
+) -> Vec<(BarItem, BrowserAct)> {
     let source = browser_bar_items(browser, scale);
     let mut output = Vec::with_capacity(source.len());
     let mut current_group = None;
@@ -133,6 +141,9 @@ fn compact_reflow(browser: &Browser, scale: f32, max_width: f32) -> Vec<(BarItem
         x += item.w + item_gap;
         row_height = row_height.max(item.h);
         output.push((item, action));
+    }
+    for (item, _) in &mut output {
+        item.x = mirror_x_for(rtl, item.x, item.w, max_width);
     }
     output
 }

@@ -1,9 +1,9 @@
-use iced::widget::{button, column, container, image, mouse_area, row, text};
+use iced::widget::{button, column, container, image, mouse_area, text};
 use iced::{Alignment, ContentFit, Element, Length, Padding};
 
 use crate::app::Message;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{label, with_alpha};
+use crate::frontend::ui::{label, row, with_alpha};
 use crate::i18n::tr;
 
 use super::super::state::{Effects, EffectsMsg, FILL_MODES, MonitorInfo, TileAudio};

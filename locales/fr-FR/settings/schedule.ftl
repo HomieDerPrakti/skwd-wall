@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = Planification
+settings-schedule-schedule-card-desc = Les règles choisissent le fond d’écran et le thème selon des conditions comme l’heure, le jour de la semaine, la météo, l’alimentation et les écrans. La première règle correspondante l’emporte.
+settings-schedule-enable-label = Activer la planification
+settings-schedule-enable-desc = Active ou désactive toutes les règles de planification sans les supprimer.
+settings-schedule-apply-on-start-label = Appliquer au démarrage
+settings-schedule-apply-on-start-desc = Applique la première règle correspondante au démarrage du service. Un fond d’écran choisi manuellement dans cette session l’emporte toujours.
+settings-schedule-editor-label = Éditeur de planification
+settings-schedule-editor-desc = Construisez des règles à partir de blocs de conditions et glissez-les pour définir la priorité ; la première correspondance l’emporte. Les anciens réglages jour et nuit deviennent deux règles à la première ouverture.
+settings-schedule-editor-action = Ouvrir
+settings-schedule-location-card = Position
+settings-schedule-location-card-desc = Utilisée pour les heures de lever et coucher du soleil et pour les conditions météo.
+settings-schedule-latitude-label = Latitude
+settings-schedule-latitude-desc = Degrés décimaux, nord positif (p. ex. 59,33).
+settings-schedule-longitude-label = Longitude
+settings-schedule-longitude-desc = Degrés décimaux, est positif (p. ex. 18,06).

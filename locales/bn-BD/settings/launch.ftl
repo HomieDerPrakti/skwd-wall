@@ -1,0 +1,12 @@
+settings-launch-launch-card = চালু
+settings-launch-launch-card-desc = পিকার প্রায় 150 ms-এ চালু হয় এবং বন্ধ করলে পুরোপুরি প্রস্থান করে। এই সেটিংস শুধু চালুর সময় এটি কীভাবে দেখা দেয় তা বদলায়।
+settings-launch-animation-label = অ্যানিমেশন
+settings-launch-animation-desc = কোনোটি নয় পিকার তৈরি হওয়ামাত্র দেখায় এবং সবচেয়ে দ্রুত। ফেড শুধু অস্বচ্ছতা বদলায়; উত্থান ও জুম নড়াচড়া যোগ করে।
+settings-launch-animation-none = কোনোটি নয়
+settings-launch-animation-fade = ফেড
+settings-launch-animation-rise = উত্থান
+settings-launch-animation-zoom = জুম
+settings-launch-motion-label = গতি
+settings-launch-motion-desc = পিকার UI-এর ভাগ করা গতি। দ্রুত, মানক ও ধীর ওজন গতি সেটিংসে বদলান।
+settings-launch-fade-from-label = ফেড শুরু
+settings-launch-fade-from-desc = প্রবেশ যে অস্বচ্ছতা থেকে শুরু হয়, শতাংশে। 0 পুরোপুরি স্বচ্ছ থেকে উঠে আসে।

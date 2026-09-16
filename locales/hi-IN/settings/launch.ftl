@@ -1,0 +1,12 @@
+settings-launch-launch-card = लॉन्च
+settings-launch-launch-card-desc = पिकर लगभग 150 ms में शुरू होता है और बंद होने पर पूरी तरह बाहर निकल जाता है। ये सेटिंग्स केवल स्टार्टअप के दौरान उसका दिखना बदलती हैं।
+settings-launch-animation-label = एनिमेशन
+settings-launch-animation-desc = कोई नहीं पिकर बनते ही दिखा देता है और सबसे तेज़ है। फ़ेड केवल अपारदर्शिता बदलता है; उभार और ज़ूम गति जोड़ते हैं।
+settings-launch-animation-none = कोई नहीं
+settings-launch-animation-fade = फ़ेड
+settings-launch-animation-rise = उभार
+settings-launch-animation-zoom = ज़ूम
+settings-launch-motion-label = गति
+settings-launch-motion-desc = पिकर UI की साझा गति। तेज़, मानक और धीमा वेट Motion सेटिंग्स में बदलें।
+settings-launch-fade-from-label = फ़ेड की शुरुआत
+settings-launch-fade-from-desc = प्रवेश जिस अपारदर्शिता से शुरू होता है, प्रतिशत में। 0 पूरी तरह पारदर्शी से उभरता है।

@@ -6,7 +6,7 @@ use crate::frontend::theme::Palette;
 
 use super::model::{BrowserAct, browser_bar_items_compact, is_order_action};
 use crate::frontend::ui::bar::{BarItem, BarVisualStyle, draw_swatch_with_style, item_contains};
-use crate::frontend::ui::{UI_FONT, mid_text, with_alpha};
+use crate::frontend::ui::{UI_FONT, mid_text, rtl, with_alpha};
 
 pub struct BrowserBar<'a> {
     pub browser: &'a crate::frontend::browser::Browser,
@@ -104,12 +104,13 @@ impl canvas::Program<BrowserIntent> for BrowserBar<'_> {
         order.sort_by_key(|&index| items[index].0.z);
         let hovered_index =
             cursor.position_in(bounds).and_then(|position| Self::hit(&items, position));
+        let rtl = rtl();
         {
             let faded = &mut crate::frontend::ui::FadeFrame::new(&mut frame, 1.0);
             for index in order {
                 let item = &items[index].0;
                 let hovered = hovered_index == Some(index);
-                draw_folio_item(faded, item, &items[index].1, hovered, self.pal, self.scale);
+                draw_folio_item(faded, item, &items[index].1, hovered, self.pal, self.scale, rtl);
             }
         }
         vec![frame.into_geometry()]
@@ -132,6 +133,10 @@ impl canvas::Program<BrowserIntent> for BrowserBar<'_> {
 
 mod tests;
 
+fn lead_x(rtl: bool, item: &BarItem, inset: f32) -> f32 {
+    if rtl { item.x + item.w - inset } else { item.x + inset }
+}
+
 fn draw_folio_item(
     frame: &mut crate::frontend::ui::FadeFrame<'_>,
     item: &BarItem,
@@ -139,21 +144,24 @@ fn draw_folio_item(
     hovered: bool,
     palette: &Palette,
     scale: f32,
+    rtl: bool,
 ) {
+    let lead = if rtl { Alignment::End } else { Alignment::Start };
     if matches!(action, BrowserAct::Label) {
         frame.fill_text(mid_text(
             item.label.clone(),
-            Point::new(item.x, item.y + item.h / 2.0),
+            Point::new(lead_x(rtl, item, 0.0), item.y + item.h / 2.0),
             with_alpha(palette.surface_text, 0.42),
             item.text_size,
             UI_FONT,
-            Alignment::Start,
+            lead,
         ));
-        let line_x = (item.x + 92.0 * scale).min(item.x + item.w);
-        if line_x < item.x + item.w {
+        let line_w = (item.w - 92.0 * scale).max(0.0);
+        if line_w > 0.0 {
+            let line_x = lead_x(!rtl, item, 0.0);
             let line = canvas::Path::line(
                 Point::new(line_x, item.y + item.h / 2.0),
-                Point::new(item.x + item.w, item.y + item.h / 2.0),
+                Point::new(lead_x(rtl, item, 92.0 * scale), item.y + item.h / 2.0),
             );
             frame.stroke(
                 &line,
@@ -173,15 +181,16 @@ fn draw_folio_item(
             frame.fill(&bounds, with_alpha(palette.surface_variant, 0.3));
         }
         if item.active {
+            let marker_x = if rtl { item.x + item.w - 2.0 * scale } else { item.x };
             let marker = canvas::Path::rectangle(
-                Point::new(item.x, item.y + 4.0 * scale),
+                Point::new(marker_x, item.y + 4.0 * scale),
                 Size::new(2.0 * scale, item.h - 8.0 * scale),
             );
             frame.fill(&marker, palette.primary);
         }
         frame.fill_text(mid_text(
             item.label.clone(),
-            Point::new(item.x + 8.0 * scale, item.y + item.h / 2.0),
+            Point::new(lead_x(rtl, item, 8.0 * scale), item.y + item.h / 2.0),
             if item.active {
                 palette.primary
             } else {
@@ -189,7 +198,7 @@ fn draw_folio_item(
             },
             item.text_size,
             if item.nerd { crate::frontend::ui::NERD_FONT } else { UI_FONT },
-            Alignment::Start,
+            lead,
         ));
         return;
     }
@@ -217,7 +226,7 @@ fn draw_folio_item(
     );
     frame.fill_text(mid_text(
         item.label.clone(),
-        Point::new(item.x + 7.0 * scale, item.y + item.h / 2.0),
+        Point::new(lead_x(rtl, item, 7.0 * scale), item.y + item.h / 2.0),
         if item.active {
             palette.primary
         } else {
@@ -225,6 +234,6 @@ fn draw_folio_item(
         },
         item.text_size,
         if item.nerd { crate::frontend::ui::NERD_FONT } else { UI_FONT },
-        Alignment::Start,
+        lead,
     ));
 }

@@ -28,7 +28,7 @@ use catalog::{
 #[cfg(test)]
 use menu::{folder_depth, folder_leaf};
 #[cfg(test)]
-use model::BarModel;
+use model::{BarModel, mirror_model};
 #[cfg(test)]
 use view::split_icon_label;
 

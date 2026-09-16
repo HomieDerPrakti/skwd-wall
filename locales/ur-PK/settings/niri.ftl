@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = niri کے اوور ویو کے پیچھے تصویر، ویڈیو یا Wallpaper Engine سین استعمال کریں۔ اسے ڈیسک ٹاپ وال پیپر سے الگ بلر اور مدھم کریں۔
+settings-niri-show-label = اوور ویو میں وال پیپر دکھائیں
+settings-niri-show-desc = الگ اوور ویو پس منظر دکھائیں۔ اوور ویو بند ہونے پر متحرک پس منظر رک جاتے ہیں۔
+settings-niri-blur-label = پس منظر بلر کریں
+settings-niri-blur-desc = ڈیسک ٹاپ وال پیپر کو واضح رکھتے ہوئے اوور ویو کی نقل بلر کریں۔
+settings-niri-blur-radius-label = بلر ریڈیس
+settings-niri-blur-radius-desc = نقل پر لاگو گاؤسی بلر ریڈیس۔ زیادہ ہو تو نرم ہوتا ہے۔
+settings-niri-follow-label = ہمیشہ موجودہ وال پیپر استعمال کریں
+settings-niri-follow-desc = آپ کے لاگو کردہ وال پیپر کی پیروی کریں۔ نیچے الگ پس منظر منتخب کرنے کے لیے بند کریں۔
+settings-niri-image-label = پس منظر کا ماخذ
+settings-niri-image-desc = کسی وال پیپر پر پس منظر کے طور پر سیٹ کریں منتخب کریں، یا تصویر، ویڈیو یا Wallpaper Engine پروجیکٹ کا پاتھ درج کریں۔ آخری وال پیپر استعمال کرنے کے لیے خالی چھوڑیں۔
+settings-niri-auto-theme-label = پس منظر کی خودکار تھیمنگ
+settings-niri-auto-theme-desc = ساکن تصاویر کو gowall تھیم پیلیٹ سے دوبارہ رنگیں۔ ویڈیوز اور Wallpaper Engine سین اپنے اصل رنگ رکھتے ہیں۔
+settings-niri-theme-label = پس منظر کی تھیم
+settings-niri-theme-desc = پس منظر کی خودکار تھیمنگ میں استعمال ہونے والا پیلیٹ۔
+settings-niri-dim-label = پس منظر کا مدھم پن
+settings-niri-dim-desc = اوور ویو پس منظر کو تاریک کریں۔ 0 = کچھ نہیں، 100 = سیاہ۔
+settings-niri-rule-label = مطلوبہ niri layer-rule
+settings-niri-rule-desc = اسے اپنی ~/.config/niri/config.kdl میں پیسٹ کریں، پھر niri دوبارہ لوڈ کریں۔
+settings-niri-refresh-label = پس منظر ابھی ریفریش کریں
+settings-niri-refresh-desc = منتخب ماخذ کو موجودہ بلر، مدھم پن اور تھیم سیٹنگز کے ساتھ دوبارہ لوڈ کریں۔
+settings-niri-refresh-action = ریفریش کریں
+settings-niri-copy-label = layer-rule کلپ بورڈ پر کاپی کریں
+settings-niri-copy-desc = niri کی کنفیگ کے لیے اوپر والا ٹکڑا کاپی کرتا ہے۔
+settings-niri-copy-action = کاپی کریں

@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = التصيير
+settings-wallpaper-engine-rendering-card-desc = حدد الافتراضيات المستخدمة عندما يعرض مصيّر Vulkan المدمج مشهد Workshop.
+settings-wallpaper-engine-fps-label = حد FPS
+settings-wallpaper-engine-fps-desc = الحد الأقصى للإطارات في الثانية. القيم الأقل تخفف حمل CPU/GPU.
+settings-wallpaper-engine-scaling-label = التحجيم الافتراضي
+settings-wallpaper-engine-scaling-desc = كيفية ملاءمة مشاهد Workshop لكل شاشة. «الافتراضي» يتبع وضع الملء العام.
+settings-wallpaper-engine-scaling-default = الافتراضي العام
+settings-wallpaper-engine-scaling-fill = ملء
+settings-wallpaper-engine-scaling-fit = احتواء
+settings-wallpaper-engine-scaling-stretch = تمديد
+settings-wallpaper-engine-scaling-center = توسيط
+settings-wallpaper-engine-scaling-tile = تبليط
+settings-wallpaper-engine-scaling-span = امتداد
+settings-wallpaper-engine-effects-card = التأثيرات
+settings-wallpaper-engine-particles-label = تعطيل الجسيمات
+settings-wallpaper-engine-particles-desc = تخطي طبقات الجسيمات في المشاهد التي تستخدمها. قد يقلل هذا عمل GPU، لكن تلك المشاهد ستفقد جزءًا من حركتها.

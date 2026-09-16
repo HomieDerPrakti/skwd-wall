@@ -1,4 +1,4 @@
-use iced::widget::{button, column, container, mouse_area, row, scrollable, text, text_input};
+use iced::widget::{button, column, container, mouse_area, scrollable, text, text_input};
 use iced::{Alignment, Background, Color, Element, Length};
 
 use crate::app::Message;
@@ -6,7 +6,7 @@ use crate::domain::theme::Candidate;
 use crate::frontend::theme::{Palette, ROLES};
 use crate::frontend::theme_designer::{ThemeDesigner, ThemeMsg};
 use crate::frontend::ui::{
-    FOLIO_INDEX_WIDTH, UI_FONT, folio_horizontal_rule, folio_rule, label, legible_type_scale,
+    FOLIO_INDEX_WIDTH, UI_FONT, folio_horizontal_rule, folio_rule, label, legible_type_scale, row,
     with_alpha,
 };
 use crate::i18n::{tr, tr_args};

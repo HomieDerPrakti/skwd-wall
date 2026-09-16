@@ -1,0 +1,49 @@
+audio-masthead = অডিও / মিক্সার
+audio-index-title = অডিও
+audio-index-desc = ডিসপ্লে অনুযায়ী ওয়ালপেপার বিরতি দিন। একই উৎস দেখানো ডিসপ্লেগুলো ভলিউম ও মিউট সেটিংস ভাগ করে নেয়।
+audio-detecting-outputs = আউটপুট শনাক্ত করা হচ্ছে
+audio-state-sound = শব্দ
+audio-state-muted = মিউট
+audio-state-none = অডিও নেই
+audio-shared-outputs = ভাগ করা আউটপুট
+audio-live-mix = বর্তমান অডিও
+audio-live-mix-summary = { $audible }টি বাজছে · { $available }টিতে অডিও আছে
+audio-kind-video = ভিডিও ওয়ালপেপার
+audio-kind-we = Wallpaper Engine দৃশ্য
+audio-kind-static = স্থির ওয়ালপেপার
+audio-kind-none = কোনো ওয়ালপেপার উৎস নেই
+audio-row-sound = ◆  শব্দ
+audio-row-muted = ◇  মিউট
+audio-row-none = -  অডিও নেই
+audio-linked-source = সংযুক্ত উৎস
+audio-independent-source = স্বতন্ত্র উৎস
+audio-channel-label = অডিও
+audio-no-channel = এই ওয়ালপেপারে কোনো অডিও চ্যানেল নেই।
+audio-outputs-kicker = অডিও / ডিসপ্লে
+audio-mixer-heading = ওয়ালপেপার মিক্সার
+audio-mixer-desc = প্রতিটি ডিসপ্লে আলাদাভাবে বিরতি দিন। ভাগ করা ওয়ালপেপারের ভলিউম ও মিউট সংযুক্ত থাকে।
+audio-outputs-summary =
+    { $total ->
+        [one] { $total }টি আউটপুট
+       *[other] মোট { $total }টি আউটপুট
+    } · { $available }টিতে অডিও আছে · { $sounding }টি বাজছে
+audio-output-channels = আউটপুট চ্যানেল
+audio-output-channels-desc = মিউট করা চ্যানেল অন্ধকার থাকে। একই উৎস দেখানো ডিসপ্লেগুলো ভলিউম ও মিউট সেটিংস ভাগ করে নেয়।
+audio-looking-displays = ডিসপ্লে খোঁজা হচ্ছে
+audio-looking-displays-desc = ওয়ালপেপার সার্ভিস ডিসপ্লের তথ্য জানালে অডিও নিয়ন্ত্রণ দেখা যাবে।
+audio-live-state = বর্তমান অবস্থা
+audio-live-none = এখন কোনো ওয়ালপেপার অডিও বাজছে না।
+audio-live-playing = হাইলাইট করা চ্যানেলগুলোতে অডিও বাজছে।
+audio-close-mixer = মিক্সার বন্ধ করুন
+audio-source-video = ভিডিও
+audio-source-wallpaper-engine = Wallpaper Engine
+audio-source-we-id = Wallpaper Engine ({ $id })
+audio-source-static-image = স্থির ছবি
+audio-wallpaper-label = ওয়ালপেপার
+audio-pause-wallpaper = ওয়ালপেপার বিরতি দিন
+audio-resume-wallpaper = ওয়ালপেপার চালু করুন
+audio-wallpaper-paused = হাতে বিরতি দেওয়া
+audio-wallpaper-held = অন্য নিয়মে বিরতি দেওয়া
+audio-wallpaper-playing = চলছে
+audio-state-paused = বিরতিতে
+audio-playback-error = ওয়ালপেপার প্লেব্যাক পরিবর্তন করা যায়নি: { $error }

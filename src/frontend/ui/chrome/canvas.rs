@@ -32,6 +32,7 @@ impl<Message> canvas::Program<Message> for ChromeCanvas<'_> {
     ) -> Vec<canvas::Geometry> {
         let palette = self.pal;
         let fade = self.fade.clamp(0.0, 1.0);
+        let rtl = super::super::rtl();
         let geometry = self.cache.draw(renderer, bounds.size(), |frame: &mut Frame| {
             for chrome in &self.render.chrome {
                 if chrome_hidden(chrome, &self.render) {
@@ -44,6 +45,7 @@ impl<Message> canvas::Program<Message> for ChromeCanvas<'_> {
                     faded,
                     self.show_type_badges,
                     self.show_video_indicators,
+                    rtl,
                 );
             }
             if let Some(panel) = &self.render.back {

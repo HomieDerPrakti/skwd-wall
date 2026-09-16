@@ -14,6 +14,7 @@ pub struct Language {
     pub label: &'static str,
     pub resources: &'static [&'static str],
     pub script: Script,
+    pub rtl: bool,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -22,6 +23,9 @@ pub enum Script {
     Cyrillic,
     Simplified,
     Japanese,
+    Arabic,
+    Bengali,
+    Devanagari,
 }
 
 pub const LANGUAGES: &[Language] = &[
@@ -30,6 +34,7 @@ pub const LANGUAGES: &[Language] = &[
         prefix: "en",
         label: "settings-language-english",
         resources: &[],
+        rtl: false,
         script: Script::Latin,
     },
     Language {
@@ -37,6 +42,7 @@ pub const LANGUAGES: &[Language] = &[
         prefix: "sv",
         label: "settings-language-swedish",
         resources: SV_SE_RESOURCES,
+        rtl: false,
         script: Script::Latin,
     },
     Language {
@@ -44,6 +50,7 @@ pub const LANGUAGES: &[Language] = &[
         prefix: "es",
         label: "settings-language-spanish",
         resources: ES_ES_RESOURCES,
+        rtl: false,
         script: Script::Latin,
     },
     Language {
@@ -51,6 +58,7 @@ pub const LANGUAGES: &[Language] = &[
         prefix: "pt",
         label: "settings-language-portuguese",
         resources: PT_BR_RESOURCES,
+        rtl: false,
         script: Script::Latin,
     },
     Language {
@@ -58,6 +66,7 @@ pub const LANGUAGES: &[Language] = &[
         prefix: "ru",
         label: "settings-language-russian",
         resources: RU_RU_RESOURCES,
+        rtl: false,
         script: Script::Cyrillic,
     },
     Language {
@@ -65,6 +74,7 @@ pub const LANGUAGES: &[Language] = &[
         prefix: "zh",
         label: "settings-language-chinese",
         resources: ZH_CN_RESOURCES,
+        rtl: false,
         script: Script::Simplified,
     },
     Language {
@@ -72,7 +82,48 @@ pub const LANGUAGES: &[Language] = &[
         prefix: "ja",
         label: "settings-language-japanese",
         resources: JA_JP_RESOURCES,
+        rtl: false,
         script: Script::Japanese,
+    },
+    Language {
+        tag: "ar-SA",
+        prefix: "ar",
+        label: "settings-language-arabic",
+        resources: AR_SA_RESOURCES,
+        rtl: true,
+        script: Script::Arabic,
+    },
+    Language {
+        tag: "fr-FR",
+        prefix: "fr",
+        label: "settings-language-french",
+        resources: FR_FR_RESOURCES,
+        rtl: false,
+        script: Script::Latin,
+    },
+    Language {
+        tag: "bn-BD",
+        prefix: "bn",
+        label: "settings-language-bengali",
+        resources: BN_BD_RESOURCES,
+        rtl: false,
+        script: Script::Bengali,
+    },
+    Language {
+        tag: "ur-PK",
+        prefix: "ur",
+        label: "settings-language-urdu",
+        resources: UR_PK_RESOURCES,
+        rtl: true,
+        script: Script::Arabic,
+    },
+    Language {
+        tag: "hi-IN",
+        prefix: "hi",
+        label: "settings-language-hindi",
+        resources: HI_IN_RESOURCES,
+        rtl: false,
+        script: Script::Devanagari,
     },
 ];
 
@@ -198,6 +249,10 @@ fn active_index() -> usize {
 
 pub fn active_script() -> Script {
     LANGUAGES[active_index()].script
+}
+
+pub fn is_rtl() -> bool {
+    LANGUAGES[active_index()].rtl
 }
 
 pub fn catalog() -> &'static Catalog {

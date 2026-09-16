@@ -1,15 +1,14 @@
 use std::time::{Duration, Instant};
 
 use iced::widget::canvas::{self, Frame, Path, Stroke};
-use iced::widget::{button, column, container, row, stack, text};
+use iced::widget::{button, column, container, stack, text};
 use iced::{
-    Alignment, Background, Border, Color, Element, Event, Length, Padding, Point, Rectangle, mouse,
-    window,
+    Alignment, Background, Border, Color, Element, Event, Length, Point, Rectangle, mouse, window,
 };
 
 use crate::frontend::animation::{MotionProfile, MotionTier};
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{UI_FONT, with_alpha};
+use crate::frontend::ui::{UI_FONT, logical_padding, mirror_x, row, with_alpha};
 
 use super::typography::legible_type_scale;
 
@@ -91,12 +90,7 @@ pub fn folio_index_shell_tinted<'a, Message: Clone + 'a>(
     container(content)
         .width(Length::Fill)
         .height(Length::Fill)
-        .padding(iced::Padding {
-            top: 25.0 * scale,
-            right: 20.0 * scale,
-            bottom: 20.0 * scale,
-            left: 22.0 * scale,
-        })
+        .padding(logical_padding(25.0 * scale, 20.0 * scale, 20.0 * scale, 22.0 * scale))
         .style(move |_| {
             super::style::box_style(
                 with_alpha(palette.background, alphas.0),
@@ -177,12 +171,7 @@ pub fn folio_stack_bar<'a, Message: Clone + 'a>(
                 .width(Length::Fill)
                 .height(Length::Fixed(options_height * scale * reveal))
                 .clip(true)
-                .padding(Padding {
-                    top: 7.0 * scale,
-                    right: 30.0 * scale,
-                    bottom: 8.0 * scale,
-                    left: 12.0 * scale,
-                })
+                .padding(logical_padding(7.0 * scale, 30.0 * scale, 8.0 * scale, 12.0 * scale))
                 .style(move |_| {
                     super::style::box_style(
                         with_alpha(palette.surface_container, 0.62),
@@ -217,17 +206,11 @@ fn folio_trailing_bar<'a, Message: Clone + 'a>(
             .width(Length::Fill)
             .height(Length::Fill)
             .align_y(iced::alignment::Vertical::Center)
-            .padding(Padding {
-                top: 4.0 * scale,
-                right: 8.0 * scale,
-                bottom: 4.0 * scale,
-                left: 10.0 * scale,
-            })
+            .padding(logical_padding(4.0 * scale, 8.0 * scale, 4.0 * scale, 10.0 * scale))
             .clip(true),
     )
     .on_press(on_focus);
-    let action =
-        container(action).padding(Padding { top: 0.0, right: 6.0 * scale, bottom: 0.0, left: 0.0 });
+    let action = container(action).padding(logical_padding(0.0, 6.0 * scale, 0.0, 0.0));
     container(row![marker, copy, action].align_y(Alignment::Center))
         .width(Length::Fill)
         .height(Length::Fixed(60.0 * scale))
@@ -462,11 +445,12 @@ pub(crate) fn folio_diagonal_edges(width: f32, height: f32, mix: f32) -> (f32, f
 
 pub(crate) fn folio_diagonal_wipe(width: f32, height: f32, mix: f32) -> Path {
     let (top, bottom) = folio_diagonal_edges(width, height, mix);
+    let origin = mirror_x(0.0, 0.0, width);
     Path::new(|builder| {
-        builder.move_to(Point::ORIGIN);
-        builder.line_to(Point::new(top, 0.0));
-        builder.line_to(Point::new(bottom, height));
-        builder.line_to(Point::new(0.0, height));
+        builder.move_to(Point::new(origin, 0.0));
+        builder.line_to(Point::new(mirror_x(top, 0.0, width), 0.0));
+        builder.line_to(Point::new(mirror_x(bottom, 0.0, width), height));
+        builder.line_to(Point::new(origin, height));
         builder.close();
     })
 }
@@ -524,7 +508,10 @@ impl<Message> canvas::Program<Message> for FolioButtonFill {
             if mix < 1.0 {
                 let (top, bottom) = folio_diagonal_edges(bounds.width, bounds.height, mix);
                 frame.stroke(
-                    &Path::line(Point::new(top, 0.0), Point::new(bottom, bounds.height)),
+                    &Path::line(
+                        Point::new(mirror_x(top, 0.0, bounds.width), 0.0),
+                        Point::new(mirror_x(bottom, 0.0, bounds.width), bounds.height),
+                    ),
                     Stroke::default()
                         .with_color(with_alpha(self.palette.tertiary, 0.9))
                         .with_width(2.0),
@@ -733,7 +720,8 @@ impl<Message> canvas::Program<Message> for FolioBlueprint {
         let mut frame = Frame::new(renderer, bounds.size());
         let line = with_alpha(self.palette.outline, 0.07);
         let accent = with_alpha(self.palette.primary, 0.1);
-        let centre = Point::new(bounds.width * 0.76, bounds.height * 0.48);
+        let centre =
+            Point::new(mirror_x(bounds.width * 0.76, 0.0, bounds.width), bounds.height * 0.48);
         for radius in [92.0, 184.0, 276.0] {
             frame.stroke(
                 &Path::circle(centre, radius),

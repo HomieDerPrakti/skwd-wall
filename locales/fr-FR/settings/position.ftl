@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = Positionnez ce style de sélecteur, sa barre de filtres et son panneau de recherche sans toucher aux autres.
+settings-position-slices-card = Sélecteur Tranches
+settings-position-hex-card = Sélecteur Géométrique
+settings-position-wall-card = Sélecteur Mur
+settings-position-sandy-card = Sélecteur Sable
+settings-position-hand-card = Sélecteur Main de cartes
+settings-position-horizontal-label = Décalage horizontal
+settings-position-horizontal-desc = Déplace le sélecteur vers la gauche ou la droite d’un pourcentage de la moitié de la largeur de l’écran. Les valeurs positives le déplacent vers la droite.
+settings-position-vertical-label = Décalage vertical
+settings-position-vertical-desc = Déplace le sélecteur vers le haut ou le bas d’un pourcentage de la moitié de la hauteur de l’écran. Les valeurs positives le déplacent vers le bas.

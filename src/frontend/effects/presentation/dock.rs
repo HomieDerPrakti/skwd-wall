@@ -1,10 +1,12 @@
-use iced::widget::{button, column, container, row, scrollable, text};
+use iced::widget::{button, column, container, scrollable, text};
 use iced::{Alignment, Background, Element, Length, Padding};
 
 use crate::app::Message;
 use crate::domain::effects::EffectParamKind;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{UI_FONT, folio_rule, label, legible_type_scale, with_alpha};
+use crate::frontend::ui::{
+    UI_FONT, folio_rule, label, legible_type_scale, logical_padding, row, with_alpha,
+};
 use crate::i18n::tr;
 
 use super::super::state::{Effects, EffectsMsg, NAV_CATEGORY, NAV_CONFIG_BASE, NAV_EFFECT};
@@ -115,12 +117,7 @@ impl Effects {
                         });
                     tree = tree.push(
                         container(row![guide, branch].spacing(9.0 * scale))
-                            .padding(Padding {
-                                top: 2.0 * scale,
-                                right: 0.0,
-                                bottom: 5.0 * scale,
-                                left: 17.0 * scale,
-                            })
+                            .padding(logical_padding(2.0 * scale, 0.0, 5.0 * scale, 17.0 * scale))
                             .width(Length::Fill),
                     );
                 }

@@ -1,0 +1,49 @@
+audio-masthead = ऑडियो / मिक्सर
+audio-index-title = ऑडियो
+audio-index-desc = डिस्प्ले के अनुसार वॉलपेपर रोकें। एक ही स्रोत दिखाने वाले डिस्प्ले वॉल्यूम और म्यूट सेटिंग साझा करते हैं।
+audio-detecting-outputs = आउटपुट खोजे जा रहे हैं
+audio-state-sound = ध्वनि
+audio-state-muted = म्यूट
+audio-state-none = कोई ऑडियो नहीं
+audio-shared-outputs = साझा आउटपुट
+audio-live-mix = वर्तमान ऑडियो
+audio-live-mix-summary = { $audible } चल रहे · { $available } ऑडियो सहित
+audio-kind-video = वीडियो वॉलपेपर
+audio-kind-we = Wallpaper Engine सीन
+audio-kind-static = स्थिर वॉलपेपर
+audio-kind-none = कोई वॉलपेपर स्रोत नहीं
+audio-row-sound = ◆  ध्वनि
+audio-row-muted = ◇  म्यूट
+audio-row-none = -  कोई ऑडियो नहीं
+audio-linked-source = लिंक्ड स्रोत
+audio-independent-source = स्वतंत्र स्रोत
+audio-channel-label = ऑडियो
+audio-no-channel = यह वॉलपेपर कोई ऑडियो चैनल उपलब्ध नहीं कराता।
+audio-outputs-kicker = ऑडियो / डिस्प्ले
+audio-mixer-heading = वॉलपेपर मिक्सर
+audio-mixer-desc = हर डिस्प्ले को अलग से रोकें। साझा वॉलपेपर के लिए वॉल्यूम और म्यूट लिंक्ड रहते हैं।
+audio-outputs-summary =
+    { $total } { $total ->
+        [one] आउटपुट
+       *[other] आउटपुट्स
+    } · { $available } ऑडियो सहित · { $sounding } चल रहे
+audio-output-channels = आउटपुट चैनल
+audio-output-channels-desc = म्यूट चैनल धुंधले रहते हैं। एक ही स्रोत दिखाने वाले डिस्प्ले वॉल्यूम और म्यूट सेटिंग साझा करते हैं।
+audio-looking-displays = डिस्प्ले खोजे जा रहे हैं
+audio-looking-displays-desc = वॉलपेपर सेवा से डिस्प्ले की सूचना मिलते ही ऑडियो नियंत्रण यहाँ दिखेंगे।
+audio-live-state = वर्तमान स्थिति
+audio-live-none = अभी कोई वॉलपेपर ऑडियो नहीं चल रहा है।
+audio-live-playing = हाइलाइट किए गए चैनल ऑडियो चला रहे हैं।
+audio-close-mixer = मिक्सर बंद करें
+audio-source-video = वीडियो
+audio-source-wallpaper-engine = Wallpaper Engine
+audio-source-we-id = Wallpaper Engine ({ $id })
+audio-source-static-image = स्थिर छवि
+audio-wallpaper-label = वॉलपेपर
+audio-pause-wallpaper = वॉलपेपर रोकें
+audio-resume-wallpaper = वॉलपेपर फिर चलाएँ
+audio-wallpaper-paused = मैन्युअल रूप से रोका गया
+audio-wallpaper-held = किसी अन्य नियम द्वारा रोका गया
+audio-wallpaper-playing = चल रहा है
+audio-state-paused = रुका हुआ
+audio-playback-error = वॉलपेपर प्लेबैक बदला नहीं जा सका: { $error }

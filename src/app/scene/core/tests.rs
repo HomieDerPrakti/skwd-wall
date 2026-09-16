@@ -33,10 +33,13 @@ fn sandy_out_capture() {
 
 #[test]
 fn center_layout_clamps() {
-    assert_eq!(center_layout(1000.0, 0.0), (500.0, 1000.0));
-    assert_eq!(center_layout(1000.0, 400.0), (700.0, 600.0));
-    assert_eq!(center_layout(1000.0, 900.0), (800.0, 400.0));
-    assert_eq!(center_layout(1000.0, -50.0), (500.0, 1000.0));
+    assert_eq!(center_layout(1000.0, 0.0, false), (500.0, 1000.0));
+    assert_eq!(center_layout(1000.0, 400.0, false), (700.0, 600.0));
+    assert_eq!(center_layout(1000.0, 900.0, false), (800.0, 400.0));
+    assert_eq!(center_layout(1000.0, -50.0, false), (500.0, 1000.0));
+    assert_eq!(center_layout(1000.0, 400.0, true), (300.0, 600.0));
+    assert_eq!(center_layout(1000.0, 900.0, true), (200.0, 400.0));
+    assert_eq!(center_layout(1000.0, 0.0, true), (500.0, 1000.0));
 }
 
 #[test]

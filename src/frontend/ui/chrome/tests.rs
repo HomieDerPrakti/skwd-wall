@@ -438,3 +438,223 @@ fn compact_back_sections() {
     assert!(layout.tags.iter().all(|tag| tag.1 + tag.3 <= layout.action_deck.1 + 0.01));
     assert!(layout.add.1 + layout.add.3 <= layout.action_deck.1 + 0.01);
 }
+
+fn chrome_at(view: u8, skew: f32) -> crate::frontend::scene::Chrome {
+    crate::frontend::scene::Chrome {
+        view,
+        cx: 400.0,
+        cy: 300.0,
+        hw: 120.0,
+        hh: 80.0,
+        skew,
+        edge_tilt: 0.0,
+        kind: 1,
+        has_video: true,
+        favourite: true,
+        radius: 8.0,
+        opacity: 1.0,
+    }
+}
+
+#[test]
+fn slice_badges_swap_column_under_rtl() {
+    let badge = 40.0;
+    let sloped = chrome_at(0, 30.0);
+    let (indicator, badge_x) = super::badges::slice_corners(false, &sloped, badge);
+    assert_eq!(indicator, sloped.cx + sloped.hw - 21.0);
+    assert_eq!(badge_x, sloped.cx + sloped.hw - badge - 30.0 - 8.0);
+    let (indicator, badge_x) = super::badges::slice_corners(true, &sloped, badge);
+    assert_eq!(indicator, sloped.cx - sloped.hw + 30.0 + 21.0);
+    assert_eq!(badge_x, sloped.cx - sloped.hw + 8.0);
+
+    let leaning = chrome_at(0, -30.0);
+    let (indicator, badge_x) = super::badges::slice_corners(false, &leaning, badge);
+    assert_eq!(indicator, leaning.cx - leaning.hw + 21.0);
+    assert_eq!(badge_x, leaning.cx - leaning.hw + 30.0 + 8.0);
+    let (indicator, badge_x) = super::badges::slice_corners(true, &leaning, badge);
+    assert_eq!(indicator, leaning.cx + leaning.hw - 30.0 - 21.0);
+    assert_eq!(badge_x, leaning.cx + leaning.hw - badge - 8.0);
+}
+
+#[test]
+fn grid_and_hex_marks_mirror_about_card_center() {
+    let badge = 36.0;
+    let grid = chrome_at(1, 0.0);
+    let (badge_x, indicator, fav) = super::badges::grid_corners(false, &grid, badge);
+    assert_eq!(badge_x, grid.cx - grid.hw + 4.0);
+    assert_eq!(indicator, grid.cx - grid.hw + 13.0);
+    assert_eq!(fav, grid.cx + grid.hw - 11.0);
+    let (badge_x, indicator, fav) = super::badges::grid_corners(true, &grid, badge);
+    assert_eq!(badge_x + badge, grid.cx + grid.hw - 4.0);
+    assert_eq!(indicator, grid.cx + grid.hw - 13.0);
+    assert_eq!(fav, grid.cx - grid.hw + 11.0);
+
+    let hex = chrome_at(2, 0.0);
+    let ltr = super::badges::hex_indicator_x(false, &hex);
+    let rtl = super::badges::hex_indicator_x(true, &hex);
+    assert_eq!(ltr, hex.cx + hex.hw * 0.5 - 14.0);
+    assert_eq!(rtl, hex.cx * 2.0 - ltr);
+}
+
+fn mirrored_rect(card: (f32, f32, f32, f32), rect: (f32, f32, f32, f32)) -> (f32, f32, f32, f32) {
+    (card.0 + card.2 - (rect.0 - card.0) - rect.2, rect.1, rect.2, rect.3)
+}
+
+fn assert_rect_mirrored(
+    name: &str,
+    card: (f32, f32, f32, f32),
+    ltr: (f32, f32, f32, f32),
+    rtl: (f32, f32, f32, f32),
+) {
+    let expected = mirrored_rect(card, ltr);
+    for (a, b) in
+        [(expected.0, rtl.0), (expected.1, rtl.1), (expected.2, rtl.2), (expected.3, rtl.3)]
+    {
+        assert!((a - b).abs() < 0.01, "{name} not mirrored: {ltr:?} -> {rtl:?}");
+    }
+}
+
+#[test]
+fn back_layout_mirrors_about_the_card() {
+    use crate::frontend::scene::BackPanel;
+    let panels = [
+        BackPanel {
+            cx: 640.0,
+            cy: 360.0,
+            hw: 462.0,
+            hh: 260.0,
+            skew: 72.0,
+            progress: 1.0,
+            embedded: true,
+            static_img: true,
+            overview_available: true,
+            tags: vec![String::from("anime"), String::from("sunset"), String::from("city")],
+            fields: vec![(String::from("Size"), String::from("1 MB"))],
+            ..Default::default()
+        },
+        BackPanel {
+            cx: 400.0,
+            cy: 300.0,
+            hw: 200.0,
+            hh: 150.0,
+            progress: 1.0,
+            embedded: true,
+            tags: vec![String::from("nature"), String::from("golden hour")],
+            fields: vec![(String::from("Size"), String::from("3840x2160"))],
+            ..Default::default()
+        },
+        BackPanel {
+            cx: 800.0,
+            cy: 450.0,
+            hw: 720.0,
+            hh: 390.0,
+            progress: 1.0,
+            static_img: true,
+            overview_available: true,
+            reset_thumbnail: true,
+            tags: vec![String::from("nature"), String::from("editorial")],
+            fields: vec![(String::from("Resolution"), String::from("3840 x 2160"))],
+            ..Default::default()
+        },
+    ];
+    for panel in &panels {
+        let ltr = super::back_layout_for(panel, false);
+        let rtl = super::back_layout_for(panel, true);
+        assert!(!ltr.rtl && rtl.rtl);
+        let card = ltr.card;
+        assert_eq!(rtl.card, card);
+        let card_right = card.0 + card.2;
+        for (name, a, b) in [
+            ("masthead", ltr.masthead, rtl.masthead),
+            ("sheet", ltr.sheet, rtl.sheet),
+            ("deck", ltr.action_deck, rtl.action_deck),
+            ("add", ltr.add, rtl.add),
+            ("playlist", ltr.playlist, rtl.playlist),
+            ("delete", ltr.delete, rtl.delete),
+        ] {
+            assert_rect_mirrored(name, card, a, b);
+        }
+        for (a, b) in ltr.tags.iter().zip(&rtl.tags) {
+            assert_rect_mirrored("tag", card, *a, *b);
+        }
+        for (a, b) in ltr.facts.iter().zip(&rtl.facts) {
+            assert_rect_mirrored("fact", card, *a, *b);
+        }
+        for (a, b) in [
+            (ltr.overview, rtl.overview),
+            (ltr.effects, rtl.effects),
+            (ltr.reset_thumbnail, rtl.reset_thumbnail),
+        ] {
+            assert_eq!(a.is_some(), b.is_some());
+            if let (Some(a), Some(b)) = (a, b) {
+                assert_rect_mirrored("action", card, a, b);
+            }
+        }
+        assert!((rtl.content_left - (card.0 + card_right - ltr.content_right)).abs() < 0.01);
+        assert!((rtl.content_right - (card.0 + card_right - ltr.content_left)).abs() < 0.01);
+        assert!((rtl.title_left - (card.0 + card_right - ltr.title_right)).abs() < 0.01);
+        assert!((rtl.action_right - (card.0 + card_right - ltr.action_left)).abs() < 0.01);
+        assert!((rtl.fav.0 - (card.0 + card_right - ltr.fav.0)).abs() < 0.01);
+        assert_eq!(rtl.fav.1, ltr.fav.1);
+        assert_eq!(rtl.kicker_cy, ltr.kicker_cy);
+        assert_eq!(rtl.title_cy, ltr.title_cy);
+        assert_eq!(rtl.facts_rule_y, ltr.facts_rule_y);
+        assert_eq!(rtl.tags_label_cy, ltr.tags_label_cy);
+        assert_eq!(rtl.actions_label_cy, ltr.actions_label_cy);
+        if rtl.tags.len() > 1 && rtl.tags[0].1 == rtl.tags[1].1 {
+            assert!(rtl.tags[1].0 + rtl.tags[1].2 <= rtl.tags[0].0 + 0.01);
+        }
+        for rect in rtl.tags.iter().chain([&rtl.add, &rtl.playlist, &rtl.delete]) {
+            assert!(
+                rect.0 >= rtl.content_left - 0.01 && rect.0 + rect.2 <= rtl.content_right + 0.01
+            );
+        }
+    }
+    let external = super::back_layout_for(&panels[2], true);
+    assert!((external.sheet.0 + external.sheet.2 - (panels[2].cx + panels[2].hw)).abs() < 0.01);
+    assert!(external.action_left >= external.sheet.0);
+}
+
+#[test]
+fn mirrored_back_hit_resolves_same_target() {
+    use crate::frontend::scene::BackPanel;
+    let panel = BackPanel {
+        cx: 640.0,
+        cy: 360.0,
+        hw: 462.0,
+        hh: 260.0,
+        skew: 72.0,
+        edge_tilt: 40.0,
+        progress: 1.0,
+        embedded: true,
+        static_img: true,
+        overview_available: true,
+        tags: vec![String::from("anime"), String::from("sunset")],
+        fields: vec![(String::from("Size"), String::from("1 MB"))],
+        ..Default::default()
+    };
+    let flat = BackPanel { skew: 0.0, edge_tilt: 0.0, ..panel.clone() };
+    for panel in [&panel, &flat] {
+        let ltr = super::back_layout_for(panel, false);
+        let rtl = super::back_layout_for(panel, true);
+        for (a, b) in [
+            (ltr.delete, rtl.delete),
+            (ltr.playlist, rtl.playlist),
+            (ltr.add, rtl.add),
+            (ltr.tags[1], rtl.tags[1]),
+            (ltr.overview.unwrap(), rtl.overview.unwrap()),
+        ] {
+            let (lx, ly, lw, lh) = super::back_bounds(panel, &ltr, a);
+            let (rx, ry, rw, rh) = super::back_bounds(panel, &rtl, b);
+            assert!((lw - rw).abs() < 0.01 && (lh - rh).abs() < 0.01);
+            if panel.skew == 0.0 && panel.edge_tilt == 0.0 {
+                assert!((ly - ry).abs() < 0.01);
+                assert!((rx - (panel.cx * 2.0 - lx - lw)).abs() < 0.01);
+            }
+            let (cx, cy) = (rx + rw * 0.5, ry + rh * 0.5);
+            assert!(super::back_contains(panel, &rtl, b, cx, cy));
+            assert!(!super::back_contains(panel, &ltr, a, cx, cy));
+            assert!(!super::back_contains(panel, &rtl, b, lx + lw * 0.5, ly + lh * 0.5));
+        }
+    }
+}

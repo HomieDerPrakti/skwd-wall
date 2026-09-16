@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = ग्रिड
+settings-wallhaven-columns-label = कॉलम
+settings-wallhaven-columns-desc = प्रति पंक्ति थंबनेल की संख्या।
+settings-wallhaven-rows-label = पंक्तियाँ
+settings-wallhaven-rows-desc = एक साथ दिखने वाली पंक्तियों की संख्या।
+settings-wallhaven-thumb-card = थंबनेल
+settings-wallhaven-width-label = चौड़ाई
+settings-wallhaven-width-desc = थंबनेल की चौड़ाई पिक्सेल में।
+settings-wallhaven-height-label = ऊँचाई
+settings-wallhaven-height-desc = थंबनेल की ऊँचाई पिक्सेल में।
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = API कुंजी
+settings-wallhaven-api-key-desc = खाता सुविधाओं और NSFW परिणामों के लिए Wallhaven API कुंजी दर्ज करें।
+settings-wallhaven-api-key-placeholder = Wallhaven API कुंजी (NSFW के लिए)
+settings-wallhaven-username-label = उपयोगकर्ता नाम
+settings-wallhaven-username-desc = अपने संग्रहों से ब्राउज़ और डाउनलोड करने के लिए अपना Wallhaven उपयोगकर्ता नाम दर्ज करें।
+settings-wallhaven-username-placeholder = Wallhaven उपयोगकर्ता नाम

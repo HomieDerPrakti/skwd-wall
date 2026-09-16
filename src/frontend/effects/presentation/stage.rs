@@ -1,9 +1,11 @@
-use iced::widget::{column, container, image, row, stack, text};
-use iced::{Alignment, ContentFit, Element, Length, Padding};
+use iced::widget::{column, container, image, stack, text};
+use iced::{Alignment, ContentFit, Element, Length};
 
 use crate::app::Message;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{UI_FONT, folio_horizontal_rule, label, with_alpha};
+use crate::frontend::ui::{
+    UI_FONT, folio_horizontal_rule, label, logical_padding, row, with_alpha,
+};
 use crate::i18n::tr;
 
 use super::super::state::{Effects, EffectsMsg};
@@ -73,12 +75,7 @@ impl Effects {
         )
         .width(Length::Fill)
         .height(Length::Fill)
-        .padding(Padding {
-            top: 28.0 * scale,
-            right: 26.0 * scale,
-            bottom: 24.0 * scale,
-            left: 28.0 * scale,
-        })
+        .padding(logical_padding(28.0 * scale, 26.0 * scale, 24.0 * scale, 28.0 * scale))
         .into()
     }
 

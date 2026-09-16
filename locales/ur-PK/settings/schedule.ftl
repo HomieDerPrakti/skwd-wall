@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = شیڈول
+settings-schedule-schedule-card-desc = رولز وقت، ہفتے کے دن، موسم، پاور اور ڈسپلے جیسی شرائط سے وال پیپر اور تھیم چنتے ہیں۔ پہلا مماثل رول لاگو ہوتا ہے۔
+settings-schedule-enable-label = شیڈول فعال کریں
+settings-schedule-enable-desc = رولز حذف کیے بغیر ہر شیڈول رول آن یا آف کریں۔
+settings-schedule-apply-on-start-label = اسٹارٹ اپ پر لاگو کریں
+settings-schedule-apply-on-start-desc = سروس شروع ہونے پر پہلا مماثل رول لاگو کریں۔ اس سیشن میں دستی طور پر چنا گیا وال پیپر پھر بھی برقرار رہتا ہے۔
+settings-schedule-editor-label = شیڈول ایڈیٹر
+settings-schedule-editor-desc = شرط بلاکس سے رولز بنائیں اور ترجیح طے کرنے کے لیے گھسیٹیں؛ پہلا مماثل لاگو ہوتا ہے۔ پرانی دن اور رات کی سیٹنگز پہلی بار کھولنے پر دو رول بن جاتی ہیں۔
+settings-schedule-editor-action = کھولیں
+settings-schedule-location-card = مقام
+settings-schedule-location-card-desc = طلوع/غروب آفتاب کے اوقات اور موسمی شرائط کے لیے استعمال ہوتا ہے۔
+settings-schedule-latitude-label = عرض بلد
+settings-schedule-latitude-desc = اعشاری ڈگریاں، شمال مثبت (مثلاً 59.33)۔
+settings-schedule-longitude-label = طول بلد
+settings-schedule-longitude-desc = اعشاری ڈگریاں، مشرق مثبت (مثلاً 18.06)۔

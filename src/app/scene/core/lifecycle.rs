@@ -366,6 +366,13 @@ impl SceneCore {
         }
     }
 
+    pub fn set_reading_direction(&mut self, rtl: bool) {
+        if self.reading_rtl != rtl {
+            self.reading_rtl = rtl;
+            self.motion.needs_frame = true;
+        }
+    }
+
     pub fn set_filter_bar_footprint(&mut self, footprint: Option<(bool, f32, f32)>) {
         if self.filter_bar_footprint == footprint {
             return;
@@ -378,7 +385,10 @@ impl SceneCore {
         let (vw, vh) = self.viewport;
         let gap = 8.0 * self.motion.scale;
         match self.filter_bar_footprint {
-            Some((true, bar_w, _)) => (vw * 0.5 + (bar_w + gap) * 0.5, vh * 0.5),
+            Some((true, bar_w, _)) => {
+                let shift = if self.reading_rtl { -(bar_w + gap) } else { bar_w + gap };
+                (vw * 0.5 + shift * 0.5, vh * 0.5)
+            }
             Some((false, _, bar_h)) => (vw * 0.5, vh * 0.5 + (bar_h + gap) * 0.5),
             None => (vw * 0.5, vh * 0.5),
         }
@@ -389,11 +399,11 @@ impl SceneCore {
     }
 
     pub(super) fn center_x(&self) -> f32 {
-        center_layout(self.viewport.0, self.motion.center_inset.x).0
+        center_layout(self.viewport.0, self.motion.center_inset.x, self.reading_rtl).0
     }
 
     pub(super) fn avail_w(&self) -> f32 {
-        center_layout(self.viewport.0, self.motion.center_inset.x).1
+        center_layout(self.viewport.0, self.motion.center_inset.x, self.reading_rtl).1
     }
 
     pub fn set_params(

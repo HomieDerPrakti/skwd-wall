@@ -1,8 +1,8 @@
 #![cfg(test)]
 
 use super::{
-    BarAction, BarModel, BarShow, ThemeBar, build_bar_with_tasks, next_orient, next_resolution,
-    orient_label, resolution_label,
+    BarAction, BarModel, BarShow, ThemeBar, build_bar_with_tasks, mirror_model, next_orient,
+    next_resolution, orient_label, resolution_label,
 };
 use crate::domain::library::filter::{Filters, ResolutionPreset};
 
@@ -1110,4 +1110,199 @@ fn skewed_bar_canvas_contains_every_item_tip() {
             }
         }
     }
+}
+
+fn slat(x: f32, w: f32, skew: f32, z: i32) -> super::BarItem {
+    super::BarItem {
+        x,
+        y: 0.0,
+        w,
+        h: 24.0,
+        skew,
+        label: String::new(),
+        nerd: false,
+        text_size: 10.0,
+        swatch: None,
+        notice: None,
+        active: false,
+        action: Some(BarAction::Favs),
+        z,
+    }
+}
+
+fn two_slats() -> BarModel {
+    BarModel {
+        items: vec![slat(0.0, 60.0, 10.0, 1), slat(50.0, 40.0, 10.0, 1)],
+        width: 90.0,
+        height: 24.0,
+        menu_up: false,
+        swatch_at: Some((20.0, 30.0)),
+        rtl: false,
+    }
+}
+
+fn ltr_model(mut model: BarModel) -> BarModel {
+    if model.rtl {
+        let extent = model.width;
+        mirror_model(&mut model, true, extent, 1.0);
+        model.rtl = false;
+    }
+    model
+}
+
+fn filter_bar<'a>(
+    model: BarModel,
+    style: super::BarVisualStyle,
+    pal: &'a crate::frontend::theme::Palette,
+    cache: &'a iced::widget::canvas::Cache,
+) -> super::FilterBar<'a> {
+    super::FilterBar {
+        model,
+        hover: None,
+        menu_open: false,
+        backend_menu_open: false,
+        backend: String::new(),
+        backend_options: Vec::new(),
+        menu_hover: None,
+        folder_options: &[],
+        selected_folder: "",
+        menu_scroll: 0.0,
+        theme_swatch: &[],
+        pal,
+        cache,
+        scale: 1.0,
+        fade: 1.0,
+        visual_style: style,
+    }
+}
+
+#[test]
+fn mirror_model_ltr_is_identity() {
+    let mut model = two_slats();
+    mirror_model(&mut model, false, 90.0, 1.0);
+    assert!(!model.rtl);
+    assert_eq!(model.items[0].x, 0.0);
+    assert_eq!(model.items[1].x, 50.0);
+    assert_eq!(model.items[0].skew, 10.0);
+    assert_eq!(model.swatch_at, Some((20.0, 30.0)));
+}
+
+#[test]
+fn mirror_model_reverses_geometry() {
+    let mut model = two_slats();
+    mirror_model(&mut model, true, 90.0, 1.0);
+    assert!(model.rtl);
+    let first = &model.items[0];
+    let second = &model.items[1];
+    assert!((first.x + first.w - 90.0).abs() < 0.01, "first item hugs the right edge");
+    assert!((second.x).abs() < 0.01, "last item hugs the left edge");
+    assert!(second.x + second.w < first.x + first.w, "reading order runs right to left");
+    assert_eq!(first.skew, -10.0);
+    assert_eq!(second.skew, -10.0);
+    assert_eq!(model.swatch_at, Some((90.0 - 20.0 - 84.0, 30.0)));
+}
+
+#[test]
+fn mirrored_slat_contains_mirrored_points() {
+    let ltr = slat(100.0, 50.0, 10.0, 0);
+    let mut rtl = ltr.clone();
+    rtl.x = 300.0 - rtl.x - rtl.w;
+    rtl.skew = -rtl.skew;
+    for (x, y) in
+        [(109.0, 0.0), (111.0, 0.0), (149.0, 0.0), (151.0, 0.0), (101.0, 24.0), (141.0, 24.0)]
+    {
+        assert_eq!(super::item_contains(&ltr, x, y), super::item_contains(&rtl, 300.0 - x, y));
+    }
+    assert!(super::item_contains(&rtl, 151.0, 0.0));
+    assert!(!super::item_contains(&rtl, 191.0, 0.0));
+    assert!(super::item_contains(&rtl, 199.0, 24.0));
+    assert!(!super::item_contains(&rtl, 159.0, 24.0));
+}
+
+#[test]
+fn mirrored_hit_returns_same_item() {
+    let pal = crate::frontend::theme::Palette::default();
+    let cache = iced::widget::canvas::Cache::new();
+    for style in
+        [super::BarVisualStyle::Slices, super::BarVisualStyle::Hex, super::BarVisualStyle::Wall]
+    {
+        let ltr = filter_bar(two_slats(), style, &pal, &cache);
+        let mut mirrored = two_slats();
+        mirror_model(&mut mirrored, true, 90.0, 1.0);
+        let rtl = filter_bar(mirrored, style, &pal, &cache);
+        for x in [5.0, 15.0, 30.0, 45.0, 52.0, 58.0, 70.0, 85.0] {
+            for y in [1.0, 12.0, 23.0] {
+                assert_eq!(ltr.hit(x, y), rtl.hit(90.0 - x, y), "{style:?} at {x},{y}");
+            }
+        }
+    }
+}
+
+#[test]
+fn mirrored_slat_corners() {
+    let corners = super::view::slat_corners(10.0, 0.0, 50.0, 24.0, 10.0);
+    assert_eq!(corners[0], iced::Point::new(10.0, 0.0));
+    assert_eq!(corners[1], iced::Point::new(50.0, 0.0));
+    assert_eq!(corners[2], iced::Point::new(60.0, 24.0));
+    assert_eq!(corners[3], iced::Point::new(20.0, 24.0));
+}
+
+#[test]
+fn mirrored_menu_anchors_right_edge() {
+    let folders: Vec<String> = (0..3).map(|i| format!("folder{i}")).collect();
+    let mut model = ltr_model(build_bar(
+        &Filters::default(),
+        &folders,
+        true,
+        0,
+        0,
+        1.0,
+        false,
+        false,
+        false,
+        false,
+        false,
+        None,
+        "",
+        &BarShow::all(),
+        9999.0,
+        false,
+        false,
+        None,
+    ));
+    let extent = model.width;
+    mirror_model(&mut model, true, extent, 1.0);
+    let anchor = model
+        .items
+        .iter()
+        .find(|item| matches!(item.action, Some(BarAction::FolderToggle)))
+        .expect("folder chip")
+        .clone();
+    let pal = crate::frontend::theme::Palette::default();
+    let cache = iced::widget::canvas::Cache::new();
+    let mut bar = filter_bar(model, super::BarVisualStyle::Slices, &pal, &cache);
+    bar.menu_open = true;
+    bar.folder_options = &folders;
+    let rect = bar.menu_rect().expect("menu open");
+    assert!((rect.x + rect.width - (anchor.x + anchor.w)).abs() < 0.01);
+    assert!(rect.x >= 0.0);
+}
+
+#[test]
+fn vertical_bar_mirrors_columns() {
+    let mut ltr = ltr_model(bar(0, 0));
+    super::verticalize_bar(&mut ltr, 140.0, 1.0);
+    let mut rtl = ltr_model(bar(0, 0));
+    let extent = rtl.width;
+    mirror_model(&mut rtl, true, extent, 1.0);
+    super::verticalize_bar(&mut rtl, 140.0, 1.0);
+    assert_eq!(ltr.width, rtl.width);
+    assert_eq!(ltr.height, rtl.height);
+    assert!(rtl.items.iter().all(|item| item.skew <= 0.0));
+    for (left, right) in ltr.items.iter().zip(&rtl.items) {
+        assert_eq!(left.y, right.y);
+        assert_eq!(left.w, right.w);
+        assert!((right.x - (ltr.width - left.x - left.w)).abs() < 0.01);
+    }
+    assert!(rtl.items.windows(2).any(|pair| pair[1].x < pair[0].x));
 }

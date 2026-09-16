@@ -1,0 +1,9 @@
+help-shortcuts = Raccourcis
+help-keyboard = Clavier
+help-mouse = Souris
+help-key-esc = Esc
+help-mouse-wheel = Molette
+help-mouse-hover = Survol
+help-close-back-quit = Fermer / retour / quitter
+help-wheel = Parcourir / défiler
+help-hover = Aperçu des vidéos

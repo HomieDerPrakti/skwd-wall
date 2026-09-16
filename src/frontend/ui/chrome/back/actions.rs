@@ -31,17 +31,21 @@ pub(super) fn draw_actions(
         frame,
         mid_text(
             tr("card-back-actions-label").to_string(),
-            Point::new(layout.action_left, layout.actions_label_cy + label_delta_y),
+            Point::new(
+                layout.lead(layout.action_left, layout.action_right),
+                layout.actions_label_cy + label_delta_y,
+            ),
             with_alpha(palette.surface_text, 0.52 * fade * label_amount),
             8.5,
             UI_FONT,
-            Alignment::Start,
+            layout.lead_align(),
         ),
     );
+    let (rule_from, rule_to) = actions_rule(layout.rtl, layout.action_left, layout.action_right);
     frame.stroke(
         &geometry.line(
-            Point::new(layout.action_left + 74.0, layout.actions_label_cy),
-            Point::new(layout.action_right, layout.actions_label_cy),
+            Point::new(rule_from, layout.actions_label_cy),
+            Point::new(rule_to, layout.actions_label_cy),
         ),
         Stroke::default()
             .with_color(with_alpha(palette.outline, 0.25 * fade * label_amount))
@@ -130,6 +134,10 @@ pub(super) fn draw_actions(
     );
 }
 
+pub(super) fn actions_rule(rtl: bool, left: f32, right: f32) -> (f32, f32) {
+    if rtl { (left, right - 74.0) } else { (left + 74.0, right) }
+}
+
 fn draw_action(
     frame: &mut Frame,
     palette: &Palette,
@@ -147,7 +155,9 @@ fn draw_action(
     if alpha <= 0.01 {
         return;
     }
+    let rtl = geometry.rtl();
     let (x, y, width, height) = (rectangle.0, rectangle.1 + delta_y, rectangle.2, rectangle.3);
+    let lead = |inset: f32| if rtl { x + width - inset } else { x + inset };
     let control = geometry.path(&Path::rectangle(Point::new(x, y), Size::new(width, height)));
     frame.fill(&control, with_alpha(palette.background, 0.58 * alpha));
     let primary = style == ActionStyle::Primary;
@@ -155,9 +165,9 @@ fn draw_action(
     if selected {
         frame.fill(&control, with_alpha(accent, 0.16 * alpha));
         let check = geometry.path(&Path::new(|builder| {
-            builder.move_to(Point::new(x + 10.0, y + height * 0.5));
-            builder.line_to(Point::new(x + 13.0, y + height * 0.5 + 3.0));
-            builder.line_to(Point::new(x + 19.0, y + height * 0.5 - 4.0));
+            builder.move_to(Point::new(lead(10.0), y + height * 0.5));
+            builder.line_to(Point::new(lead(13.0), y + height * 0.5 + 3.0));
+            builder.line_to(Point::new(lead(19.0), y + height * 0.5 - 4.0));
         }));
         frame.stroke(
             &check,
@@ -169,16 +179,16 @@ fn draw_action(
         let top = (sweep - slant).clamp(0.0, width);
         let bottom = (sweep + slant).clamp(0.0, width);
         let wipe = geometry.path(&Path::new(|builder| {
-            builder.move_to(Point::new(x, y));
-            builder.line_to(Point::new(x + top, y));
-            builder.line_to(Point::new(x + bottom, y + height));
-            builder.line_to(Point::new(x, y + height));
+            builder.move_to(Point::new(lead(0.0), y));
+            builder.line_to(Point::new(lead(top), y));
+            builder.line_to(Point::new(lead(bottom), y + height));
+            builder.line_to(Point::new(lead(0.0), y + height));
             builder.close();
         }));
         frame.fill(&wipe, with_alpha(accent, 0.94 * fade));
     } else {
         let underline = geometry.path(&Path::rectangle(
-            Point::new(x, y + height - 2.0),
+            Point::new(if rtl { x + width - width * amount } else { x }, y + height - 2.0),
             Size::new(width * amount, 2.0),
         ));
         frame.fill(&underline, with_alpha(accent, 0.72 * fade));
@@ -193,7 +203,10 @@ fn draw_action(
         frame,
         mid_text(
             label.to_string(),
-            Point::new(x + width * 0.5 + if selected { 7.0 } else { 0.0 }, y + height * 0.5),
+            Point::new(
+                x + width * 0.5 + if selected { if rtl { -7.0 } else { 7.0 } } else { 0.0 },
+                y + height * 0.5,
+            ),
             with_alpha(if primary { palette.primary_text } else { palette.surface_text }, alpha),
             9.0,
             UI_FONT,

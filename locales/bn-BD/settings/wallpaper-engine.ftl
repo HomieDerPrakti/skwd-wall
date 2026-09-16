@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = রেন্ডারিং
+settings-wallpaper-engine-rendering-card-desc = বিল্ট-ইন Vulkan রেন্ডারার Workshop সিন দেখানোর সময় যে ডিফল্ট ব্যবহার করে তা ঠিক করুন।
+settings-wallpaper-engine-fps-label = FPS সীমা
+settings-wallpaper-engine-fps-desc = প্রতি সেকেন্ডে সর্বোচ্চ ফ্রেম। কম মান CPU/GPU-র চাপ কমায়।
+settings-wallpaper-engine-scaling-label = ডিফল্ট স্কেলিং
+settings-wallpaper-engine-scaling-desc = Workshop সিন প্রতিটি মনিটরে কীভাবে বসে। ডিফল্ট গ্লোবাল ফিল মোড অনুসরণ করে।
+settings-wallpaper-engine-scaling-default = গ্লোবাল ডিফল্ট
+settings-wallpaper-engine-scaling-fill = ফিল
+settings-wallpaper-engine-scaling-fit = ফিট
+settings-wallpaper-engine-scaling-stretch = টেনে বড় করা
+settings-wallpaper-engine-scaling-center = কেন্দ্র
+settings-wallpaper-engine-scaling-tile = টাইল
+settings-wallpaper-engine-scaling-span = বিস্তৃত
+settings-wallpaper-engine-effects-card = ইফেক্ট
+settings-wallpaper-engine-particles-label = পার্টিকেল বন্ধ করুন
+settings-wallpaper-engine-particles-desc = যেসব সিন পার্টিকেল লেয়ার ব্যবহার করে সেগুলোতে তা বাদ দিন। এতে GPU-র কাজ কমতে পারে, তবে ওই সিনগুলো অ্যানিমেশনের কিছু অংশ হারাবে।

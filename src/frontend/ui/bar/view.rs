@@ -7,11 +7,11 @@ use crate::i18n::tr;
 
 use super::super::color::swatch_color;
 use super::super::misc::{FadeFrame, NERD_FONT, UI_FONT, glyph_width, mid_text};
-use super::super::{parallelogram, with_alpha};
+use super::super::{mirror_x_for, parallelogram, with_alpha};
 use super::canvas::FilterBar;
 use super::catalog::{DROP_ARROW, DROP_ARROW_UP, ICON_FOLDER, MENU_MAX_ROWS};
 use super::menu::{MenuKind, folder_depth, folder_leaf};
-use super::model::{BarItem, BarNotice, BarVisualStyle};
+use super::model::{BarItem, BarNotice, BarVisualStyle, SWATCH_CELLS};
 
 pub(super) fn draw_filter_bar(
     bar: &FilterBar<'_>,
@@ -33,6 +33,7 @@ pub(super) fn draw_filter_bar(
                 Some(index) == bar.hover,
                 palette,
                 bar.visual_style,
+                bar.model.rtl,
             );
         }
         if let Some((x, y)) = bar.model.swatch_at
@@ -52,13 +53,14 @@ fn draw_item(
     hovered: bool,
     palette: &Palette,
     style: BarVisualStyle,
+    rtl: bool,
 ) {
     if let Some(swatch_index) = item.swatch {
         draw_swatch_styled(frame, item, swatch_index, hovered, palette, style);
     } else if let Some(notice) = item.notice.as_ref() {
-        draw_notice(frame, item, notice, palette, style);
+        draw_notice(frame, item, notice, palette, style, rtl);
     } else if item.action.is_some() {
-        draw_button_styled(frame, item, hovered, palette, style);
+        draw_button_styled(frame, item, hovered, palette, style, rtl);
     } else {
         let (visual_x, visual_w) = item_visual_bounds(item, style);
         frame.fill_text(mid_text(
@@ -78,6 +80,7 @@ fn draw_notice(
     notice: &BarNotice,
     palette: &Palette,
     style: BarVisualStyle,
+    rtl: bool,
 ) {
     let accent = match &notice.state {
         crate::contracts::daemon::TaskState::Running
@@ -126,21 +129,22 @@ fn draw_notice(
 
     let scale = item.h / 24.0;
     let (visual_x, visual_w) = item_visual_bounds(item, style);
-    let leading_edge = match style {
-        BarVisualStyle::Slices => visual_x + item.skew * 0.5,
-        BarVisualStyle::Hex => visual_x + item.h * 0.14,
-        BarVisualStyle::Wall => visual_x,
+    let lean = item.skew.abs();
+    let edge_inset = match style {
+        BarVisualStyle::Slices => lean * 0.5,
+        BarVisualStyle::Hex => item.h * 0.14,
+        BarVisualStyle::Wall => 0.0,
     };
-    let marker_x = leading_edge + 8.0 * scale;
+    let marker_x = lead_x(rtl, visual_x, visual_w, edge_inset + 8.0 * scale);
     let marker = canvas::Path::circle(Point::new(marker_x, item.y + item.h / 2.0), 2.5 * scale);
     frame.fill(&marker, with_alpha(accent, marker_alpha));
     frame.fill_text(mid_text(
         item.label.clone(),
-        Point::new(marker_x + 8.0 * scale, item.y + item.h / 2.0),
+        Point::new(lead_x(rtl, marker_x, 0.0, 8.0 * scale), item.y + item.h / 2.0),
         with_alpha(palette.surface_text, text_alpha),
         item.text_size,
         UI_FONT,
-        Alignment::Start,
+        lead(rtl),
     ));
 
     let Some(progress) = notice.progress else {
@@ -151,26 +155,39 @@ fn draw_notice(
         BarVisualStyle::Slices | BarVisualStyle::Wall => 2.0 * scale,
     };
     let trailing_inset =
-        if style == BarVisualStyle::Slices { item.skew + 2.0 * scale } else { track_inset };
+        if style == BarVisualStyle::Slices { lean + 2.0 * scale } else { track_inset };
     let track_width = (visual_w - track_inset - trailing_inset).max(1.0);
+    let track_x = visual_x + if rtl { trailing_inset } else { track_inset };
     let track_y = item.y + item.h - 2.5 * scale;
-    let track = canvas::Path::rectangle(
-        Point::new(visual_x + track_inset, track_y),
-        Size::new(track_width, 1.5 * scale),
-    );
+    let track =
+        canvas::Path::rectangle(Point::new(track_x, track_y), Size::new(track_width, 1.5 * scale));
     frame.fill(&track, with_alpha(palette.outline, 0.24));
+    let fill_width = track_width * progress.clamp(0.0, 1.0);
     let fill = canvas::Path::rectangle(
-        Point::new(visual_x + track_inset, track_y),
-        Size::new(track_width * progress.clamp(0.0, 1.0), 1.5 * scale),
+        Point::new(mirror_x_for(rtl, 0.0, fill_width, track_width) + track_x, track_y),
+        Size::new(fill_width, 1.5 * scale),
     );
     frame.fill(&fill, with_alpha(accent, marker_alpha));
 }
 
+fn lead(rtl: bool) -> Alignment {
+    if rtl { Alignment::End } else { Alignment::Start }
+}
+
+fn trail(rtl: bool) -> Alignment {
+    if rtl { Alignment::Start } else { Alignment::End }
+}
+
+fn lead_x(rtl: bool, x: f32, width: f32, inset: f32) -> f32 {
+    if rtl { x + width - inset } else { x + inset }
+}
+
 fn draw_swatch_strip(frame: &mut FadeFrame<'_>, bar: &FilterBar<'_>, x: f32, y: f32) {
     let cell = 14.0 * bar.scale;
-    for (index, color) in bar.theme_swatch.iter().take(6).enumerate() {
-        let shape =
-            style_path(x + index as f32 * cell, y, cell, cell, 3.0 * bar.scale, bar.visual_style);
+    let strip = SWATCH_CELLS as f32 * cell;
+    for (index, color) in bar.theme_swatch.iter().take(SWATCH_CELLS).enumerate() {
+        let cell_x = x + mirror_x_for(bar.model.rtl, index as f32 * cell, cell, strip);
+        let shape = style_path(cell_x, y, cell, cell, 3.0 * bar.scale, bar.visual_style);
         frame.fill(&shape, *color);
         frame.stroke(
             &shape,
@@ -220,12 +237,35 @@ pub(crate) fn control_border(palette: &Palette, active: bool, hovered: bool) -> 
     )
 }
 
-fn item_visual_bounds(item: &BarItem, style: BarVisualStyle) -> (f32, f32) {
+pub(super) fn item_visual_bounds(item: &BarItem, style: BarVisualStyle) -> (f32, f32) {
     if style == BarVisualStyle::Slices {
         (item.x, item.w)
     } else {
-        (item.x, (item.w - item.skew).max(1.0))
+        (item.x + (-item.skew).max(0.0), (item.w - item.skew.abs()).max(1.0))
     }
+}
+
+pub(super) fn slat_corners(x: f32, y: f32, width: f32, height: f32, lean: f32) -> [Point; 4] {
+    [
+        Point::new(x, y),
+        Point::new(x + width - lean, y),
+        Point::new(x + width, y + height),
+        Point::new(x + lean, y + height),
+    ]
+}
+
+fn slat_path(x: f32, y: f32, width: f32, height: f32, skew: f32) -> canvas::Path {
+    if skew >= 0.0 {
+        return parallelogram(x, y, width, height, skew);
+    }
+    let corners = slat_corners(x, y, width, height, -skew);
+    canvas::Path::new(|builder| {
+        builder.move_to(corners[0]);
+        builder.line_to(corners[1]);
+        builder.line_to(corners[2]);
+        builder.line_to(corners[3]);
+        builder.close();
+    })
 }
 
 fn item_path(item: &BarItem, style: BarVisualStyle) -> canvas::Path {
@@ -242,7 +282,9 @@ fn style_path(
     style: BarVisualStyle,
 ) -> canvas::Path {
     match style {
-        BarVisualStyle::Slices => parallelogram(x, y, width, height, accent.min(width * 0.35)),
+        BarVisualStyle::Slices => {
+            slat_path(x, y, width, height, accent.abs().min(width * 0.35).copysign(accent))
+        }
         BarVisualStyle::Hex => {
             let cut = (height * 0.28).min(width * 0.18).max(2.0);
             canvas::Path::new(|builder| {
@@ -262,8 +304,21 @@ fn style_path(
     }
 }
 
-fn panel_path(rectangle: Rectangle, style: BarVisualStyle) -> canvas::Path {
+fn panel_path(rectangle: Rectangle, style: BarVisualStyle, rtl: bool) -> canvas::Path {
     match style {
+        BarVisualStyle::Slices if rtl => {
+            let Rectangle { x, y, width, height } = rectangle;
+            let cut = 10.0;
+            canvas::Path::new(|builder| {
+                builder.move_to(Point::new(x, y));
+                builder.line_to(Point::new(x + width - cut, y));
+                builder.line_to(Point::new(x + width, y + cut));
+                builder.line_to(Point::new(x + width, y + height));
+                builder.line_to(Point::new(x + cut, y + height));
+                builder.line_to(Point::new(x, y + height - cut));
+                builder.close();
+            })
+        }
         BarVisualStyle::Slices => {
             cut_rect(rectangle.x, rectangle.y, rectangle.width, rectangle.height, 10.0)
         }
@@ -292,7 +347,7 @@ pub(crate) fn draw_button(
     hovered: bool,
     palette: &Palette,
 ) {
-    draw_button_styled(frame, item, hovered, palette, BarVisualStyle::Slices);
+    draw_button_styled(frame, item, hovered, palette, BarVisualStyle::Slices, false);
 }
 
 fn draw_button_styled(
@@ -301,11 +356,12 @@ fn draw_button_styled(
     hovered: bool,
     palette: &Palette,
     style: BarVisualStyle,
+    rtl: bool,
 ) {
     item_background(frame, item, hovered, palette, style);
     let text_color = control_text(palette, item.active);
     if item.nerd && item.label.contains(' ') {
-        draw_icon_label(frame, item, text_color, style);
+        draw_icon_label(frame, item, text_color, style, rtl);
         return;
     }
     let (visual_x, visual_w) = item_visual_bounds(item, style);
@@ -324,39 +380,41 @@ fn draw_icon_label(
     item: &BarItem,
     text_color: Color,
     style: BarVisualStyle,
+    rtl: bool,
 ) {
     let (icon, name, arrow) = split_icon_label(&item.label);
     let center_y = item.y + item.h / 2.0;
     let (visual_x, visual_w) = item_visual_bounds(item, style);
-    let icon_x =
-        visual_x + if style == BarVisualStyle::Slices { item.skew.max(6.0) + 4.0 } else { 10.0 };
+    let icon_inset =
+        if style == BarVisualStyle::Slices { item.skew.abs().max(6.0) + 4.0 } else { 10.0 };
+    let icon_x = lead_x(rtl, visual_x, visual_w, icon_inset);
     frame.fill_text(mid_text(
         icon.to_string(),
         Point::new(icon_x, center_y),
         text_color,
         item.text_size,
         NERD_FONT,
-        Alignment::Start,
+        lead(rtl),
     ));
-    let name_x = icon_x + glyph_width(item.text_size) + 5.0;
+    let name_x = lead_x(rtl, icon_x, 0.0, glyph_width(item.text_size) + 5.0);
     frame.fill_text(mid_text(
         name.to_string(),
         Point::new(name_x, center_y),
         text_color,
         item.text_size,
         UI_FONT,
-        Alignment::Start,
+        lead(rtl),
     ));
     if arrow.is_empty() {
         return;
     }
     frame.fill_text(mid_text(
         arrow.to_string(),
-        Point::new(visual_x + visual_w - 7.0, center_y),
+        Point::new(lead_x(!rtl, visual_x, visual_w, 7.0), center_y),
         text_color,
         item.text_size,
         UI_FONT,
-        Alignment::End,
+        trail(rtl),
     ));
 }
 
@@ -420,7 +478,7 @@ fn draw_menu(
     bar: &FilterBar<'_>,
     palette: &Palette,
 ) {
-    let background = panel_path(rectangle, bar.visual_style);
+    let background = panel_path(rectangle, bar.visual_style, bar.model.rtl);
     frame.fill(&background, with_alpha(palette.surface, 0.97));
     frame.stroke(
         &background,
@@ -459,6 +517,7 @@ fn draw_backend_row(
     let label = tr(label_key);
     let row_height = bar.menu_row_h();
     let selected = bar.backend == key;
+    let rtl = bar.model.rtl;
     if selected || bar.menu_hover == Some(index) {
         let row = panel_path(
             Rectangle::new(
@@ -466,16 +525,17 @@ fn draw_backend_row(
                 Size::new(rectangle.width - 8.0, row_height - 2.0),
             ),
             bar.visual_style,
+            rtl,
         );
         frame.fill(&row, with_alpha(palette.primary, if selected { 0.16 } else { 0.08 }));
     }
     frame.fill_text(mid_text(
         label.to_string(),
-        Point::new(rectangle.x + 12.0, y + row_height / 2.0),
+        Point::new(lead_x(rtl, rectangle.x, rectangle.width, 12.0), y + row_height / 2.0),
         if selected { palette.primary } else { palette.surface_text },
         10.0 * bar.scale,
         UI_FONT,
-        Alignment::Start,
+        lead(rtl),
     ));
 }
 
@@ -491,6 +551,7 @@ fn draw_folder_row(
     let row_height = bar.menu_row_h();
     let size = 10.0 * bar.scale;
     let selected = option == bar.selected_folder;
+    let rtl = bar.model.rtl;
     if selected || bar.menu_hover == Some(index) {
         let row = panel_path(
             Rectangle::new(
@@ -498,6 +559,7 @@ fn draw_folder_row(
                 Size::new(rectangle.width - 8.0, row_height - 2.0),
             ),
             bar.visual_style,
+            rtl,
         );
         frame.fill(&row, with_alpha(palette.primary, if selected { 0.16 } else { 0.08 }));
     }
@@ -509,30 +571,31 @@ fn draw_folder_row(
         };
         frame.fill_text(mid_text(
             shown.to_string(),
-            Point::new(rectangle.x + 12.0, center_y),
+            Point::new(lead_x(rtl, rectangle.x, rectangle.width, 12.0), center_y),
             if selected { palette.primary } else { palette.surface_text },
             size,
             UI_FONT,
-            Alignment::Start,
+            lead(rtl),
         ));
         return;
     }
-    let base_x = rectangle.x + 12.0 + (folder_depth(option).min(6) as f32) * 16.0 * bar.scale;
+    let indent = 12.0 + (folder_depth(option).min(6) as f32) * 16.0 * bar.scale;
+    let base_x = lead_x(rtl, rectangle.x, rectangle.width, indent);
     frame.fill_text(mid_text(
         ICON_FOLDER.to_string(),
         Point::new(base_x, center_y),
         if selected { palette.primary } else { with_alpha(palette.surface_text, 0.7) },
         size,
         NERD_FONT,
-        Alignment::Start,
+        lead(rtl),
     ));
     frame.fill_text(mid_text(
         folder_leaf(option).to_string(),
-        Point::new(base_x + glyph_width(size) + 5.0, center_y),
+        Point::new(lead_x(rtl, base_x, 0.0, glyph_width(size) + 5.0), center_y),
         if selected { palette.primary } else { palette.surface_text },
         size,
         UI_FONT,
-        Alignment::Start,
+        lead(rtl),
     ));
 }
 
@@ -552,6 +615,8 @@ fn draw_scrollbar(
     let thumb_height = (visible / count * track_height).max(12.0);
     let fraction = (bar.menu_scroll / max_scroll).clamp(0.0, 1.0);
     let thumb_y = rectangle.y + 4.0 + fraction * (track_height - thumb_height);
-    let scrollbar = cut_rect(rectangle.x + rectangle.width - 5.0, thumb_y, 3.0, thumb_height, 1.0);
+    let thumb_x =
+        if bar.model.rtl { rectangle.x + 2.0 } else { rectangle.x + rectangle.width - 5.0 };
+    let scrollbar = cut_rect(thumb_x, thumb_y, 3.0, thumb_height, 1.0);
     frame.fill(&scrollbar, with_alpha(palette.primary, 0.5));
 }

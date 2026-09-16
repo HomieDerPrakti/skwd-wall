@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = استخدم صورة أو فيديو أو مشهد Wallpaper Engine خلف النظرة العامة في niri. موّهه وعتّمه باستقلال عن خلفية سطح المكتب.
+settings-niri-show-label = إظهار الخلفية في النظرة العامة
+settings-niri-show-desc = إظهار خلفية النظرة العامة المنفصلة. تتوقف الخلفيات المتحركة مؤقتًا عندما تكون النظرة العامة مغلقة.
+settings-niri-blur-label = تمويه خلفية النظرة العامة
+settings-niri-blur-desc = تمويه نسخة النظرة العامة مع إبقاء خلفية سطح المكتب حادة.
+settings-niri-blur-radius-label = نصف قطر التمويه
+settings-niri-blur-radius-desc = نصف قطر التمويه الغاوسي المطبق على النسخة. القيم الأعلى أنعم.
+settings-niri-follow-label = استخدام الخلفية الحالية دائمًا
+settings-niri-follow-desc = اتباع الخلفية التي تطبّقها. أوقفه لاختيار خلفية منفصلة للنظرة العامة أدناه.
+settings-niri-image-label = مصدر خلفية النظرة العامة
+settings-niri-image-desc = اختر «تعيين كخلفية للنظرة العامة» على إحدى الخلفيات، أو أدخل مسار صورة أو فيديو أو مشروع Wallpaper Engine. اتركه فارغًا لاستخدام آخر خلفية.
+settings-niri-auto-theme-label = تلوين خلفية النظرة العامة تلقائيًا
+settings-niri-auto-theme-desc = إعادة تلوين الصور الثابتة بلوحة ألوان سمة gowall. تحتفظ الفيديوهات ومشاهد Wallpaper Engine بألوانها الأصلية.
+settings-niri-theme-label = سمة خلفية النظرة العامة
+settings-niri-theme-desc = لوحة الألوان المستخدمة عند التلوين التلقائي لخلفية النظرة العامة.
+settings-niri-dim-label = تعتيم خلفية النظرة العامة
+settings-niri-dim-desc = تعتيم خلفية النظرة العامة. 0 = بلا تعتيم، 100 = أسود.
+settings-niri-rule-label = قاعدة layer-rule المطلوبة في niri
+settings-niri-rule-desc = الصق هذا في ~/.config/niri/config.kdl، ثم أعد تحميل niri.
+settings-niri-refresh-label = تحديث خلفية النظرة العامة الآن
+settings-niri-refresh-desc = إعادة تحميل المصدر المحدد بإعدادات التمويه والتعتيم والسمة الحالية.
+settings-niri-refresh-action = تحديث
+settings-niri-copy-label = نسخ layer-rule إلى الحافظة
+settings-niri-copy-desc = ينسخ المقتطف أعلاه لإعداد niri.
+settings-niri-copy-action = نسخ

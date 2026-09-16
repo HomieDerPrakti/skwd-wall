@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = Utilisez une image, une vidéo ou une scène Wallpaper Engine derrière la vue d’ensemble de niri. Floutez-la et assombrissez-la indépendamment du fond d’écran du bureau.
+settings-niri-show-label = Afficher le fond dans la vue d’ensemble
+settings-niri-show-desc = Affiche l’arrière-plan séparé de la vue d’ensemble. Les arrière-plans animés sont en pause quand la vue d’ensemble est fermée.
+settings-niri-blur-label = Flouter l’arrière-plan
+settings-niri-blur-desc = Floute la copie de la vue d’ensemble en laissant le fond d’écran du bureau net.
+settings-niri-blur-radius-label = Rayon de flou
+settings-niri-blur-radius-desc = Rayon du flou gaussien appliqué à la copie. Plus il est élevé, plus le flou est doux.
+settings-niri-follow-label = Toujours utiliser le fond d’écran actuel
+settings-niri-follow-desc = Suit le fond d’écran que vous appliquez. Désactivez pour choisir un arrière-plan séparé ci-dessous.
+settings-niri-image-label = Source de l’arrière-plan
+settings-niri-image-desc = Choisissez Définir comme arrière-plan sur un fond d’écran, ou saisissez le chemin d’une image, d’une vidéo ou d’un projet Wallpaper Engine. Laissez vide pour utiliser le dernier fond d’écran.
+settings-niri-auto-theme-label = Thème automatique de l’arrière-plan
+settings-niri-auto-theme-desc = Recolore les images fixes avec une palette de thème gowall. Les vidéos et les scènes Wallpaper Engine gardent leurs couleurs d’origine.
+settings-niri-theme-label = Thème de l’arrière-plan
+settings-niri-theme-desc = Palette utilisée pour le thème automatique de l’arrière-plan.
+settings-niri-dim-label = Assombrissement de l’arrière-plan
+settings-niri-dim-desc = Assombrit l’arrière-plan de la vue d’ensemble. 0 = aucun, 100 = noir.
+settings-niri-rule-label = Règle layer-rule niri requise
+settings-niri-rule-desc = Collez ceci dans votre ~/.config/niri/config.kdl, puis rechargez niri.
+settings-niri-refresh-label = Actualiser l’arrière-plan maintenant
+settings-niri-refresh-desc = Recharge la source sélectionnée avec les réglages actuels de flou, d’assombrissement et de thème.
+settings-niri-refresh-action = Actualiser
+settings-niri-copy-label = Copier la layer-rule dans le presse-papiers
+settings-niri-copy-desc = Copie l’extrait ci-dessus pour la configuration de niri.
+settings-niri-copy-action = Copier

@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = গ্রিড
+settings-wallhaven-columns-label = কলাম
+settings-wallhaven-columns-desc = প্রতি সারিতে থাম্বনেইলের সংখ্যা।
+settings-wallhaven-rows-label = সারি
+settings-wallhaven-rows-desc = একসাথে দৃশ্যমান সারির সংখ্যা।
+settings-wallhaven-thumb-card = থাম্বনেইল
+settings-wallhaven-width-label = প্রস্থ
+settings-wallhaven-width-desc = পিক্সেলে থাম্বনেইলের প্রস্থ।
+settings-wallhaven-height-label = উচ্চতা
+settings-wallhaven-height-desc = পিক্সেলে থাম্বনেইলের উচ্চতা।
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = API কী
+settings-wallhaven-api-key-desc = অ্যাকাউন্ট ফিচার ও NSFW ফলাফল পেতে একটি Wallhaven API কী লিখুন।
+settings-wallhaven-api-key-placeholder = Wallhaven API কী (NSFW-এর জন্য)
+settings-wallhaven-username-label = ব্যবহারকারীর নাম
+settings-wallhaven-username-desc = আপনার কালেকশন থেকে ব্রাউজ ও ডাউনলোড করতে আপনার Wallhaven ব্যবহারকারীর নাম লিখুন।
+settings-wallhaven-username-placeholder = Wallhaven ব্যবহারকারীর নাম

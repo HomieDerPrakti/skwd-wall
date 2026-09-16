@@ -121,9 +121,14 @@ impl SceneCore {
         }
     }
 
+    fn inset_sides(&self, inset: f32) -> (f32, f32) {
+        if self.reading_rtl { (0.0, inset) } else { (inset, 0.0) }
+    }
+
     fn hex_camera(&self, sel_center: f32, cx: f32, inset: f32, fade_zone: f32, vw: f32) -> f32 {
-        let left_bound = inset + fade_zone + self.hp.step_x();
-        let right_bound = vw - fade_zone - self.hp.step_x();
+        let (lead, trail) = self.inset_sides(inset);
+        let left_bound = lead + fade_zone + self.hp.step_x();
+        let right_bound = vw - trail - fade_zone - self.hp.step_x();
         if self.kb_nav || right_bound <= left_bound {
             return sel_center;
         }
@@ -146,8 +151,9 @@ impl SceneCore {
         fade_zone: f32,
         vw: f32,
     ) -> f32 {
-        let left = inset + fade_zone;
-        let right = vw - fade_zone;
+        let (lead, trail) = self.inset_sides(inset);
+        let left = lead + fade_zone;
+        let right = vw - trail - fade_zone;
         let half_band = ((right - left) * 0.5).max(1.0);
         let dn = (col_center - f32::midpoint(left, right)).abs() / half_band;
         let base = 1.0 - 0.2 * anim::smoothstep((dn - 0.7) / 0.3);

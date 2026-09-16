@@ -112,3 +112,55 @@ fn tag_chip_click_emits_consumer_intent_and_captures() {
     ));
     assert_eq!(status, iced::event::Status::Captured);
 }
+
+#[test]
+fn tag_cloud_chips_flow_from_the_right_under_rtl() {
+    let entries: Vec<crate::domain::library::search::TagEntry> = (0..12)
+        .map(|i| crate::domain::library::search::TagEntry {
+            tag: format!("tag-{i}"),
+            count: i + 1,
+            selected: false,
+            excluded: false,
+        })
+        .collect();
+    let width = 260.0;
+    let (ltr, ltr_total) = super::tag_cloud_chip_layout(&entries, width, 1.0, false);
+    let (rtl, rtl_total) = super::tag_cloud_chip_layout(&entries, width, 1.0, true);
+    assert_eq!(ltr_total, rtl_total);
+    assert_eq!(ltr.len(), rtl.len());
+    assert_eq!(ltr[0].0, 0.0);
+    assert!((rtl[0].0 + rtl[0].2 - width).abs() < 1e-4);
+    for (a, b) in ltr.iter().zip(&rtl) {
+        assert_eq!(a.1, b.1);
+        assert_eq!(a.2, b.2);
+        assert!((b.0 - (width - a.0 - a.2)).abs() < 1e-4);
+    }
+    let same_row = ltr.iter().zip(&rtl).filter(|(a, _)| a.1 == ltr[0].1).count();
+    assert!(same_row > 1);
+    assert!(rtl[1].0 + rtl[1].2 < rtl[0].0);
+    assert!(ltr.iter().any(|r| r.1 > 0.0));
+}
+
+#[test]
+fn mirrored_tag_chip_hit_resolves_same_entry() {
+    let entries: Vec<crate::domain::library::search::TagEntry> = (0..6)
+        .map(|i| crate::domain::library::search::TagEntry {
+            tag: format!("tag-{i}"),
+            count: 1,
+            selected: false,
+            excluded: false,
+        })
+        .collect();
+    let width = 240.0;
+    let h = super::TAG_CHIP_H;
+    let (ltr, _) = super::tag_cloud_chip_layout(&entries, width, 1.0, false);
+    let (rtl, _) = super::tag_cloud_chip_layout(&entries, width, 1.0, true);
+    let hit = |rects: &[(f32, f32, f32)], px: f32, py: f32| {
+        rects.iter().position(|&(x, y, w)| super::chip_contains(x, y, w, h, 0.0, px, py))
+    };
+    for (index, &(x, y, w)) in ltr.iter().enumerate() {
+        let (cx, cy) = (x + w / 2.0, y + h / 2.0);
+        assert_eq!(hit(&ltr, cx, cy), Some(index));
+        assert_eq!(hit(&rtl, width - cx, cy), Some(index));
+    }
+}

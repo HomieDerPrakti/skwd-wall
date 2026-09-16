@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = دوسروں کو متاثر کیے بغیر اس پکر انداز اور اس کی فلٹر بار اور تلاش پینل کی پوزیشن سیٹ کریں۔
+settings-position-slices-card = سلائسز پکر
+settings-position-hex-card = ہندسی پکر
+settings-position-wall-card = وال پکر
+settings-position-sandy-card = سینڈی پکر
+settings-position-hand-card = کارڈ ہینڈ پکر
+settings-position-horizontal-label = افقی آفسیٹ
+settings-position-horizontal-desc = پکر کو اسکرین کی نصف چوڑائی کے فیصد کے حساب سے بائیں یا دائیں لے جائیں۔ مثبت قدریں دائیں لے جاتی ہیں۔
+settings-position-vertical-label = عمودی آفسیٹ
+settings-position-vertical-desc = پکر کو اسکرین کی نصف اونچائی کے فیصد کے حساب سے اوپر یا نیچے لے جائیں۔ مثبت قدریں نیچے لے جاتی ہیں۔

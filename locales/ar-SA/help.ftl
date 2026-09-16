@@ -1,0 +1,9 @@
+help-shortcuts = الاختصارات
+help-keyboard = لوحة المفاتيح
+help-mouse = الفأرة
+help-key-esc = Esc
+help-mouse-wheel = العجلة
+help-mouse-hover = التحويم
+help-close-back-quit = إغلاق / رجوع / خروج
+help-wheel = تصفح / تمرير
+help-hover = معاينة الفيديو

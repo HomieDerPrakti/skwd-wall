@@ -1,0 +1,10 @@
+settings-displays-card = موجودہ وال پیپر
+settings-displays-card-desc = یہ وہ وال پیپر ہیں جو وال پیپر سروس اس وقت رپورٹ کر رہی ہے۔ یہاں کی گئی تبدیلیاں ایک وقت میں ایک ڈسپلے پر لاگو ہوتی ہیں۔
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = آف لائن · { $width } × { $height }
+settings-displays-placement-label = جگہ
+settings-displays-placement-desc = منتخب کریں کہ وال پیپر ڈسپلے کو بھرے، اس میں فٹ ہو، کھنچے، درمیان میں رہے، ٹائل ہو یا اس پر پھیلے۔
+settings-displays-lock-label = لاک
+settings-displays-lock-desc = اس مانیٹر کا وال پیپر صرف ملٹی پکر کے ذریعے بدلیں۔
+settings-displays-empty-label = ڈسپلے تلاش کیے جا رہے ہیں
+settings-displays-empty-desc = وال پیپر سروس اپنے ڈسپلے رپورٹ کرے گی تو موجودہ وال پیپر یہاں نظر آئیں گے۔

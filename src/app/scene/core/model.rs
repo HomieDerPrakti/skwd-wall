@@ -47,6 +47,7 @@ pub struct SceneCore {
     pub input_idle: bool,
     pub(super) direct_thumbnails: bool,
     pub(super) filter_bar_footprint: Option<(bool, f32, f32)>,
+    pub(super) reading_rtl: bool,
     pub(super) preview_state: PreviewState,
 }
 
@@ -350,6 +351,7 @@ impl SceneCore {
             input_idle: false,
             direct_thumbnails: false,
             filter_bar_footprint: None,
+            reading_rtl: false,
             preview_state: PreviewState::new(),
         }
     }

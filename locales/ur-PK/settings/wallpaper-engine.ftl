@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = رینڈرنگ
+settings-wallpaper-engine-rendering-card-desc = وہ ڈیفالٹس سیٹ کریں جو بلٹ اِن Vulkan رینڈرر Workshop سین دکھاتے وقت استعمال کرے۔
+settings-wallpaper-engine-fps-label = FPS حد
+settings-wallpaper-engine-fps-desc = زیادہ سے زیادہ فریم فی سیکنڈ۔ کم قدریں CPU/GPU لوڈ گھٹاتی ہیں۔
+settings-wallpaper-engine-scaling-label = ڈیفالٹ اسکیلنگ
+settings-wallpaper-engine-scaling-desc = Workshop سین ہر مانیٹر پر کیسے فٹ ہوں۔ ڈیفالٹ عمومی فل موڈ کی پیروی کرتا ہے۔
+settings-wallpaper-engine-scaling-default = عمومی ڈیفالٹ
+settings-wallpaper-engine-scaling-fill = فل
+settings-wallpaper-engine-scaling-fit = فٹ
+settings-wallpaper-engine-scaling-stretch = اسٹریچ
+settings-wallpaper-engine-scaling-center = مرکز
+settings-wallpaper-engine-scaling-tile = ٹائل
+settings-wallpaper-engine-scaling-span = اسپین
+settings-wallpaper-engine-effects-card = اثرات
+settings-wallpaper-engine-particles-label = ذرّات غیر فعال کریں
+settings-wallpaper-engine-particles-desc = ذرّات استعمال کرنے والے سین میں ذرّاتی تہیں چھوڑ دیں۔ اس سے GPU کام کم ہو سکتا ہے، لیکن وہ سین اپنی اینیمیشن کا کچھ حصہ کھو دیں گے۔

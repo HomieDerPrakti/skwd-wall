@@ -7,6 +7,7 @@ use super::layout::BackLayout;
 
 #[derive(Debug, Clone, Copy)]
 pub(super) struct BackGeometry {
+    rtl: bool,
     m11: f32,
     m12: f32,
     m21: f32,
@@ -32,7 +33,11 @@ impl BackGeometry {
         let m22 = by / hh;
         let m31 = cx - cx * m11 - cy * m21;
         let m32 = cy - cx * m12 - cy * m22;
-        Self { m11, m12, m21, m22, m31, m32 }
+        Self { rtl: layout.rtl, m11, m12, m21, m22, m31, m32 }
+    }
+
+    pub(super) fn rtl(self) -> bool {
+        self.rtl
     }
 
     pub(super) fn point(self, point: Point) -> Point {

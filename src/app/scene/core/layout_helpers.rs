@@ -34,9 +34,10 @@ pub(super) fn vis_range(low: usize, high: usize, current: usize) -> (usize, usiz
     (low, high.max(low))
 }
 
-pub(super) fn center_layout(viewport_width: f32, raw_inset: f32) -> (f32, f32) {
+pub(super) fn center_layout(viewport_width: f32, raw_inset: f32, rtl: bool) -> (f32, f32) {
     let inset = clamp_inset(viewport_width, raw_inset);
-    (inset + (viewport_width - inset) * 0.5, (viewport_width - inset).max(1.0))
+    let lead = if rtl { 0.0 } else { inset };
+    (lead + (viewport_width - inset) * 0.5, (viewport_width - inset).max(1.0))
 }
 
 pub(super) struct CardSpec {

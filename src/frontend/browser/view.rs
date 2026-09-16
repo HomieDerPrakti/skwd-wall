@@ -1,6 +1,6 @@
 use iced::widget::canvas::{Frame, Path, Stroke};
 use iced::widget::{
-    button, canvas, column, container, image, mouse_area, row, scrollable, shader, stack, text,
+    button, canvas, column, container, image, mouse_area, scrollable, shader, stack, text,
     text_input,
 };
 use iced::{
@@ -9,7 +9,10 @@ use iced::{
 
 use crate::frontend::animation::ease_out_cubic;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{UI_FONT, folio_horizontal_rule, label, mid_text, with_alpha};
+use crate::frontend::ui::{
+    UI_FONT, end, folio_horizontal_rule, label, logical_padding, mid_text, mirror_x, row, start,
+    with_alpha,
+};
 use crate::i18n::{
     browser_downloading_count, browser_downloading_queued, browser_masthead, browser_queued_count,
     browser_results_page, tr, tr_args,
@@ -83,7 +86,7 @@ fn catalogue_hero<'a>(
         ),
     ]
     .spacing(4.0 * scale)
-    .align_x(Alignment::End);
+    .align_x(end());
     let identity_plane = container(identity)
         .width(Length::Fixed(430.0 * scale))
         .padding(Padding {
@@ -102,15 +105,15 @@ fn catalogue_hero<'a>(
     let cover_title = container(identity_plane)
         .width(Length::Fill)
         .height(Length::Fill)
-        .align_x(Alignment::Start)
+        .align_x(start())
         .align_y(Alignment::End)
-        .padding(Padding { top: 0.0, right: 0.0, bottom: 18.0 * scale, left: 18.0 * scale });
+        .padding(logical_padding(0.0, 0.0, 18.0 * scale, 18.0 * scale));
     let issue = container(counter_plane)
         .width(Length::Fill)
         .height(Length::Fill)
-        .align_x(Alignment::End)
+        .align_x(end())
         .align_y(Alignment::Start)
-        .padding(Padding { top: 18.0 * scale, right: 18.0 * scale, bottom: 0.0, left: 0.0 });
+        .padding(logical_padding(18.0 * scale, 18.0 * scale, 0.0, 0.0));
     container(stack![artwork, cover_title, issue,])
         .width(Length::Fill)
         .height(Length::Fixed(132.0 * scale))
@@ -220,11 +223,14 @@ fn browser_card_action_rects(
     let height = (30.0 * scale).min(card_h);
     let total_w = (158.0 * scale).min(card_w);
     let save_w = total_w * 0.56;
-    let x = hit.cx + hit.hw - total_w;
+    let apply_w = total_w - save_w;
+    let left = hit.cx - hit.hw;
+    let save_x = left + mirror_x(card_w - total_w, save_w, card_w);
+    let apply_x = left + mirror_x(card_w - apply_w, apply_w, card_w);
     let y = hit.cy + hit.hh - height;
     BrowserCardActionRects {
-        save: Rectangle::new(Point::new(x, y), Size::new(save_w, height)),
-        apply: Rectangle::new(Point::new(x + save_w, y), Size::new(total_w - save_w, height)),
+        save: Rectangle::new(Point::new(save_x, y), Size::new(save_w, height)),
+        apply: Rectangle::new(Point::new(apply_x, y), Size::new(apply_w, height)),
     }
 }
 
@@ -311,12 +317,11 @@ fn draw_downloaded_badge(
     scale: f32,
     fade: f32,
 ) {
+    let card_w = hit.hw * 2.0;
     let height = (22.0 * scale).min(hit.hh * 2.0);
-    let width = (70.0 * scale).min(hit.hw * 2.0);
-    let rect = Rectangle::new(
-        Point::new(hit.cx + hit.hw - width, hit.cy - hit.hh),
-        Size::new(width, height),
-    );
+    let width = (70.0 * scale).min(card_w);
+    let x = hit.cx - hit.hw + mirror_x(card_w - width, width, card_w);
+    let rect = Rectangle::new(Point::new(x, hit.cy - hit.hh), Size::new(width, height));
     let path = Path::rectangle(rect.position(), rect.size());
     frame.fill(&path, with_alpha(pal.primary, 0.94 * fade));
     frame.stroke(
@@ -533,13 +538,13 @@ fn preview_modal<'a>(
         })
         .width(Length::Fill)
         .height(Length::Fill)
-        .align_x(Alignment::Start)
+        .align_x(start())
         .align_y(Alignment::Start)
         .padding(20),
         container(close)
             .width(Length::Fill)
             .height(Length::Fill)
-            .align_x(Alignment::End)
+            .align_x(end())
             .align_y(Alignment::Start)
             .padding(20),
         container(

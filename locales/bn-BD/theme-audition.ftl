@@ -1,0 +1,56 @@
+theme-audition-title = রং প্রিভিউ
+theme-audition-subtitle = একটি রঙের উৎস বেছে নিন, তারপর একই ওয়ালপেপার দিয়ে এর প্রোফাইলগুলো তুলনা করুন।
+theme-audition-backend = রঙের উৎস
+theme-audition-backend-on = { $backend } · চালু
+theme-audition-selected = নির্বাচিত
+theme-audition-preview = প্রিভিউ
+theme-audition-loading = বর্তমান ওয়ালপেপার থেকে প্রিভিউ তৈরি হচ্ছে…
+theme-audition-empty = কোনো রং প্রিভিউ পাওয়া যায়নি। নির্বাচিত রঙের উৎস ইনস্টল করা আছে ও কাজ করছে কি না দেখুন।
+
+settings-theme-profile-desc = বর্তমান রং সম্পাদনা করুন এবং যে ওয়ালপেপার এগুলো সরবরাহ করে তার জন্য একটি প্রোফাইল সংরক্ষণ করুন।
+theme-profile-load = বর্তমানটি লোড করুন
+theme-profile-save = এই ওয়ালপেপারের জন্য সংরক্ষণ করুন
+theme-profile-enabled = এই প্রোফাইল ব্যবহার করুন
+theme-profile-dark = গাঢ়
+theme-profile-light = হালকা
+
+settings-playback-pause-title = স্বয়ংক্রিয় বিরতি
+settings-playback-pause-desc = চালু থাকা যেকোনো শর্ত পূরণ হলে অ্যানিমেটেড ওয়ালপেপার বিরতি দিন।
+settings-playback-process-enabled = অ্যাপ্লিকেশন চলাকালে বিরতি
+settings-playback-process-desc = তালিকাভুক্ত কোনো প্রসেস চলাকালে সব ডিসপ্লে বিরতি দিন।
+settings-playback-processes = প্রসেস
+settings-playback-processes-desc = এক্সিকিউটেবলের নামগুলো কমা দিয়ে আলাদা করুন। নাম মেলানোয় বড়-ছোট হাতের অক্ষর বা .exe প্রত্যয় ধরা হয় না।
+settings-playback-choose-process = চলমান একটি প্রসেস বেছে নিন
+settings-playback-fullscreen = ফুলস্ক্রিনে বিরতি
+settings-playback-fullscreen-desc = ফুলস্ক্রিন উইন্ডো দৃশ্যমান থাকাকালে বিরতি দিন। কম্পোজিটরের সমর্থন প্রয়োজন।
+settings-playback-scope = উইন্ডো বিরতির ডিসপ্লে
+settings-playback-scope-desc = উইন্ডো বিরতির শর্ত শুধু নিজের ডিসপ্লে নাকি সব ডিসপ্লে বিরতি দেবে তা বেছে নিন।
+settings-playback-all = সব ডিসপ্লে
+settings-playback-display = উইন্ডো থাকা ডিসপ্লে
+settings-playback-resume = পুনরায় চালুর বিলম্ব
+settings-playback-resume-desc = শেষ স্বয়ংক্রিয় বিরতির শর্ত সরার পর অপেক্ষা করুন। হাতে দেওয়া বিরতি বহাল থাকে।
+settings-playback-detection-off = কম্পোজিটরের সমর্থন যাচাই করতে ফুলস্ক্রিন বা ম্যাক্সিমাইজড উইন্ডো বিরতি চালু করুন।
+settings-playback-detection-ready = উইন্ডোর অবস্থা শনাক্তকরণ উপলব্ধ
+settings-playback-detection-unavailable = এই কম্পোজিটরে উইন্ডোর অবস্থা শনাক্তকরণ উপলব্ধ নয়
+settings-playback-paused-process = বিরতিতে: { $names } চলছে
+settings-playback-paused-fullscreen = বিরতিতে: ফুলস্ক্রিন উইন্ডো
+settings-playback-resuming = পুনরায় চালুর অপেক্ষায়
+settings-playback-no-rule = কোনো স্বয়ংক্রিয় বিরতি নিয়ম সক্রিয় নেই
+
+settings-paper-layer-label = ওয়ালপেপার স্তর
+settings-paper-layer-desc = ভিডিও ও দৃশ্যের জন্য Wayland স্তর। ওভারভিউয়ের পেছনে সক্রিয় ওয়ালপেপার দেখাতে Niri-এর place-within-backdrop নিয়মের সাথে পটভূমি ব্যবহার করুন।
+settings-paper-layer-bottom = নিচের স্তর (ডিফল্ট)
+settings-paper-layer-background = পটভূমি
+settings-paper-layer-top = উপরের স্তর
+settings-paper-layer-overlay = ওভারলে
+settings-paper-overview-only-label = শুধু Niri ওভারভিউতে অ্যানিমেট করুন
+settings-paper-overview-only-desc = পটভূমি এবং place-within-backdrop প্রয়োজন। ওভারভিউ বন্ধ থাকাকালে বিরতিতে থাকে।
+settings-playback-paused-overview = Niri ওভারভিউ বন্ধ থাকায় বিরতিতে
+
+settings-playback-maximized = ম্যাক্সিমাইজড উইন্ডোতে বিরতি
+settings-playback-maximized-desc = কম্পোজিটর ম্যাক্সিমাইজড উইন্ডো জানালে বিরতি দিন। কম্পোজিটরের সমর্থন প্রয়োজন; Niri লুকানো ওয়ার্কস্পেসের উইন্ডোও জানায়।
+settings-playback-paused-maximized = বিরতিতে: ম্যাক্সিমাইজড উইন্ডো
+
+settings-playback-full-width = পূর্ণ-প্রস্থ কলামে বিরতি (Niri)
+settings-playback-full-width-desc = সক্রিয় টাইল করা কলাম ডিসপ্লের প্রস্থের অন্তত 90% জুড়ে থাকলে বিরতি দিন। সাধারণ ফাঁকসহ Mod+F অন্তর্ভুক্ত। অন্য ওয়ার্কস্পেস গণনায় আসে না।
+settings-playback-paused-full-width = বিরতিতে: পূর্ণ-প্রস্থ কলাম

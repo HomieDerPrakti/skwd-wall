@@ -286,3 +286,127 @@ fn folio_sheet_panel_chrome() {
 fn folio_rule_alpha() {
     assert_eq!(super::layout::FOLIO_RULE_ALPHA, 0.58);
 }
+
+#[test]
+fn rtl_canvas_text_anchors_its_measured_width() {
+    use iced::advanced::text::Alignment as TextAlignment;
+    use iced::{Alignment, Color, Point};
+    let latin = super::mid_text(
+        "ALL",
+        Point::new(100.0, 8.0),
+        Color::WHITE,
+        11.0,
+        super::UI_FONT,
+        Alignment::Center,
+    );
+    assert_eq!(latin.align_x, TextAlignment::Center);
+    assert_eq!(latin.position, Point::new(100.0, 8.0));
+
+    let arabic = super::mid_text(
+        "الكل",
+        Point::new(100.0, 8.0),
+        Color::WHITE,
+        11.0,
+        super::UI_FONT,
+        Alignment::Center,
+    );
+    let width = super::typography::measured_line_width("الكل", 11.0, super::UI_FONT);
+    assert!(width > 0.0 && width.is_finite());
+    assert_eq!(arabic.align_x, TextAlignment::Default);
+    assert_eq!(arabic.position, Point::new(100.0 - width / 2.0, 8.0));
+
+    let trailing = super::mid_text(
+        "صور",
+        Point::new(100.0, 8.0),
+        Color::WHITE,
+        11.0,
+        super::UI_FONT,
+        Alignment::End,
+    );
+    let width = super::typography::measured_line_width("صور", 11.0, super::UI_FONT);
+    assert_eq!(trailing.align_x, TextAlignment::Default);
+    assert_eq!(trailing.position.x, 100.0 - width);
+
+    let multiline = super::mid_text(
+        "الكل\nصور",
+        Point::new(100.0, 8.0),
+        Color::WHITE,
+        11.0,
+        super::UI_FONT,
+        Alignment::Center,
+    );
+    assert_eq!(multiline.align_x, TextAlignment::Center);
+    assert!(super::typography::has_rtl("اردو") && !super::typography::has_rtl("हिन्दी"));
+}
+
+#[test]
+fn reading_direction_helpers_mirror_only_for_rtl() {
+    use iced::alignment::Horizontal;
+    assert_eq!(super::ordered(vec![1, 2, 3], false), vec![1, 2, 3]);
+    assert_eq!(super::ordered(vec![1, 2, 3], true), vec![3, 2, 1]);
+    assert_eq!(super::start_for(false), Horizontal::Left);
+    assert_eq!(super::start_for(true), Horizontal::Right);
+    assert_eq!(super::end_for(false), Horizontal::Right);
+    assert_eq!(super::end_for(true), Horizontal::Left);
+    let ltr = super::logical_padding_for(false, 1.0, 2.0, 3.0, 4.0);
+    assert_eq!((ltr.top, ltr.right, ltr.bottom, ltr.left), (1.0, 2.0, 3.0, 4.0));
+    let rtl = super::logical_padding_for(true, 1.0, 2.0, 3.0, 4.0);
+    assert_eq!((rtl.top, rtl.right, rtl.bottom, rtl.left), (1.0, 4.0, 3.0, 2.0));
+    assert_eq!(super::mirror_x_for(false, 10.0, 30.0, 100.0), 10.0);
+    assert_eq!(super::mirror_x_for(true, 10.0, 30.0, 100.0), 60.0);
+    let flow: super::Flow<'_, ()> = super::row![iced::widget::text("a"), iced::widget::text("b")];
+    assert_eq!(flow.len(), 2);
+    let empty: super::Flow<'_, ()> = super::row![];
+    assert!(empty.push(iced::widget::text("c")).len() == 1);
+}
+
+#[test]
+fn flow_rows_enclose_filling_children_like_iced_rows() {
+    use iced::Length;
+    let filling: iced::Element<'_, ()> =
+        super::row![iced::widget::text("a").width(Length::Fill), iced::widget::text("b")].into();
+    assert_eq!(filling.as_widget().size_hint().width, Length::Fill);
+    let shrinking: iced::Element<'_, ()> = super::row![iced::widget::text("a")].into();
+    assert_eq!(shrinking.as_widget().size_hint().width, Length::Shrink);
+    let fixed: iced::Element<'_, ()> =
+        super::row![iced::widget::text("a").width(Length::Fill)].width(Length::Fixed(40.0)).into();
+    assert_eq!(fixed.as_widget().size_hint().width, Length::Fixed(40.0));
+    let tall: iced::Element<'_, ()> =
+        super::row![iced::widget::text("a").height(Length::Fill)].into();
+    assert_eq!(tall.as_widget().size_hint().height, Length::Fill);
+}
+
+#[test]
+fn view_rows_come_from_the_direction_aware_kit() {
+    fn visit(directory: &std::path::Path, offenders: &mut Vec<String>) {
+        for entry in std::fs::read_dir(directory).expect("read view directory") {
+            let path = entry.expect("view entry").path();
+            if path.is_dir() {
+                visit(&path, offenders);
+                continue;
+            }
+            if path.extension().is_none_or(|extension| extension != "rs")
+                || path.ends_with("dir.rs")
+                || path.file_name().is_some_and(|name| name == "tests.rs")
+            {
+                continue;
+            }
+            let source = std::fs::read_to_string(&path).expect("read view source");
+            let imports_iced_row = source.lines().any(|line| {
+                line.starts_with("use iced::widget::")
+                    && line.split(['{', '}', ',', ' ']).any(|token| token == "row")
+            }) || source.contains("iced::widget::row!")
+                || source.contains("widget::row(")
+                || source.contains("Row::with_children(")
+                || source.contains("Row::new(");
+            if imports_iced_row {
+                offenders.push(path.display().to_string());
+            }
+        }
+    }
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    let mut offenders = Vec::new();
+    visit(&root.join("src/frontend"), &mut offenders);
+    visit(&root.join("src/app/view"), &mut offenders);
+    assert!(offenders.is_empty(), "{offenders:#?}");
+}

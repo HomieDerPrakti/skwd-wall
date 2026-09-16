@@ -1,11 +1,12 @@
-use iced::widget::{canvas, column, container, mouse_area, row, stack, text, text_input};
+use iced::widget::{canvas, column, container, mouse_area, stack, text, text_input};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::{SearchMode, tag_query_id};
 use crate::domain::library::search::{QueryChip, TagEntry, suggest_completion};
 use crate::frontend::theme::Palette;
 use crate::frontend::ui::{
-    NERD_FONT, TagChips, control_background, control_border, control_text, with_alpha,
+    NERD_FONT, TagChips, control_background, control_border, control_text, logical_padding, row,
+    with_alpha,
 };
 use crate::i18n::tr;
 
@@ -293,7 +294,7 @@ pub fn view(cloud: CloudView<'_>) -> Element<'_, Message> {
     let search_row = container(search_controls)
         .width(Length::Fill)
         .height(Length::Fixed(field_h))
-        .padding(Padding { left: 12.0 * scale, right: 5.0 * scale, ..Padding::ZERO })
+        .padding(logical_padding(0.0, 5.0 * scale, 0.0, 12.0 * scale))
         .style(move |_theme| crate::frontend::ui::box_style(field_bg, field_border));
     let mut sections: Vec<Element<'_, Message>> = vec![toolbar.into(), search_row.into()];
     if search_mode == SearchMode::Tags {

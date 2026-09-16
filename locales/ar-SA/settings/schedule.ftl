@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = الجدولة
+settings-schedule-schedule-card-desc = تختار القواعد الخلفية والسمة من شروط مثل الوقت ويوم الأسبوع والطقس والطاقة والشاشات. أول قاعدة مطابقة هي التي تسري.
+settings-schedule-enable-label = تفعيل الجدولة
+settings-schedule-enable-desc = تشغيل كل قواعد الجدولة أو إيقافها دون حذف القواعد.
+settings-schedule-apply-on-start-label = التطبيق عند بدء التشغيل
+settings-schedule-apply-on-start-desc = تطبيق أول قاعدة مطابقة عند بدء الخدمة. تبقى الخلفية المختارة يدويًا في هذه الجلسة هي السارية.
+settings-schedule-editor-label = محرر الجدولة
+settings-schedule-editor-desc = ابنِ القواعد من كتل الشروط واسحب لتحديد الأولوية؛ أول تطابق يسري. تتحول إعدادات النهار والليل القديمة إلى قاعدتين عند أول فتح.
+settings-schedule-editor-action = فتح
+settings-schedule-location-card = الموقع
+settings-schedule-location-card-desc = يُستخدم لأوقات الشروق/الغروب ولشروط الطقس.
+settings-schedule-latitude-label = خط العرض
+settings-schedule-latitude-desc = درجات عشرية، الشمال موجب (مثل 59.33).
+settings-schedule-longitude-label = خط الطول
+settings-schedule-longitude-desc = درجات عشرية، الشرق موجب (مثل 18.06).

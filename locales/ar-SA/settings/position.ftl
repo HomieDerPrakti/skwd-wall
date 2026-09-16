@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = حدد موضع نمط المنتقي هذا وشريط التصفية ولوحة البحث الخاصين به دون التأثير على الأنماط الأخرى.
+settings-position-slices-card = منتقي الشرائح
+settings-position-hex-card = المنتقي الهندسي
+settings-position-wall-card = منتقي الجدار
+settings-position-sandy-card = المنتقي الرملي
+settings-position-hand-card = منتقي يد البطاقات
+settings-position-horizontal-label = الإزاحة الأفقية
+settings-position-horizontal-desc = تحريك المنتقي يسارًا أو يمينًا بنسبة مئوية من نصف عرض الشاشة. القيم الموجبة تحرّكه يمينًا.
+settings-position-vertical-label = الإزاحة الرأسية
+settings-position-vertical-desc = تحريك المنتقي لأعلى أو لأسفل بنسبة مئوية من نصف ارتفاع الشاشة. القيم الموجبة تحرّكه لأسفل.

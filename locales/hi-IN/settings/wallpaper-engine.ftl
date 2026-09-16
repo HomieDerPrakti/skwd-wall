@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = रेंडरिंग
+settings-wallpaper-engine-rendering-card-desc = अंतर्निहित Vulkan रेंडरर द्वारा Workshop सीन दिखाते समय इस्तेमाल होने वाले डिफ़ॉल्ट सेट करें।
+settings-wallpaper-engine-fps-label = FPS सीमा
+settings-wallpaper-engine-fps-desc = प्रति सेकंड अधिकतम फ़्रेम। कम मान CPU/GPU लोड घटाते हैं।
+settings-wallpaper-engine-scaling-label = डिफ़ॉल्ट स्केलिंग
+settings-wallpaper-engine-scaling-desc = Workshop सीन हर मॉनिटर पर कैसे फ़िट हों। डिफ़ॉल्ट वैश्विक फ़िल मोड का पालन करता है।
+settings-wallpaper-engine-scaling-default = वैश्विक डिफ़ॉल्ट
+settings-wallpaper-engine-scaling-fill = भरें
+settings-wallpaper-engine-scaling-fit = फ़िट
+settings-wallpaper-engine-scaling-stretch = खींचें
+settings-wallpaper-engine-scaling-center = केंद्र
+settings-wallpaper-engine-scaling-tile = टाइल
+settings-wallpaper-engine-scaling-span = फैलाएँ
+settings-wallpaper-engine-effects-card = प्रभाव
+settings-wallpaper-engine-particles-label = कण अक्षम करें
+settings-wallpaper-engine-particles-desc = उन सीन में कण परतें छोड़ें जो इनका उपयोग करते हैं। इससे GPU का काम घट सकता है, पर उन सीन का एनीमेशन आंशिक रूप से खो जाएगा।

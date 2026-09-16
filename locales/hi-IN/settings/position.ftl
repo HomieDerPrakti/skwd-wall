@@ -1,0 +1,10 @@
+settings-position-picker-card-desc = इस पिकर शैली और उसके फ़िल्टर बार व खोज पैनल की स्थिति बाकी को प्रभावित किए बिना तय करें।
+settings-position-slices-card = स्लाइस पिकर
+settings-position-hex-card = ज्यामितीय पिकर
+settings-position-wall-card = वॉल पिकर
+settings-position-sandy-card = रेत पिकर
+settings-position-hand-card = कार्ड हैंड पिकर
+settings-position-horizontal-label = क्षैतिज ऑफ़सेट
+settings-position-horizontal-desc = पिकर को आधी स्क्रीन चौड़ाई के प्रतिशत से बाएँ या दाएँ खिसकाएँ। धनात्मक मान दाएँ ले जाते हैं।
+settings-position-vertical-label = ऊर्ध्वाधर ऑफ़सेट
+settings-position-vertical-desc = पिकर को आधी स्क्रीन ऊँचाई के प्रतिशत से ऊपर या नीचे खिसकाएँ। धनात्मक मान नीचे ले जाते हैं।

@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = Grille
+settings-wallhaven-columns-label = Colonnes
+settings-wallhaven-columns-desc = Nombre de miniatures par ligne.
+settings-wallhaven-rows-label = Lignes
+settings-wallhaven-rows-desc = Nombre de lignes visibles à la fois.
+settings-wallhaven-thumb-card = Miniature
+settings-wallhaven-width-label = Largeur
+settings-wallhaven-width-desc = Largeur des miniatures en pixels.
+settings-wallhaven-height-label = Hauteur
+settings-wallhaven-height-desc = Hauteur des miniatures en pixels.
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = Clé API
+settings-wallhaven-api-key-desc = Saisissez une clé API Wallhaven pour accéder aux fonctions du compte et aux résultats NSFW.
+settings-wallhaven-api-key-placeholder = Clé API Wallhaven (pour le NSFW)
+settings-wallhaven-username-label = Nom d’utilisateur
+settings-wallhaven-username-desc = Saisissez votre nom d’utilisateur Wallhaven pour parcourir et télécharger vos collections.
+settings-wallhaven-username-placeholder = Nom d’utilisateur Wallhaven

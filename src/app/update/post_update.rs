@@ -35,6 +35,7 @@ pub(super) fn finish(
         0.0
     };
     app.panels.settings.inset_target = if design_mode { inset } else { 0.0 };
+    app.scene.set_reading_direction(crate::i18n::is_rtl());
     app.scene.set_center_inset(inset);
     if sync_filter_bar {
         let bar_footprint = (app.chrome.filter_bar_fade() > 0.001 && !hard_overlay).then(|| {

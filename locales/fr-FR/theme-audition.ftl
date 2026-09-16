@@ -1,0 +1,56 @@
+theme-audition-title = Aperçu des couleurs
+theme-audition-subtitle = Choisissez une source de couleurs, puis comparez ses profils avec le même fond d'écran.
+theme-audition-backend = Source de couleurs
+theme-audition-backend-on = { $backend } · activé
+theme-audition-selected = Sélectionné
+theme-audition-preview = Aperçu
+theme-audition-loading = Génération des aperçus à partir du fond d'écran actuel…
+theme-audition-empty = Aucun aperçu de couleurs n'a été renvoyé. Vérifiez que la source de couleurs sélectionnée est installée et fonctionne.
+
+settings-theme-profile-desc = Modifiez les couleurs actuelles et enregistrez un profil pour le fond d'écran qui les fournit.
+theme-profile-load = Charger l'actuel
+theme-profile-save = Enregistrer pour ce fond d'écran
+theme-profile-enabled = Utiliser ce profil
+theme-profile-dark = Sombre
+theme-profile-light = Clair
+
+settings-playback-pause-title = Pause automatique
+settings-playback-pause-desc = Mettre en pause les fonds d'écran animés lorsqu'une condition activée est remplie.
+settings-playback-process-enabled = Pause quand des applications sont en cours d'exécution
+settings-playback-process-desc = Mettre tous les écrans en pause tant qu'un processus listé est en cours d'exécution.
+settings-playback-processes = Processus
+settings-playback-processes-desc = Séparez les noms d'exécutables par des virgules. La correspondance ignore la casse et le suffixe .exe.
+settings-playback-choose-process = Choisir un processus en cours
+settings-playback-fullscreen = Pause en plein écran
+settings-playback-fullscreen-desc = Mettre en pause tant qu'une fenêtre plein écran est visible. Nécessite la prise en charge du compositeur.
+settings-playback-scope = Écrans mis en pause par une fenêtre
+settings-playback-scope-desc = Choisissez si une condition de pause liée à une fenêtre met en pause son écran ou tous les écrans.
+settings-playback-all = Tous les écrans
+settings-playback-display = L'écran contenant la fenêtre
+settings-playback-resume = Délai de reprise
+settings-playback-resume-desc = Attendre après la levée de la dernière condition de pause automatique. La pause manuelle reste en vigueur.
+settings-playback-detection-off = Activez la pause en plein écran ou sur fenêtre maximisée pour vérifier la prise en charge du compositeur.
+settings-playback-detection-ready = Détection de l'état des fenêtres disponible
+settings-playback-detection-unavailable = Détection de l'état des fenêtres indisponible sur ce compositeur
+settings-playback-paused-process = En pause : { $names } est en cours d'exécution
+settings-playback-paused-fullscreen = En pause : fenêtre plein écran
+settings-playback-resuming = En attente de reprise
+settings-playback-no-rule = Aucune règle de pause automatique n'est active
+
+settings-paper-layer-label = Couche du fond d'écran
+settings-paper-layer-desc = Couche Wayland pour les vidéos et les scènes. Utilisez Arrière-plan avec la règle place-within-backdrop de Niri pour afficher le fond d'écran actif derrière la vue d'ensemble.
+settings-paper-layer-bottom = Bas (par défaut)
+settings-paper-layer-background = Arrière-plan
+settings-paper-layer-top = Haut
+settings-paper-layer-overlay = Superposition
+settings-paper-overview-only-label = Animer uniquement dans la vue d'ensemble Niri
+settings-paper-overview-only-desc = Nécessite Arrière-plan et place-within-backdrop. En pause tant que la vue d'ensemble est fermée.
+settings-playback-paused-overview = En pause tant que la vue d'ensemble Niri est fermée
+
+settings-playback-maximized = Pause sur fenêtre maximisée
+settings-playback-maximized-desc = Mettre en pause lorsque le compositeur signale une fenêtre maximisée. Nécessite la prise en charge du compositeur ; Niri signale aussi les fenêtres des espaces de travail masqués.
+settings-playback-paused-maximized = En pause : fenêtre maximisée
+
+settings-playback-full-width = Pause sur colonne pleine largeur (Niri)
+settings-playback-full-width-desc = Mettre en pause lorsque la colonne active couvre au moins 90 % de la largeur de son écran. Inclut Mod+F avec des espacements normaux. Les autres espaces de travail ne comptent pas.
+settings-playback-paused-full-width = En pause : colonne pleine largeur

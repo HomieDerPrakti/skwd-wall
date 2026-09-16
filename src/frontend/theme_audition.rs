@@ -1,11 +1,9 @@
-use iced::widget::{
-    Column, Row, Space, button, column, container, mouse_area, row, scrollable, text,
-};
+use iced::widget::{Column, Space, button, column, container, mouse_area, scrollable, text};
 use iced::{Alignment, Color, Element, Length, Padding};
 
 use crate::app::{Message, ThemeAuditionPreview};
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{THEME_BACKENDS, UI_FONT, legible_type_scale, with_alpha};
+use crate::frontend::ui::{THEME_BACKENDS, UI_FONT, legible_type_scale, row, with_alpha};
 use crate::i18n::{tr, tr_args};
 
 fn fill<'a>(color: Color, width: f32, height: f32) -> Element<'a, Message> {
@@ -142,7 +140,7 @@ fn backend_picker<'a>(
 ) -> Element<'a, Message> {
     let mut lines = Column::new().spacing(6.0 * scale);
     for group in backends.chunks(6) {
-        let mut line = Row::new().spacing(6.0 * scale);
+        let mut line = row![].spacing(6.0 * scale);
         for backend in group {
             let is_inspected = backend == inspected;
             let is_applied = backend == applied;
@@ -203,7 +201,7 @@ pub fn view<'a>(
     let content_height = rows as f32 * 123.0 * scale + rows.saturating_sub(1) as f32 * 12.0 * scale;
     let mut grid = Column::new().spacing(12.0 * scale);
     for group in previews.chunks(columns) {
-        let mut line = Row::new().spacing(12.0 * scale);
+        let mut line = row![].spacing(12.0 * scale);
         for preview in group {
             let active = preview.backend == applied_backend && preview.value == current_value;
             line = line.push(preview_card(preview, active, card_width, scale));

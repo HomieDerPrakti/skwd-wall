@@ -118,11 +118,9 @@ pub(super) fn draw_surface(
             &Path::rectangle(sheet.position(), sheet.size()),
             with_alpha(palette.background, 0.90 * fade),
         );
+        let (from, to) = rail_divider(sheet, layout.rtl);
         frame.stroke(
-            &Path::line(
-                Point::new(sheet.x + sheet.width, sheet.y),
-                Point::new(sheet.x + sheet.width, sheet.y + sheet.height),
-            ),
+            &Path::line(from, to),
             Stroke::default().with_color(with_alpha(palette.outline, 0.46 * fade)).with_width(1.0),
         );
         frame.stroke(
@@ -137,6 +135,11 @@ pub(super) fn draw_surface(
             Stroke::default().with_color(with_alpha(palette.primary, 0.48 * fade)).with_width(1.0),
         );
     }
+}
+
+pub(super) fn rail_divider(sheet: Rectangle, rtl: bool) -> (Point, Point) {
+    let x = if rtl { sheet.x } else { sheet.x + sheet.width };
+    (Point::new(x, sheet.y), Point::new(x, sheet.y + sheet.height))
 }
 
 pub(super) fn masthead_divider(masthead: Rectangle, embedded: bool) -> Option<(Point, Point)> {

@@ -1,0 +1,9 @@
+help-shortcuts = শর্টকাট
+help-keyboard = কিবোর্ড
+help-mouse = মাউস
+help-key-esc = Esc
+help-mouse-wheel = হুইল
+help-mouse-hover = হোভার
+help-close-back-quit = বন্ধ / পেছনে / প্রস্থান
+help-wheel = ব্রাউজ / স্ক্রল
+help-hover = ভিডিও প্রিভিউ

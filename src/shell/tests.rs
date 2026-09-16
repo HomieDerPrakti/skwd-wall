@@ -5,11 +5,12 @@ use std::os::linux::net::SocketAddrExt;
 use std::os::unix::net::{SocketAddr, UnixListener, UnixStream};
 
 use super::shell::{
-    JAPANESE_UI_FONT_BYTES, NERD_FONT_BYTES, NVIDIA_COMPILER_RECLAIM_ADVICE,
-    SIMPLIFIED_UI_FONT_BYTES, UI_FONT_BYTES, attach_reply, cold_nvidia_compiler_mapping,
-    compressed_thumbnail_profile, layer_shell_global_usable, layershell_error_message,
-    layershell_run_error_message, parse_control_command, picker_power_preference,
-    remove_embedded_ui_faces, startup_control_command, ui_font_bytes,
+    ARABIC_UI_FONT_BYTES, BENGALI_UI_FONT_BYTES, DEVANAGARI_UI_FONT_BYTES, JAPANESE_UI_FONT_BYTES,
+    NERD_FONT_BYTES, NVIDIA_COMPILER_RECLAIM_ADVICE, SIMPLIFIED_UI_FONT_BYTES, UI_FONT_BYTES,
+    attach_reply, cold_nvidia_compiler_mapping, compressed_thumbnail_profile,
+    layer_shell_global_usable, layershell_error_message, layershell_run_error_message,
+    parse_control_command, picker_power_preference, remove_embedded_ui_faces,
+    startup_control_command, ui_font_bytes,
 };
 
 #[test]
@@ -87,6 +88,43 @@ fn ui_font_follows_script() {
     assert!(std::ptr::eq(ui_font_bytes(Script::Cyrillic), UI_FONT_BYTES));
     assert!(std::ptr::eq(ui_font_bytes(Script::Simplified), SIMPLIFIED_UI_FONT_BYTES));
     assert!(std::ptr::eq(ui_font_bytes(Script::Japanese), JAPANESE_UI_FONT_BYTES));
+    assert!(std::ptr::eq(ui_font_bytes(Script::Arabic), ARABIC_UI_FONT_BYTES));
+    assert!(std::ptr::eq(ui_font_bytes(Script::Bengali), BENGALI_UI_FONT_BYTES));
+    assert!(std::ptr::eq(ui_font_bytes(Script::Devanagari), DEVANAGARI_UI_FONT_BYTES));
+}
+
+fn shaped_glyphs(script: crate::i18n::Script, text: &str) -> Vec<u16> {
+    use iced_wgpu::graphics::text::cosmic_text::{
+        Attrs, Buffer, Family, FontSystem, Metrics, Shaping, Stretch, Weight, fontdb,
+    };
+    let mut db = fontdb::Database::new();
+    db.load_font_data(ui_font_bytes(script).to_vec());
+    let mut system = FontSystem::new_with_locale_and_db(String::from("en-US"), db);
+    let mut buffer = Buffer::new(&mut system, Metrics::new(14.0, 20.0));
+    let attrs = Attrs::new()
+        .family(Family::Name(crate::frontend::ui::UI_FONT_FAMILY))
+        .weight(Weight::BOLD)
+        .stretch(Stretch::Condensed);
+    buffer.set_text(&mut system, text, &attrs, Shaping::Advanced, None);
+    buffer.shape_until_scroll(&mut system, false);
+    let ids: Vec<u16> = buffer
+        .layout_runs()
+        .flat_map(|run| run.glyphs.iter().map(|glyph| glyph.glyph_id))
+        .collect();
+    assert!(!ids.is_empty() && ids.iter().all(|&id| id != 0), "{text}");
+    ids
+}
+
+#[test]
+fn ui_faces_shape_complex_scripts() {
+    use crate::i18n::Script;
+    let isolated = shaped_glyphs(Script::Arabic, "ب")[0];
+    assert!(!shaped_glyphs(Script::Arabic, "ببب").contains(&isolated));
+    let urdu_isolated = shaped_glyphs(Script::Arabic, "ٹ")[0];
+    assert!(!shaped_glyphs(Script::Arabic, "ٹٹٹ").contains(&urdu_isolated));
+    assert_eq!(shaped_glyphs(Script::Devanagari, "क्ष").len(), 1);
+    assert_eq!(shaped_glyphs(Script::Bengali, "ক্ষ").len(), 1);
+    assert_eq!(shaped_glyphs(Script::Latin, "Français").len(), 8);
 }
 
 #[test]

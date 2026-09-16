@@ -5,6 +5,7 @@ use crate::frontend::theme::Palette;
 
 pub fn chrome_signature(chrome: &[Chrome], back: Option<&BackPanel>, palette: &Palette) -> u64 {
     let mut hasher = std::collections::hash_map::DefaultHasher::new();
+    hasher.write_u8(super::super::rtl() as u8);
     hasher.write_usize(chrome.len());
     for item in chrome {
         hasher.write_u8(item.view);

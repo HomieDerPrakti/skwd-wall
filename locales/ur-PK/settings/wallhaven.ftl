@@ -1,0 +1,17 @@
+settings-wallhaven-grid-card = گرڈ
+settings-wallhaven-columns-label = کالم
+settings-wallhaven-columns-desc = فی قطار تھمب نیلز کی تعداد۔
+settings-wallhaven-rows-label = قطاریں
+settings-wallhaven-rows-desc = بیک وقت نظر آنے والی قطاروں کی تعداد۔
+settings-wallhaven-thumb-card = تھمب نیل
+settings-wallhaven-width-label = چوڑائی
+settings-wallhaven-width-desc = تھمب نیل کی چوڑائی پکسلز میں۔
+settings-wallhaven-height-label = اونچائی
+settings-wallhaven-height-desc = تھمب نیل کی اونچائی پکسلز میں۔
+settings-wallhaven-api-card = API
+settings-wallhaven-api-key-label = API کلید
+settings-wallhaven-api-key-desc = اکاؤنٹ فیچرز اور NSFW نتائج تک رسائی کے لیے Wallhaven API کلید درج کریں۔
+settings-wallhaven-api-key-placeholder = Wallhaven API کلید (NSFW کے لیے)
+settings-wallhaven-username-label = صارف نام
+settings-wallhaven-username-desc = اپنے مجموعوں سے براؤز اور ڈاؤن لوڈ کرنے کے لیے اپنا Wallhaven صارف نام درج کریں۔
+settings-wallhaven-username-placeholder = Wallhaven صارف نام

@@ -6,6 +6,7 @@ use crate::i18n::tr;
 
 use super::chrome::ChamferPanel;
 use super::misc::{UI_FONT, scrim};
+use super::row;
 use super::with_alpha;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -46,7 +47,7 @@ pub fn help_overlay(
     scale: f32,
 ) -> Element<'static, HelpIntent> {
     use iced::Length;
-    use iced::widget::{button, column, row, stack};
+    use iced::widget::{button, column, stack};
     let key_col = |items: Vec<(String, String)>, title: &'static str| {
         let mut col = column![text(title).font(UI_FONT).size(13.0 * scale).color(pal.tertiary)]
             .spacing(7.0 * scale);

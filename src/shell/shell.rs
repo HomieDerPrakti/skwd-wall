@@ -9,6 +9,12 @@ pub(super) static SIMPLIFIED_UI_FONT_BYTES: &[u8] =
     include_bytes!("../../assets/RobotoCondensed-Bold-SC.ttf");
 pub(super) static JAPANESE_UI_FONT_BYTES: &[u8] =
     include_bytes!("../../assets/RobotoCondensed-Bold-JP.ttf");
+pub(super) static ARABIC_UI_FONT_BYTES: &[u8] =
+    include_bytes!("../../assets/RobotoCondensed-Bold-AR.ttf");
+pub(super) static BENGALI_UI_FONT_BYTES: &[u8] =
+    include_bytes!("../../assets/RobotoCondensed-Bold-BN.ttf");
+pub(super) static DEVANAGARI_UI_FONT_BYTES: &[u8] =
+    include_bytes!("../../assets/RobotoCondensed-Bold-HI.ttf");
 const CTRL_IO_TIMEOUT: Duration = Duration::from_secs(2);
 const CTRL_READ_TIMEOUT: Duration = Duration::from_millis(300);
 
@@ -458,6 +464,9 @@ pub(super) fn ui_font_bytes(script: crate::i18n::Script) -> &'static [u8] {
         crate::i18n::Script::Latin | crate::i18n::Script::Cyrillic => UI_FONT_BYTES,
         crate::i18n::Script::Simplified => SIMPLIFIED_UI_FONT_BYTES,
         crate::i18n::Script::Japanese => JAPANESE_UI_FONT_BYTES,
+        crate::i18n::Script::Arabic => ARABIC_UI_FONT_BYTES,
+        crate::i18n::Script::Bengali => BENGALI_UI_FONT_BYTES,
+        crate::i18n::Script::Devanagari => DEVANAGARI_UI_FONT_BYTES,
     }
 }
 

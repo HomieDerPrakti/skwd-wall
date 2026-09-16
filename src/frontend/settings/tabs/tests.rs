@@ -1213,7 +1213,10 @@ fn language_tab_lists_supported_languages_and_system_default() {
         assert_eq!(current, expected);
         assert_eq!(
             options.iter().map(|(id, _)| id.as_str()).collect::<Vec<_>>(),
-            ["auto", "en-US", "sv-SE", "es-ES", "pt-BR", "ru-RU", "zh-CN", "ja-JP"]
+            [
+                "auto", "en-US", "sv-SE", "es-ES", "pt-BR", "ru-RU", "zh-CN", "ja-JP", "ar-SA",
+                "fr-FR", "bn-BD", "ur-PK", "hi-IN"
+            ]
         );
         assert_eq!(
             options[1..].iter().map(|(_, label)| label.as_str()).collect::<Vec<_>>(),
@@ -1224,7 +1227,12 @@ fn language_tab_lists_supported_languages_and_system_default() {
                 "Português (Brasil)",
                 "Русский",
                 "简体中文",
-                "日本語"
+                "日本語",
+                "العربية",
+                "Français",
+                "বাংলা",
+                "اردو",
+                "हिन्दी"
             ]
         );
     }

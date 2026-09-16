@@ -2,14 +2,16 @@ use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
 use iced::widget::canvas::{self, Frame, Path, Stroke};
-use iced::widget::{button, column, container, row, stack, text, text_input};
+use iced::widget::{button, column, container, stack, text, text_input};
 use iced::{Alignment, Border, Color, Element, Event, Length, Point, Rectangle, mouse, window};
 
 use crate::app::Message;
 use crate::frontend::animation::{MotionProfile, MotionTier};
 use crate::frontend::components::with_alpha;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{folio_diagonal_edges, folio_diagonal_wipe, label, legible_type_scale};
+use crate::frontend::ui::{
+    folio_diagonal_edges, folio_diagonal_wipe, label, legible_type_scale, mirror_x, row,
+};
 use crate::i18n::tr;
 
 use super::super::{ActionId, Control, PRESET_NAME_KEY, SettingsMsg};
@@ -120,6 +122,8 @@ impl canvas::Program<Message> for ButtonFill {
             frame.fill(&folio_diagonal_wipe(bounds.width, bounds.height, mix), fill);
             if mix < 1.0 {
                 let (top, bottom) = folio_diagonal_edges(bounds.width, bounds.height, mix);
+                let top = mirror_x(top, 0.0, bounds.width);
+                let bottom = mirror_x(bottom, 0.0, bounds.width);
                 frame.stroke(
                     &Path::line(Point::new(top, 0.0), Point::new(bottom, bounds.height)),
                     Stroke::default()

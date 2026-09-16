@@ -1,0 +1,10 @@
+settings-displays-card = Fonds d’écran actuels
+settings-displays-card-desc = Voici les fonds d’écran actuellement signalés par le service de fonds d’écran. Les modifications faites ici s’appliquent à un écran à la fois.
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = Hors ligne · { $width } × { $height }
+settings-displays-placement-label = Placement
+settings-displays-placement-desc = Choisissez si le fond d’écran remplit l’écran, s’y ajuste, s’étire, se centre, se répète en mosaïque ou s’étend sur plusieurs écrans.
+settings-displays-lock-label = Verrouiller
+settings-displays-lock-desc = Ne met à jour le fond d’écran de ce moniteur que via le multi-sélecteur.
+settings-displays-empty-label = Détection des écrans
+settings-displays-empty-desc = Les fonds d’écran actuels apparaîtront lorsque le service de fonds d’écran signalera ses écrans.

@@ -1,10 +1,10 @@
-use iced::widget::{column, container, row, scrollable, text, text_input};
+use iced::widget::{column, container, scrollable, text, text_input};
 use iced::{Alignment, Element, Length};
 
 use crate::app::Message;
 use crate::domain::effects::{EffectParam, EffectParamKind, EffectValue};
 use crate::frontend::theme::{Palette, parse_hex};
-use crate::frontend::ui::{UI_FONT, folio_horizontal_rule, legible_type_scale, with_alpha};
+use crate::frontend::ui::{UI_FONT, folio_horizontal_rule, legible_type_scale, row, with_alpha};
 
 use super::super::state::EffectsMsg;
 

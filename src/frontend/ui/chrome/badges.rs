@@ -7,7 +7,7 @@ use crate::i18n::tr;
 
 use super::super::bar::ICON_FAV;
 use super::super::misc::{NERD_FONT, UI_FONT, mid_text};
-use super::super::{parallelogram, with_alpha};
+use super::super::{mirror_x_for, parallelogram, with_alpha};
 
 fn badge_label(kind: u8) -> &'static str {
     match kind % 3 {
@@ -15,6 +15,41 @@ fn badge_label(kind: u8) -> &'static str {
         2 => tr("filter-bar-type-we"),
         _ => tr("filter-bar-type-pic"),
     }
+}
+
+fn badge_width(label: &str, text_size: f32, height: f32) -> f32 {
+    label.chars().count() as f32 * text_size * 0.7 + height
+}
+
+pub(super) fn slice_corners(rtl: bool, chrome: &Chrome, badge_width: f32) -> (f32, f32) {
+    let cut = chrome.skew.abs();
+    let right = (chrome.skew >= 0.0) != rtl;
+    let indicator_x = match (right, chrome.skew >= 0.0) {
+        (true, true) => chrome.cx + chrome.hw - 21.0,
+        (true, false) => chrome.cx + chrome.hw - cut - 21.0,
+        (false, true) => chrome.cx - chrome.hw + cut + 21.0,
+        (false, false) => chrome.cx - chrome.hw + 21.0,
+    };
+    let badge_x = match (right, chrome.skew >= 0.0) {
+        (true, true) => chrome.cx + chrome.hw - badge_width - cut - 8.0,
+        (true, false) => chrome.cx + chrome.hw - badge_width - 8.0,
+        (false, true) => chrome.cx - chrome.hw + 8.0,
+        (false, false) => chrome.cx - chrome.hw + cut + 8.0,
+    };
+    (indicator_x, badge_x)
+}
+
+pub(super) fn grid_corners(rtl: bool, chrome: &Chrome, badge_width: f32) -> (f32, f32, f32) {
+    let extent = chrome.cx * 2.0;
+    (
+        mirror_x_for(rtl, chrome.cx - chrome.hw + 4.0, badge_width, extent),
+        mirror_x_for(rtl, chrome.cx - chrome.hw + 13.0, 0.0, extent),
+        mirror_x_for(rtl, chrome.cx + chrome.hw - 11.0, 0.0, extent),
+    )
+}
+
+pub(super) fn hex_indicator_x(rtl: bool, chrome: &Chrome) -> f32 {
+    mirror_x_for(rtl, chrome.cx + chrome.hw * 0.5 - 14.0, 0.0, chrome.cx * 2.0)
 }
 
 fn badge_text(
@@ -72,7 +107,7 @@ fn type_badge(
     opacity: f32,
 ) {
     let label = badge_label(kind);
-    let width = label.chars().count() as f32 * text_size * 0.7 + height;
+    let width = badge_width(label, text_size, height);
     let background = parallelogram(x, y, width, height, skew.min(height * 0.4));
     frame.fill(
         &background,
@@ -98,11 +133,12 @@ pub(super) fn draw_chrome_item(
     chrome: &Chrome,
     show_type_badge: bool,
     show_video_indicator: bool,
+    rtl: bool,
 ) {
     match chrome.view {
-        0 => draw_slice(frame, palette, chrome, show_type_badge, show_video_indicator),
-        1 => draw_grid(frame, palette, chrome, show_type_badge, show_video_indicator),
-        _ => draw_hex(frame, palette, chrome, show_type_badge, show_video_indicator),
+        0 => draw_slice(frame, palette, chrome, show_type_badge, show_video_indicator, rtl),
+        1 => draw_grid(frame, palette, chrome, show_type_badge, show_video_indicator, rtl),
+        _ => draw_hex(frame, palette, chrome, show_type_badge, show_video_indicator, rtl),
     }
 }
 
@@ -112,13 +148,13 @@ fn draw_slice(
     chrome: &Chrome,
     show_type_badge: bool,
     show_video_indicator: bool,
+    rtl: bool,
 ) {
+    let height = 16.0;
+    let width = badge_width(badge_label(chrome.kind), 9.0, height);
+    let (indicator_x, badge_x) = slice_corners(rtl, chrome, width);
     if show_video_indicator && chrome.has_video {
-        let x = if chrome.skew >= 0.0 {
-            chrome.cx + chrome.hw - 21.0
-        } else {
-            chrome.cx - chrome.hw + 21.0
-        };
+        let x = indicator_x;
         let edge_y = -chrome.edge_tilt * 0.5 * ((x - chrome.cx) / chrome.hw.max(1.0));
         video_indicator(
             frame,
@@ -130,15 +166,7 @@ fn draw_slice(
         );
     }
     if show_type_badge {
-        let skew = chrome.skew.abs();
-        let height = 16.0;
-        let label = badge_label(chrome.kind);
-        let width = label.chars().count() as f32 * 9.0 * 0.7 + height;
-        let x = if chrome.skew >= 0.0 {
-            chrome.cx + chrome.hw - width - skew - 8.0
-        } else {
-            chrome.cx - chrome.hw + skew + 8.0
-        };
+        let x = badge_x;
         let edge_y = -chrome.edge_tilt * 0.5 * ((x + width * 0.5 - chrome.cx) / chrome.hw.max(1.0));
         type_badge(
             frame,
@@ -161,13 +189,16 @@ fn draw_grid(
     chrome: &Chrome,
     show_type_badge: bool,
     show_video_indicator: bool,
+    rtl: bool,
 ) {
+    let (badge_x, indicator_x, fav_x) =
+        grid_corners(rtl, chrome, badge_width(badge_label(chrome.kind), 8.0, 14.0));
     if show_type_badge {
         type_badge(
             frame,
             palette,
             chrome.kind,
-            chrome.cx - chrome.hw + 4.0,
+            badge_x,
             chrome.cy + chrome.hh - 18.0,
             14.0,
             3.0,
@@ -180,7 +211,7 @@ fn draw_grid(
         video_indicator(
             frame,
             palette,
-            chrome.cx - chrome.hw + 13.0,
+            indicator_x,
             chrome.cy - chrome.hh + 13.0,
             18.0,
             chrome.opacity,
@@ -189,7 +220,7 @@ fn draw_grid(
     if chrome.favourite {
         frame.fill_text(mid_text(
             ICON_FAV.to_string(),
-            Point::new(chrome.cx + chrome.hw - 11.0, chrome.cy - chrome.hh + 11.0),
+            Point::new(fav_x, chrome.cy - chrome.hh + 11.0),
             with_alpha(palette.primary, chrome.opacity),
             14.0,
             NERD_FONT,
@@ -204,11 +235,12 @@ fn draw_hex(
     chrome: &Chrome,
     show_type_badge: bool,
     show_video_indicator: bool,
+    rtl: bool,
 ) {
     if show_type_badge {
         let height = 18.0;
         let label = badge_label(chrome.kind);
-        let width = label.chars().count() as f32 * 9.0 * 0.7 + 14.0;
+        let width = badge_width(label, 9.0, 14.0);
         type_badge(
             frame,
             palette,
@@ -226,7 +258,7 @@ fn draw_hex(
         video_indicator(
             frame,
             palette,
-            chrome.cx + chrome.hw * 0.5 - 14.0,
+            hex_indicator_x(rtl, chrome),
             chrome.cy - chrome.hh * 0.866 + 18.0,
             20.0,
             chrome.opacity,

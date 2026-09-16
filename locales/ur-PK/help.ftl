@@ -1,0 +1,9 @@
+help-shortcuts = شارٹ کٹس
+help-keyboard = کی بورڈ
+help-mouse = ماؤس
+help-key-esc = Esc
+help-mouse-wheel = وہیل
+help-mouse-hover = ہوور
+help-close-back-quit = بند / واپس / باہر
+help-wheel = براؤز / اسکرول
+help-hover = ویڈیو کا پیش منظر

@@ -57,6 +57,11 @@ const LOCALE_CONSTANTS: &[(&str, &str)] = &[
     ("ru-RU", "RU_RU_RESOURCES"),
     ("zh-CN", "ZH_CN_RESOURCES"),
     ("ja-JP", "JA_JP_RESOURCES"),
+    ("ar-SA", "AR_SA_RESOURCES"),
+    ("fr-FR", "FR_FR_RESOURCES"),
+    ("bn-BD", "BN_BD_RESOURCES"),
+    ("ur-PK", "UR_PK_RESOURCES"),
+    ("hi-IN", "HI_IN_RESOURCES"),
 ];
 
 fn generate_embedded_locales() {

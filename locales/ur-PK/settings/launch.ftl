@@ -1,0 +1,12 @@
+settings-launch-launch-card = آغاز
+settings-launch-launch-card-desc = پکر تقریباً 150 ms میں شروع ہوتا ہے اور بند ہونے پر مکمل طور پر ختم ہو جاتا ہے۔ یہ ترتیبات صرف شروع ہوتے وقت اس کا ظاہر ہونا بدلتی ہیں۔
+settings-launch-animation-label = اینیمیشن
+settings-launch-animation-desc = کوئی نہیں پکر کو موجود ہوتے ہی دکھاتا ہے اور سب سے تیز ہے۔ فیڈ صرف شفافیت بدلتا ہے؛ ابھار اور زوم حرکت شامل کرتے ہیں۔
+settings-launch-animation-none = کوئی نہیں
+settings-launch-animation-fade = فیڈ
+settings-launch-animation-rise = ابھار
+settings-launch-animation-zoom = زوم
+settings-launch-motion-label = حرکت
+settings-launch-motion-desc = پکر UI کی مشترکہ رفتار۔ تیز، معیاری اور سست وزن حرکت کی ترتیبات میں بدلیں۔
+settings-launch-fade-from-label = فیڈ کی ابتدا
+settings-launch-fade-from-desc = داخلہ جس شفافیت سے شروع ہو، فیصد میں۔ 0 مکمل شفاف سے ابھرتا ہے۔

@@ -1,0 +1,26 @@
+settings-niri-backdrop-card = Niri
+settings-niri-backdrop-card-desc = niri के ओवरव्यू के पीछे एक छवि, वीडियो या Wallpaper Engine सीन इस्तेमाल करें। इसे डेस्कटॉप वॉलपेपर से अलग धुंधला और मंद करें।
+settings-niri-show-label = ओवरव्यू में वॉलपेपर दिखाएँ
+settings-niri-show-desc = अलग ओवरव्यू बैकड्रॉप दिखाएँ। ओवरव्यू बंद रहने पर एनिमेटेड बैकड्रॉप रुक जाते हैं।
+settings-niri-blur-label = बैकड्रॉप धुंधला करें
+settings-niri-blur-desc = डेस्कटॉप वॉलपेपर को स्पष्ट रखते हुए ओवरव्यू की प्रति धुंधली करें।
+settings-niri-blur-radius-label = धुंधलापन त्रिज्या
+settings-niri-blur-radius-desc = प्रति पर लागू गाउसियन धुंधलापन त्रिज्या। जितनी अधिक, उतनी नरम।
+settings-niri-follow-label = हमेशा वर्तमान वॉलपेपर इस्तेमाल करें
+settings-niri-follow-desc = आपके लागू किए गए वॉलपेपर का पालन करें। नीचे अलग बैकड्रॉप चुनने के लिए बंद करें।
+settings-niri-image-label = बैकड्रॉप स्रोत
+settings-niri-image-desc = किसी वॉलपेपर पर बैकड्रॉप के रूप में सेट करें चुनें, या छवि, वीडियो या Wallpaper Engine प्रोजेक्ट का पथ दर्ज करें। पिछला वॉलपेपर इस्तेमाल करने के लिए खाली छोड़ें।
+settings-niri-auto-theme-label = बैकड्रॉप को ऑटो-थीम करें
+settings-niri-auto-theme-desc = स्थिर छवियों को gowall थीम पैलेट से फिर से रंगें। वीडियो और Wallpaper Engine सीन अपने मूल रंग रखते हैं।
+settings-niri-theme-label = बैकड्रॉप थीम
+settings-niri-theme-desc = बैकड्रॉप को ऑटो-थीम करते समय इस्तेमाल होने वाला पैलेट।
+settings-niri-dim-label = बैकड्रॉप मंदता
+settings-niri-dim-desc = ओवरव्यू बैकड्रॉप को गहरा करें। 0 = कुछ नहीं, 100 = काला।
+settings-niri-rule-label = आवश्यक niri layer-rule
+settings-niri-rule-desc = इसे अपनी ~/.config/niri/config.kdl में पेस्ट करें, फिर niri रीलोड करें।
+settings-niri-refresh-label = बैकड्रॉप अभी रीफ़्रेश करें
+settings-niri-refresh-desc = चुने गए स्रोत को वर्तमान धुंधलापन, मंदता और थीम सेटिंग के साथ फिर से लोड करें।
+settings-niri-refresh-action = रीफ़्रेश करें
+settings-niri-copy-label = layer-rule क्लिपबोर्ड पर कॉपी करें
+settings-niri-copy-desc = ऊपर का स्निपेट niri के कॉन्फ़िग के लिए कॉपी करता है।
+settings-niri-copy-action = कॉपी करें

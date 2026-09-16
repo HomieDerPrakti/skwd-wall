@@ -1,10 +1,10 @@
-use iced::widget::{column, container, row, scrollable, text};
+use iced::widget::{column, container, scrollable, text};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::Message;
 use crate::contracts::media::MediaKind;
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{UI_FONT, folio_rule, label, with_alpha};
+use crate::frontend::ui::{UI_FONT, end, folio_rule, label, row, with_alpha};
 use crate::i18n::tr;
 
 #[derive(Debug, Clone)]
@@ -345,7 +345,7 @@ impl AudioPanel {
                     ),
                 ]
                 .spacing(3.0 * scale)
-                .align_x(Alignment::End),
+                .align_x(end()),
             ]
             .spacing(12.0 * scale)
             .align_y(Alignment::Center),
@@ -486,7 +486,7 @@ impl AudioPanel {
                     ),
                 ]
                 .spacing(6.0 * scale)
-                .align_x(Alignment::End),
+                .align_x(end()),
             ]
             .align_y(Alignment::Center),
             folio_rule(palette),

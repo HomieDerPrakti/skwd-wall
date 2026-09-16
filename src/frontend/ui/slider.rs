@@ -3,12 +3,16 @@ use iced::{Element, Event, Point, Rectangle, mouse};
 
 use crate::frontend::theme::Palette;
 
-use super::with_alpha;
+use super::{rtl, with_alpha};
 
 const FOLIO_SLIDER_INSET: f32 = 7.0;
 
 fn slider_fraction(min: f64, max: f64, value: f64) -> f32 {
     if max <= min { 0.0 } else { (((value - min) / (max - min)) as f32).clamp(0.0, 1.0) }
+}
+
+fn track_x(rtl: bool, x_local: f32, w: f32) -> f32 {
+    if rtl { w - x_local } else { x_local }
 }
 
 fn marker_snap(raw_x: f32) -> f32 {
@@ -33,13 +37,14 @@ pub struct FolioSlider<Message> {
 }
 
 impl<Message> FolioSlider<Message> {
-    fn value_at(&self, x: f32, width: f32) -> f64 {
+    fn value_at(&self, rtl: bool, x: f32, width: f32) -> f64 {
+        let track = width - FOLIO_SLIDER_INSET * 2.0;
         slider_value(
             self.min,
             self.max,
             self.step,
-            x - FOLIO_SLIDER_INSET,
-            width - FOLIO_SLIDER_INSET * 2.0,
+            track_x(rtl, x - FOLIO_SLIDER_INSET, track),
+            track,
         )
     }
 }
@@ -58,14 +63,14 @@ impl<Message: Clone> canvas::Program<Message> for FolioSlider<Message> {
             Event::Mouse(mouse::Event::ButtonPressed(mouse::Button::Left)) => {
                 if let Some(point) = cursor.position_in(bounds) {
                     *dragging = true;
-                    let value = self.value_at(point.x, bounds.width);
+                    let value = self.value_at(rtl(), point.x, bounds.width);
                     return Some(Action::publish((self.on_change)(value)).and_capture());
                 }
                 None
             }
             Event::Mouse(mouse::Event::CursorMoved { .. }) if *dragging => {
                 let x = cursor.position().map_or(0.0, |point| point.x - bounds.x);
-                let value = self.value_at(x, bounds.width);
+                let value = self.value_at(rtl(), x, bounds.width);
                 Some(Action::publish((self.on_change)(value)).and_capture())
             }
             Event::Mouse(mouse::Event::ButtonReleased(mouse::Button::Left)) if *dragging => {
@@ -86,18 +91,26 @@ impl<Message: Clone> canvas::Program<Message> for FolioSlider<Message> {
     ) -> Vec<canvas::Geometry> {
         let mut frame = Frame::new(renderer, bounds.size());
         let inset = FOLIO_SLIDER_INSET;
+        let mirrored = rtl();
         let start = Point::new(inset, bounds.height * 0.5);
         let end = Point::new((bounds.width - inset).max(inset), start.y);
-        let raw_x = start.x + (end.x - start.x) * slider_fraction(self.min, self.max, self.value);
+        let raw_x = start.x
+            + track_x(
+                mirrored,
+                (end.x - start.x) * slider_fraction(self.min, self.max, self.value),
+                end.x - start.x,
+            );
         let x = marker_snap(raw_x);
 
         frame.stroke(
             &Path::line(start, end),
             Stroke::default().with_color(with_alpha(self.pal.outline, 0.5)).with_width(1.0),
         );
-        if x > start.x {
+        let (fill_from, fill_to) =
+            if mirrored { (Point::new(x, start.y), end) } else { (start, Point::new(x, start.y)) };
+        if fill_from.x < fill_to.x {
             frame.stroke(
-                &Path::line(start, Point::new(x, start.y)),
+                &Path::line(fill_from, fill_to),
                 Stroke::default().with_color(self.pal.primary).with_width(2.0),
             );
         }

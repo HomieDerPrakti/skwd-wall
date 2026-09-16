@@ -1,3 +1,4 @@
+use iced::advanced::text::Alignment as TextAlignment;
 use iced::widget::canvas::Text;
 use iced::{Alignment, Color, Font, Point, alignment};
 
@@ -64,14 +65,57 @@ pub fn mid_text(
     font: Font,
     align_x: Alignment,
 ) -> Text {
+    let content = content.into();
+    let (position, align_x) = anchor_rtl(&content, position, align_x.into(), size, font);
     Text {
-        content: content.into(),
+        content,
         position,
         color,
         size: size.into(),
         font,
-        align_x: align_x.into(),
+        align_x,
         align_y: alignment::Vertical::Center,
         ..Text::default()
     }
+}
+
+pub(crate) fn has_rtl(text: &str) -> bool {
+    text.chars().any(|ch| {
+        matches!(ch, '\u{0590}'..='\u{08FF}' | '\u{FB1D}'..='\u{FDFF}' | '\u{FE70}'..='\u{FEFF}')
+    })
+}
+
+fn anchor_rtl(
+    content: &str,
+    position: Point,
+    align_x: TextAlignment,
+    size: f32,
+    font: Font,
+) -> (Point, TextAlignment) {
+    if align_x == TextAlignment::Default || content.contains('\n') || !has_rtl(content) {
+        return (position, align_x);
+    }
+    let width = measured_line_width(content, size, font);
+    let x = match align_x {
+        TextAlignment::Center => position.x - width / 2.0,
+        TextAlignment::Right => position.x - width,
+        _ => position.x,
+    };
+    (Point::new(x, position.y), TextAlignment::Default)
+}
+
+pub(crate) fn measured_line_width(content: &str, size: f32, font: Font) -> f32 {
+    use iced::advanced::graphics::text::{cosmic_text, font_system, to_attributes};
+    let mut system = font_system().write().expect("font system poisoned");
+    let mut buffer =
+        cosmic_text::Buffer::new(system.raw(), cosmic_text::Metrics::new(size, size * 1.2));
+    buffer.set_size(system.raw(), Some(f32::INFINITY), Some(f32::INFINITY));
+    buffer.set_text(
+        system.raw(),
+        content,
+        &to_attributes(font),
+        cosmic_text::Shaping::Advanced,
+        None,
+    );
+    buffer.layout_runs().map(|run| run.line_w).fold(0.0, f32::max)
 }

@@ -1,0 +1,10 @@
+settings-displays-card = বর্তমান ওয়ালপেপার
+settings-displays-card-desc = ওয়ালপেপার সার্ভিস বর্তমানে এই ওয়ালপেপারগুলো জানাচ্ছে। এখানে করা পরিবর্তন এক সময়ে একটি ডিসপ্লেতে প্রযোজ্য হয়।
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = অফলাইন · { $width } × { $height }
+settings-displays-placement-label = স্থাপন
+settings-displays-placement-desc = ওয়ালপেপার ডিসপ্লে ভরাবে, মানাবে, টানবে, কেন্দ্রে থাকবে, টাইল হবে, নাকি বিস্তৃত হবে তা বেছে নিন।
+settings-displays-lock-label = লক
+settings-displays-lock-desc = এই মনিটরের ওয়ালপেপার শুধু মাল্টিপিকার দিয়ে হালনাগাদ করুন।
+settings-displays-empty-label = ডিসপ্লে শনাক্ত করা হচ্ছে
+settings-displays-empty-desc = ওয়ালপেপার সার্ভিস ডিসপ্লে জানালে বর্তমান ওয়ালপেপার দেখা যাবে।

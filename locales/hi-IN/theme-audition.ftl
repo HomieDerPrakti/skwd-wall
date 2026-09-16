@@ -1,0 +1,56 @@
+theme-audition-title = रंग प्रीव्यू
+theme-audition-subtitle = कोई रंग स्रोत चुनें, फिर एक ही वॉलपेपर से उसकी प्रोफ़ाइलों की तुलना करें।
+theme-audition-backend = रंग स्रोत
+theme-audition-backend-on = { $backend } · चालू
+theme-audition-selected = चयनित
+theme-audition-preview = प्रीव्यू
+theme-audition-loading = वर्तमान वॉलपेपर से प्रीव्यू बनाए जा रहे हैं…
+theme-audition-empty = कोई रंग प्रीव्यू नहीं मिला। जाँचें कि चुना गया रंग स्रोत इंस्टॉल है और काम कर रहा है।
+
+settings-theme-profile-desc = वर्तमान रंग संपादित करें और उन्हें देने वाले वॉलपेपर के लिए एक प्रोफ़ाइल सहेजें।
+theme-profile-load = वर्तमान लोड करें
+theme-profile-save = इस वॉलपेपर के लिए सहेजें
+theme-profile-enabled = यह प्रोफ़ाइल उपयोग करें
+theme-profile-dark = डार्क
+theme-profile-light = लाइट
+
+settings-playback-pause-title = स्वचालित रोक
+settings-playback-pause-desc = कोई भी सक्षम शर्त पूरी होने पर एनिमेटेड वॉलपेपर रोकें।
+settings-playback-process-enabled = ऐप्लिकेशन चलते समय रोकें
+settings-playback-process-desc = सूचीबद्ध प्रोसेस चलते समय सभी डिस्प्ले रोकें।
+settings-playback-processes = प्रोसेस
+settings-playback-processes-desc = एक्ज़ीक्यूटेबल नामों को कॉमा से अलग करें। मिलान में अक्षरों के केस और .exe प्रत्यय की अनदेखी होती है।
+settings-playback-choose-process = चल रही प्रोसेस चुनें
+settings-playback-fullscreen = फ़ुलस्क्रीन पर रोकें
+settings-playback-fullscreen-desc = फ़ुलस्क्रीन विंडो दिखते समय रोकें। कंपोज़िटर समर्थन आवश्यक है।
+settings-playback-scope = विंडो रोक के डिस्प्ले
+settings-playback-scope-desc = चुनें कि विंडो रोक शर्त केवल अपने डिस्प्ले को रोके या सभी डिस्प्ले को।
+settings-playback-all = सभी डिस्प्ले
+settings-playback-display = विंडो वाला डिस्प्ले
+settings-playback-resume = फिर चलाने में देरी
+settings-playback-resume-desc = अंतिम स्वचालित रोक शर्त हटने के बाद प्रतीक्षा करें। मैन्युअल रोक लागू रहती है।
+settings-playback-detection-off = कंपोज़िटर समर्थन जाँचने के लिए फ़ुलस्क्रीन या मैक्सिमाइज़्ड-विंडो रोक सक्षम करें।
+settings-playback-detection-ready = विंडो स्थिति पहचान उपलब्ध है
+settings-playback-detection-unavailable = इस कंपोज़िटर पर विंडो स्थिति पहचान उपलब्ध नहीं है
+settings-playback-paused-process = रुका हुआ: { $names } चल रहा है
+settings-playback-paused-fullscreen = रुका हुआ: फ़ुलस्क्रीन विंडो
+settings-playback-resuming = फिर चलाने की प्रतीक्षा
+settings-playback-no-rule = कोई स्वचालित रोक नियम सक्रिय नहीं है
+
+settings-paper-layer-label = वॉलपेपर लेयर
+settings-paper-layer-desc = वीडियो और सीन के लिए Wayland लेयर। ओवरव्यू के पीछे सक्रिय वॉलपेपर दिखाने के लिए Niri के place-within-backdrop नियम के साथ Background चुनें।
+settings-paper-layer-bottom = Bottom (डिफ़ॉल्ट)
+settings-paper-layer-background = Background
+settings-paper-layer-top = Top
+settings-paper-layer-overlay = Overlay
+settings-paper-overview-only-label = केवल Niri ओवरव्यू में एनिमेट करें
+settings-paper-overview-only-desc = Background और place-within-backdrop आवश्यक हैं। ओवरव्यू बंद रहने पर रुका रहता है।
+settings-playback-paused-overview = Niri ओवरव्यू बंद रहने तक रुका हुआ
+
+settings-playback-maximized = मैक्सिमाइज़्ड विंडो पर रोकें
+settings-playback-maximized-desc = कंपोज़िटर द्वारा मैक्सिमाइज़्ड विंडो की सूचना मिलने पर रोकें। कंपोज़िटर समर्थन आवश्यक है; Niri छिपे वर्कस्पेस की विंडो भी रिपोर्ट करता है।
+settings-playback-paused-maximized = रुका हुआ: मैक्सिमाइज़्ड विंडो
+
+settings-playback-full-width = पूरी चौड़ाई वाले कॉलम पर रोकें (Niri)
+settings-playback-full-width-desc = सक्रिय टाइल्ड कॉलम अपने डिस्प्ले की चौड़ाई का कम से कम 90% घेरने पर रोकें। सामान्य गैप के साथ Mod+F भी शामिल है। अन्य वर्कस्पेस नहीं गिने जाते।
+settings-playback-paused-full-width = रुका हुआ: पूरी चौड़ाई वाला कॉलम

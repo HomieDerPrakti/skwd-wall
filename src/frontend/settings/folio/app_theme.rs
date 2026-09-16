@@ -1,4 +1,4 @@
-use iced::widget::{column, container, row, text};
+use iced::widget::{column, container, text};
 use iced::{Alignment, Element, Length, Padding};
 
 use crate::app::Message;
@@ -6,7 +6,7 @@ use crate::contracts::daemon::AppThemeStatus;
 use crate::frontend::components::with_alpha;
 use crate::frontend::settings::{ActionId, SettingsMsg};
 use crate::frontend::theme::Palette;
-use crate::frontend::ui::{TYPE_SMALL, folio_action, label};
+use crate::frontend::ui::{TYPE_SMALL, folio_action, label, row};
 use crate::i18n::tr;
 
 fn state_label(state: &str) -> &'static str {

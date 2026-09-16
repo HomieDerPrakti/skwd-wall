@@ -1,0 +1,10 @@
+settings-displays-card = वर्तमान वॉलपेपर
+settings-displays-card-desc = ये वॉलपेपर सेवा द्वारा अभी बताए गए वॉलपेपर हैं। यहाँ किए गए बदलाव एक बार में एक डिस्प्ले पर लागू होते हैं।
+settings-displays-monitor-desc = { $width } × { $height } · { $kind }
+settings-displays-monitor-offline-desc = ऑफ़लाइन · { $width } × { $height }
+settings-displays-placement-label = स्थापन
+settings-displays-placement-desc = चुनें कि वॉलपेपर डिस्प्ले को भरे, फ़िट हो, खिंचे, केंद्र में रहे, टाइल बने या फैले।
+settings-displays-lock-label = लॉक
+settings-displays-lock-desc = इस मॉनिटर का वॉलपेपर केवल मल्टीपिकर से बदलें।
+settings-displays-empty-label = डिस्प्ले खोजे जा रहे हैं
+settings-displays-empty-desc = वॉलपेपर सेवा के अपने डिस्प्ले बताने पर वर्तमान वॉलपेपर दिखेंगे।

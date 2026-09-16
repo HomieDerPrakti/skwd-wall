@@ -1,0 +1,12 @@
+settings-launch-launch-card = Lancement
+settings-launch-launch-card-desc = Le sélecteur démarre en environ 150 ms et se termine complètement à la fermeture. Ces réglages ne changent que son apparence au démarrage.
+settings-launch-animation-label = Animation
+settings-launch-animation-desc = Aucune affiche le sélecteur dès qu’il existe et est la plus rapide. Fondu ne change que l’opacité ; Montée et Zoom ajoutent du mouvement.
+settings-launch-animation-none = Aucune
+settings-launch-animation-fade = Fondu
+settings-launch-animation-rise = Montée
+settings-launch-animation-zoom = Zoom
+settings-launch-motion-label = Mouvement
+settings-launch-motion-desc = Le rythme partagé de l’interface du sélecteur. Modifiez les poids Rapide, Standard et Lent dans les réglages Mouvement.
+settings-launch-fade-from-label = Fondu depuis
+settings-launch-fade-from-desc = Opacité de départ de l’entrée, en pourcentage. 0 part d’une transparence totale.

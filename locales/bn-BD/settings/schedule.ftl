@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = সময়সূচি
+settings-schedule-schedule-card-desc = নিয়মগুলো সময়, সপ্তাহের দিন, আবহাওয়া, পাওয়ার ও ডিসপ্লের মতো শর্ত থেকে ওয়ালপেপার ও থিম বেছে নেয়। প্রথম মিলে যাওয়া নিয়ম প্রযোজ্য হয়।
+settings-schedule-enable-label = সময়সূচি চালু করুন
+settings-schedule-enable-desc = নিয়ম না মুছে সব সময়সূচি নিয়ম চালু বা বন্ধ করুন।
+settings-schedule-apply-on-start-label = স্টার্টআপে প্রয়োগ করুন
+settings-schedule-apply-on-start-desc = সার্ভিস চালু হলে প্রথম মিলে যাওয়া নিয়ম প্রয়োগ করুন। এই সেশনে হাতে বেছে নেওয়া ওয়ালপেপার তবুও অগ্রাধিকার পায়।
+settings-schedule-editor-label = সময়সূচি সম্পাদক
+settings-schedule-editor-desc = শর্ত ব্লক থেকে নিয়ম তৈরি করুন এবং টেনে অগ্রাধিকার ঠিক করুন; প্রথম মিলটি প্রযোজ্য হয়। পুরোনো দিন ও রাতের সেটিংস প্রথমবার খোলার সময় দুটি নিয়মে পরিণত হয়।
+settings-schedule-editor-action = খুলুন
+settings-schedule-location-card = অবস্থান
+settings-schedule-location-card-desc = সূর্যোদয়/সূর্যাস্তের সময় ও আবহাওয়ার শর্তের জন্য ব্যবহৃত হয়।
+settings-schedule-latitude-label = অক্ষাংশ
+settings-schedule-latitude-desc = দশমিক ডিগ্রি, উত্তর ধনাত্মক (যেমন 23.81)।
+settings-schedule-longitude-label = দ্রাঘিমাংশ
+settings-schedule-longitude-desc = দশমিক ডিগ্রি, পূর্ব ধনাত্মক (যেমন 90.41)।

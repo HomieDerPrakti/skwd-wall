@@ -1,11 +1,11 @@
-use iced::widget::{column, container, image, row, scrollable, text};
+use iced::widget::{column, container, image, scrollable, text};
 use iced::{Alignment, Element, Length};
 
 use crate::app::Message;
 use crate::domain::library::catalog::WallpaperKind;
 use crate::frontend::theme::Palette;
 use crate::frontend::ui::{
-    FOLIO_INDEX_WIDTH, UI_FONT, folio_horizontal_rule, folio_rule, label, with_alpha,
+    FOLIO_INDEX_WIDTH, UI_FONT, folio_horizontal_rule, folio_rule, label, row, with_alpha,
 };
 use crate::i18n::tr;
 

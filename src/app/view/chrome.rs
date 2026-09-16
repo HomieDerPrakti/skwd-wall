@@ -1,5 +1,5 @@
 use iced::widget::{canvas, container};
-use iced::{Alignment, Element, Length, Padding};
+use iced::{Element, Length};
 
 use crate::frontend::scene::layout::Mode;
 
@@ -212,8 +212,8 @@ pub(super) fn filter_bar_layer(app: &App, vw: f32, vh: f32) -> Element<'_, Messa
     let bar = bar.map(bar_intent_message);
     container(bar)
         .width(Length::Fill)
-        .align_x(Alignment::Start)
-        .padding(Padding { top, left, ..Padding::ZERO })
+        .align_x(crate::frontend::ui::start())
+        .padding(crate::frontend::ui::logical_padding(top, 0.0, 0.0, left))
         .into()
 }
 

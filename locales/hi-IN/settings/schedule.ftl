@@ -1,0 +1,15 @@
+settings-schedule-schedule-card = शेड्यूल
+settings-schedule-schedule-card-desc = नियम समय, सप्ताह के दिन, मौसम, पावर और डिस्प्ले जैसी शर्तों से वॉलपेपर और थीम चुनते हैं। पहला मेल खाता नियम लागू होता है।
+settings-schedule-enable-label = शेड्यूल सक्षम करें
+settings-schedule-enable-desc = नियम हटाए बिना हर शेड्यूल नियम चालू या बंद करें।
+settings-schedule-apply-on-start-label = स्टार्टअप पर लागू करें
+settings-schedule-apply-on-start-desc = सेवा शुरू होने पर पहला मेल खाता नियम लागू करें। इस सत्र में हाथ से चुना गया वॉलपेपर फिर भी प्राथमिकता पाता है।
+settings-schedule-editor-label = शेड्यूल संपादक
+settings-schedule-editor-desc = शर्त ब्लॉकों से नियम बनाएँ और प्राथमिकता तय करने के लिए खींचें; पहला मेल लागू होता है। पुरानी दिन और रात सेटिंग पहली बार खोलने पर दो नियम बन जाती हैं।
+settings-schedule-editor-action = खोलें
+settings-schedule-location-card = स्थान
+settings-schedule-location-card-desc = सूर्योदय/सूर्यास्त समय और मौसम शर्तों के लिए इस्तेमाल होता है।
+settings-schedule-latitude-label = अक्षांश
+settings-schedule-latitude-desc = दशमलव डिग्री, उत्तर धनात्मक (जैसे 59.33)।
+settings-schedule-longitude-label = देशांतर
+settings-schedule-longitude-desc = दशमलव डिग्री, पूर्व धनात्मक (जैसे 18.06)।

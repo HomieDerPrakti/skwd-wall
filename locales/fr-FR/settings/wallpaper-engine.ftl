@@ -1,0 +1,16 @@
+settings-wallpaper-engine-rendering-card = Rendu
+settings-wallpaper-engine-rendering-card-desc = Définissez les valeurs par défaut utilisées quand le moteur de rendu Vulkan intégré affiche une scène Workshop.
+settings-wallpaper-engine-fps-label = Limite de FPS
+settings-wallpaper-engine-fps-desc = Images par seconde maximum. Des valeurs plus basses réduisent la charge CPU/GPU.
+settings-wallpaper-engine-scaling-label = Mise à l’échelle par défaut
+settings-wallpaper-engine-scaling-desc = Comment les scènes Workshop s’adaptent à chaque écran. Par défaut suit le mode de remplissage global.
+settings-wallpaper-engine-scaling-default = Valeur globale
+settings-wallpaper-engine-scaling-fill = Remplir
+settings-wallpaper-engine-scaling-fit = Ajuster
+settings-wallpaper-engine-scaling-stretch = Étirer
+settings-wallpaper-engine-scaling-center = Centrer
+settings-wallpaper-engine-scaling-tile = Mosaïque
+settings-wallpaper-engine-scaling-span = Étendre
+settings-wallpaper-engine-effects-card = Effets
+settings-wallpaper-engine-particles-label = Désactiver les particules
+settings-wallpaper-engine-particles-desc = Ignore les calques de particules dans les scènes qui en utilisent. Cela peut réduire la charge GPU, mais ces scènes perdront une partie de leur animation.

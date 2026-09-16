@@ -1,0 +1,56 @@
+theme-audition-title = رنگوں کا پیش منظر
+theme-audition-subtitle = رنگ کا ماخذ چنیں، پھر اسی وال پیپر کے ساتھ اس کے پروفائلز کا موازنہ کریں۔
+theme-audition-backend = رنگ کا ماخذ
+theme-audition-backend-on = { $backend } · آن
+theme-audition-selected = منتخب
+theme-audition-preview = پیش منظر
+theme-audition-loading = موجودہ وال پیپر سے پیش منظر بنائے جا رہے ہیں…
+theme-audition-empty = کوئی رنگ پیش منظر واپس نہیں آیا۔ جانچیں کہ منتخب رنگ کا ماخذ انسٹال ہے اور کام کر رہا ہے۔
+
+settings-theme-profile-desc = موجودہ رنگوں میں ترمیم کریں اور انہیں فراہم کرنے والے وال پیپر کے لیے پروفائل محفوظ کریں۔
+theme-profile-load = موجودہ لوڈ کریں
+theme-profile-save = اس وال پیپر کے لیے محفوظ کریں
+theme-profile-enabled = یہ پروفائل استعمال کریں
+theme-profile-dark = ڈارک
+theme-profile-light = لائٹ
+
+settings-playback-pause-title = خودکار وقفہ
+settings-playback-pause-desc = جب کوئی فعال شرط پوری ہو تو متحرک وال پیپر روک دیں۔
+settings-playback-process-enabled = ایپلیکیشنز چلنے پر روکیں
+settings-playback-process-desc = جب فہرست میں شامل کوئی پروسیس چل رہا ہو تو تمام ڈسپلے روک دیں۔
+settings-playback-processes = پروسیسز
+settings-playback-processes-desc = ایگزیکیوٹیبل ناموں کو کوما سے الگ کریں۔ نام حروف کے کیس اور .exe لاحقے سے قطع نظر میل کھاتے ہیں۔
+settings-playback-choose-process = چلتا ہوا پروسیس چنیں
+settings-playback-fullscreen = فل اسکرین پر روکیں
+settings-playback-fullscreen-desc = جب کوئی فل اسکرین ونڈو نظر آ رہی ہو تو روکیں۔ کمپوزیٹر کی معاونت درکار ہے۔
+settings-playback-scope = ونڈو وقفے کے ڈسپلے
+settings-playback-scope-desc = چنیں کہ ونڈو وقفے کی شرط اپنا ڈسپلے روکے یا ہر ڈسپلے۔
+settings-playback-all = تمام ڈسپلے
+settings-playback-display = ونڈو والا ڈسپلے
+settings-playback-resume = دوبارہ چلانے میں تاخیر
+settings-playback-resume-desc = آخری خودکار وقفے کی شرط ختم ہونے کے بعد انتظار کریں۔ دستی وقفہ برقرار رہتا ہے۔
+settings-playback-detection-off = کمپوزیٹر کی معاونت جانچنے کے لیے فل اسکرین یا میکسیمائزڈ ونڈو پر وقفہ فعال کریں۔
+settings-playback-detection-ready = ونڈو حالت کی شناخت دستیاب ہے
+settings-playback-detection-unavailable = اس کمپوزیٹر پر ونڈو حالت کی شناخت دستیاب نہیں
+settings-playback-paused-process = رکا ہوا: { $names } چل رہا ہے
+settings-playback-paused-fullscreen = رکا ہوا: فل اسکرین ونڈو
+settings-playback-resuming = دوبارہ چلانے کا انتظار
+settings-playback-no-rule = کوئی خودکار وقفے کا اصول فعال نہیں
+
+settings-paper-layer-label = وال پیپر لیئر
+settings-paper-layer-desc = ویڈیوز اور سینز کے لیے Wayland لیئر۔ اوور ویو کے پیچھے فعال وال پیپر دکھانے کے لیے Niri کے place-within-backdrop اصول کے ساتھ پس منظر استعمال کریں۔
+settings-paper-layer-bottom = نچلی (طے شدہ)
+settings-paper-layer-background = پس منظر
+settings-paper-layer-top = اوپری
+settings-paper-layer-overlay = اوورلے
+settings-paper-overview-only-label = صرف Niri اوور ویو میں متحرک
+settings-paper-overview-only-desc = پس منظر اور place-within-backdrop درکار ہیں۔ اوور ویو بند ہونے پر رکا رہتا ہے۔
+settings-playback-paused-overview = Niri اوور ویو بند ہونے پر رکا ہوا
+
+settings-playback-maximized = میکسیمائزڈ ونڈوز پر روکیں
+settings-playback-maximized-desc = جب کمپوزیٹر میکسیمائزڈ ونڈو رپورٹ کرے تو روکیں۔ کمپوزیٹر کی معاونت درکار ہے؛ Niri پوشیدہ ورک اسپیسز کی ونڈوز بھی رپورٹ کرتا ہے۔
+settings-playback-paused-maximized = رکا ہوا: میکسیمائزڈ ونڈو
+
+settings-playback-full-width = پوری چوڑائی کے کالمز پر روکیں (Niri)
+settings-playback-full-width-desc = جب فعال ٹائلڈ کالم اپنے ڈسپلے کی چوڑائی کا کم از کم 90% گھیرے تو روکیں۔ عام گیپس کے ساتھ Mod+F شامل ہے۔ دیگر ورک اسپیسز شمار نہیں ہوتیں۔
+settings-playback-paused-full-width = رکا ہوا: پوری چوڑائی کا کالم

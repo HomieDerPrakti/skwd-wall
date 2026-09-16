@@ -6,7 +6,7 @@ use crate::frontend::theme::Palette;
 
 use super::bar::{BarItem, control_background, control_border, control_text, draw_button};
 use super::misc::{NERD_FONT, UI_FONT, mid_text, text_width};
-use super::{parallelogram, with_alpha};
+use super::{mirror_x_for, parallelogram, rtl, with_alpha};
 
 pub struct SkwdChip<Message> {
     label: String,
@@ -181,7 +181,7 @@ fn chip_contains(x: f32, y: f32, w: f32, h: f32, skew: f32, px: f32, py: f32) ->
 
 impl TagChips<'_> {
     fn layout(&self) -> (Vec<(f32, f32, f32)>, f32) {
-        tag_cloud_chip_layout(&self.entries, self.width, self.scale)
+        tag_cloud_chip_layout(&self.entries, self.width, self.scale, rtl())
     }
 
     fn eff_scroll(&self, total: f32) -> f32 {
@@ -193,6 +193,7 @@ fn tag_cloud_chip_layout(
     entries: &[crate::domain::library::search::TagEntry],
     width: f32,
     scale: f32,
+    rtl: bool,
 ) -> (Vec<(f32, f32, f32)>, f32) {
     let h = TAG_CHIP_H * scale;
     let size = TAG_CHIP_TEXT * scale;
@@ -210,7 +211,7 @@ fn tag_cloud_chip_layout(
             x = 0.0;
             y += h + gap_y;
         }
-        rects.push((x, y, w));
+        rects.push((mirror_x_for(rtl, x, w, width), y, w));
         x += w + gap_x;
     }
     let total = if rects.is_empty() { 0.0 } else { y + h };
@@ -222,7 +223,7 @@ pub fn tag_cloud_row_count(
     width: f32,
     scale: f32,
 ) -> usize {
-    let (_, total) = tag_cloud_chip_layout(entries, width, scale);
+    let (_, total) = tag_cloud_chip_layout(entries, width, scale, false);
     if total <= 0.0 {
         return 1;
     }
@@ -305,6 +306,7 @@ impl canvas::Program<crate::frontend::tagcloud::TagIntent> for TagChips<'_> {
         let excl = pal.destructive();
         let (rects, total) = self.layout();
         let off = self.eff_scroll(total);
+        let mirrored = rtl();
         let ent = self.entrance.clamp(0.0, 1.0);
         let num = self.entries.len().max(1) as f32;
         for (idx, (entry, &(x, y, w))) in self.entries.iter().zip(&rects).enumerate() {
@@ -349,10 +351,15 @@ impl canvas::Program<crate::frontend::tagcloud::TagIntent> for TagChips<'_> {
             let count_w = text_width(&count, count_size, false);
             let gap = 6.0 * scale;
             let start_x = x + w / 2.0 - (name_w + gap + count_w) / 2.0;
+            let (name_x, count_x) = if mirrored {
+                (start_x + count_w + gap, start_x)
+            } else {
+                (start_x, start_x + name_w + gap)
+            };
             let cy = yy + h / 2.0;
             frame.fill_text(mid_text(
                 name,
-                Point::new(start_x, cy),
+                Point::new(name_x, cy),
                 fade(txt),
                 size,
                 UI_FONT,
@@ -360,7 +367,7 @@ impl canvas::Program<crate::frontend::tagcloud::TagIntent> for TagChips<'_> {
             ));
             frame.fill_text(mid_text(
                 count,
-                Point::new(start_x + name_w + gap, cy),
+                Point::new(count_x, cy),
                 fade(with_alpha(txt, 0.5)),
                 count_size,
                 UI_FONT,
