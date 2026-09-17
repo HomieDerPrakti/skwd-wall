@@ -153,6 +153,23 @@ fn overlay_close_clears() {
 }
 
 #[test]
+fn opening_downloads_closes_the_tag_cloud() {
+    let mut app = test_app();
+    let _ = update(&mut app, Message::OpenTagCloud);
+    let _ = update(
+        &mut app,
+        Message::Tag(crate::frontend::tagcloud::TagMsg::CloudClick(String::from("forest"), false)),
+    );
+    assert!(app.tags.cloud_open);
+
+    let _ = update(&mut app, Message::OpenBrowser(String::from("wallhaven")));
+
+    assert!(app.source_browser.browser.is_some());
+    assert!(!app.tags.cloud_open);
+    assert_eq!(app.library_session.filters.tags, [String::from("forest")]);
+}
+
+#[test]
 fn menu_capturing_overlays() {
     use crate::app::overlay::Overlay;
     let mut app = test_app();

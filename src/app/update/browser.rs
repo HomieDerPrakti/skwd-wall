@@ -136,6 +136,9 @@ pub(super) fn browser_apply_current(app: &mut App) -> Task<Message> {
 
 pub(super) fn open_browser(app: &mut App, source_key: &str) -> Task<Message> {
     app.close_settings();
+    if app.tags.cloud_open {
+        app.close_overlay(crate::app::overlay::Overlay::TagCloud);
+    }
     app.call_tracked("status", serde_json::json!({}), crate::app::state::Pending::Status);
     let requested = crate::frontend::browser::Source::from_key(source_key)
         .unwrap_or(crate::frontend::browser::Source::Wallhaven);
