@@ -37,6 +37,20 @@ pub fn sort_label_key(mode: &str) -> &'static str {
     }
 }
 
+pub fn cycle_key<'a>(keys: &[&'a str], current: &str, backwards: bool) -> Option<&'a str> {
+    let len = keys.len();
+    if len == 0 {
+        return None;
+    }
+    let next = match keys.iter().position(|key| *key == current) {
+        Some(index) if backwards => (index + len - 1) % len,
+        Some(index) => (index + 1) % len,
+        None if backwards => len - 1,
+        None => 0,
+    };
+    Some(keys[next])
+}
+
 pub fn next_orient(current: &str) -> &'static str {
     let index = ORIENTS.iter().position(|key| *key == current).unwrap_or(0);
     ORIENTS[(index + 1) % ORIENTS.len()]

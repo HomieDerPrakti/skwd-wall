@@ -106,6 +106,8 @@ pub(crate) fn update_inner(app: &mut App, message: Message) -> Task<Message> {
             app.change_filters(|filters| filters.favourites_only = !filters.favourites_only);
             Task::none()
         }
+        Message::CycleType { backwards } => filters::cycle_type(app, backwards),
+        Message::CycleSort { backwards } => filters::cycle_sort(app, backwards),
         Message::ToggleRandomRotate => filters::toggle_random_rotate(app),
         Message::ToggleFilterBar => filters::toggle_filter_bar(app),
         Message::BarHover(hover, menu_hover) => {
@@ -181,10 +183,15 @@ pub(crate) fn update_inner(app: &mut App, message: Message) -> Task<Message> {
             {
                 return update_inner(app, message);
             }
-            if app.tags.cloud_open && matches!(&key, iced::keyboard::Key::Character(_)) {
+            if app.tags.cloud_open
+                && matches!(&key, iced::keyboard::Key::Character(_))
+                && !modifiers.control()
+                && !modifiers.alt()
+            {
                 return iced::widget::operation::focus(tag_query_id());
             }
-            let Some(message) = super::input::key_message(&app.input.bindings, &key, modifiers)
+            let Some(message) =
+                super::input::key_message(&app.input.bindings, &key, modifiers, app.input_scopes())
             else {
                 return Task::none();
             };
@@ -229,6 +236,7 @@ pub(crate) fn update_inner(app: &mut App, message: Message) -> Task<Message> {
             let source = app.source_browser.last_source.key();
             browser::open_browser(app, source)
         }
+        Message::ToggleDownloads => browser::toggle_downloads(app),
         Message::OpenBrowser(source) => browser::open_browser(app, &source),
         Message::CloseBrowser => browser::close_browser(app),
         Message::OpenPlaylists => playlists::open_playlists(app),

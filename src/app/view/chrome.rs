@@ -66,7 +66,7 @@ pub(super) fn card_h(app: &App, vh: f32) -> f32 {
     }
 }
 
-fn bar_show(app: &App) -> crate::frontend::ui::BarShow {
+pub(crate) fn bar_show(app: &App) -> crate::frontend::ui::BarShow {
     crate::frontend::ui::BarShow {
         types: crate::frontend::ui::TYPES
             .iter()

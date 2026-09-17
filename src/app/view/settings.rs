@@ -64,7 +64,8 @@ fn keybind_capture_view(app: &App) -> Option<settings::KeybindCaptureView> {
         .find_map(|trigger| {
             app.input
                 .bindings
-                .shared_trigger(capture.action, trigger)
+                .trigger_holders(capture.action, trigger)
+                .next()
                 .map(|other| (other, trigger.label()))
         })
         .and_then(|(other, trigger)| {

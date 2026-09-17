@@ -14,7 +14,7 @@ pub use crate::frontend::components::{parallelogram, with_alpha};
 
 pub use bar::{
     BarAction, BarIntent, BarItem, BarShow, BarVisualStyle, FilterBar, MENU_MAX_ROWS, MENU_ROW_H,
-    MenuKind, SORTS, TYPES, build_bar_with_tasks, sort_label_key, verticalize_bar,
+    MenuKind, SORTS, TYPES, build_bar_with_tasks, cycle_key, sort_label_key, verticalize_bar,
 };
 pub(crate) use bar::{control_background, control_border, control_text};
 pub use browser_bar::{BrowserAct, BrowserBar, browser_bar_compact_size};

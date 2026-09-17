@@ -56,6 +56,7 @@ fn picker_controls_bindings() {
             "Filters & tags",
             "Folders",
             "Navigation",
+            "Downloads",
             "Fixed controls",
             "Reset controls",
         ]

@@ -245,6 +245,16 @@ impl App {
         Overlay::ALL.into_iter().any(|ov| ov.policy().captures && self.overlay_open(ov))
     }
 
+    pub(super) fn input_scopes(&self) -> crate::domain::input::ActiveScopes {
+        let search = self.tags.cloud_open;
+        let downloads = self.overlay_open(Overlay::Browser);
+        crate::domain::input::ActiveScopes {
+            fields: search || downloads || self.tags.editing || self.menu_capturing(),
+            search,
+            downloads,
+        }
+    }
+
     pub(super) fn picker_obscured(&self) -> bool {
         Overlay::ALL.into_iter().any(|ov| ov.policy().obscures && self.overlay_open(ov))
     }

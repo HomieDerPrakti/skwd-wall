@@ -21,6 +21,7 @@ pub enum TagMsg {
     CloseCardDrawer,
     QueryInput(String),
     SearchMode(SearchMode),
+    CycleSearchMode,
     CloudClick(String, bool),
     CloudScroll(f32),
     Autocomplete,

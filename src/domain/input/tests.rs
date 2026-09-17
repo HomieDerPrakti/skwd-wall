@@ -1,7 +1,16 @@
+use super::action::InputScope;
 use super::{
-    InputAction, InputMap, KeyId, KeySpec, Mods, MouseButton, MouseSpec, Trigger, binding_config,
-    binding_label, parse_binding,
+    ActiveScopes, InputAction, InputMap, KeyId, KeySpec, Mods, MouseButton, MouseSpec, Trigger,
+    binding_config, binding_label, parse_binding,
 };
+
+const PICKER: ActiveScopes = ActiveScopes { fields: false, search: false, downloads: false };
+const SEARCH: ActiveScopes = ActiveScopes { fields: true, search: true, downloads: false };
+const DOWNLOADS: ActiveScopes = ActiveScopes { fields: true, search: false, downloads: true };
+
+fn holders(map: &InputMap, action: InputAction, trigger: &str) -> Vec<InputAction> {
+    map.trigger_holders(action, &key(trigger)).collect()
+}
 
 fn key(text: &str) -> Trigger {
     Trigger::parse(text).expect("valid trigger")
@@ -87,18 +96,27 @@ fn defaults_reachable() {
         assert!(parse_binding(action.default_binding()).is_some(), "{action:?}");
     }
     let map = InputMap::default();
-    assert_eq!(map.lookup_key(&KeyId::Char("p".into()), Mods::NONE), Some(InputAction::Playlists));
     assert_eq!(
-        map.lookup_key(&KeyId::Char("p".into()), Mods::new(false, false, true)),
+        map.lookup_key(&KeyId::Char("p".into()), Mods::NONE, PICKER),
         Some(InputAction::Playlists)
     );
-    assert_eq!(map.lookup_key(&KeyId::Char("p".into()), Mods::new(true, false, false)), None);
-    assert_eq!(map.lookup_key(&KeyId::Enter, Mods::NONE), Some(InputAction::Apply));
-    assert_eq!(map.lookup_key(&KeyId::Char("c".into()), Mods::NONE), Some(InputAction::ThemePanel));
-    assert_eq!(map.lookup_key(&KeyId::Tab, Mods::NONE), Some(InputAction::Autocomplete));
-    assert_eq!(map.lookup_key(&KeyId::Left, Mods::NONE), Some(InputAction::NavLeft));
     assert_eq!(
-        map.lookup_key(&KeyId::Left, Mods::new(false, false, true)),
+        map.lookup_key(&KeyId::Char("p".into()), Mods::new(false, false, true), PICKER),
+        Some(InputAction::Playlists)
+    );
+    assert_eq!(
+        map.lookup_key(&KeyId::Char("p".into()), Mods::new(true, false, false), PICKER),
+        None
+    );
+    assert_eq!(map.lookup_key(&KeyId::Enter, Mods::NONE, PICKER), Some(InputAction::Apply));
+    assert_eq!(
+        map.lookup_key(&KeyId::Char("c".into()), Mods::NONE, PICKER),
+        Some(InputAction::ThemePanel)
+    );
+    assert_eq!(map.lookup_key(&KeyId::Tab, Mods::NONE, PICKER), Some(InputAction::TypeNext));
+    assert_eq!(map.lookup_key(&KeyId::Left, Mods::NONE, PICKER), Some(InputAction::NavLeft));
+    assert_eq!(
+        map.lookup_key(&KeyId::Left, Mods::new(false, false, true), PICKER),
         Some(InputAction::ColorPrev)
     );
 }
@@ -106,7 +124,7 @@ fn defaults_reachable() {
 #[test]
 fn clicks_resolve_like_keys() {
     let map = InputMap::default();
-    let click = |mods, button| map.lookup_mouse(MouseSpec { mods, button });
+    let click = |mods, button| map.lookup_mouse(MouseSpec { mods, button }, PICKER);
     assert_eq!(click(Mods::NONE, MouseButton::Left), Some(InputAction::Select));
     assert_eq!(click(Mods::NONE, MouseButton::Right), Some(InputAction::Flip));
     assert_eq!(click(Mods::new(true, false, false), MouseButton::Left), Some(InputAction::Effects));
@@ -123,15 +141,21 @@ fn any_trigger_kind() {
         (InputAction::Studio, "ctrl+alt+shift+d".to_string()),
     ]);
     assert_eq!(
-        map.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Middle }),
+        map.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Middle }, PICKER),
         Some(InputAction::Playlists)
     );
-    assert_eq!(map.lookup_key(&KeyId::Char("u".into()), Mods::NONE), Some(InputAction::Select));
     assert_eq!(
-        map.lookup_key(&KeyId::Char("d".into()), Mods::new(true, true, true)),
+        map.lookup_key(&KeyId::Char("u".into()), Mods::NONE, PICKER),
+        Some(InputAction::Select)
+    );
+    assert_eq!(
+        map.lookup_key(&KeyId::Char("d".into()), Mods::new(true, true, true), PICKER),
         Some(InputAction::Studio)
     );
-    assert_eq!(map.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Left }), None);
+    assert_eq!(
+        map.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Left }, PICKER),
+        None
+    );
 }
 
 #[test]
@@ -141,12 +165,12 @@ fn invalid_override_fallback() {
         (InputAction::Flip, "banana+q".to_string()),
     ]);
     assert_eq!(
-        map.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Right }),
+        map.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Right }, PICKER),
         Some(InputAction::Flip)
     );
     assert_eq!(map.conflicts(), vec![(InputAction::Favourite, InputAction::Playlists)]);
-    assert_eq!(map.shared_trigger(InputAction::Playlists, &key("f")), Some(InputAction::Favourite));
-    assert_eq!(map.shared_trigger(InputAction::Playlists, &key("z")), None);
+    assert_eq!(holders(&map, InputAction::Playlists, "f"), vec![InputAction::Favourite]);
+    assert_eq!(holders(&map, InputAction::Playlists, "z"), Vec::new());
 }
 
 #[test]
@@ -169,4 +193,65 @@ fn card_actions_need_target() {
     ] {
         assert!(!action.targets_card(), "{action:?}");
     }
+}
+
+#[test]
+fn defaults_have_no_conflicts() {
+    assert_eq!(InputMap::default().conflicts(), Vec::new());
+}
+
+#[test]
+fn scoped_defaults_resolve_by_context() {
+    let map = InputMap::default();
+    let ctrl = Mods::new(true, false, false);
+    let alt = Mods::new(false, true, false);
+    let shift = Mods::new(false, false, true);
+    let tab = |mods, scopes| map.lookup_key(&KeyId::Tab, mods, scopes);
+    assert_eq!(tab(Mods::NONE, PICKER), Some(InputAction::TypeNext));
+    assert_eq!(tab(shift, PICKER), Some(InputAction::TypePrev));
+    assert_eq!(tab(Mods::NONE, SEARCH), Some(InputAction::Autocomplete));
+    assert_eq!(tab(Mods::NONE, DOWNLOADS), Some(InputAction::Autocomplete));
+    assert_eq!(tab(shift, SEARCH), None);
+    assert_eq!(tab(ctrl, SEARCH), Some(InputAction::SearchMode));
+    assert_eq!(tab(ctrl, PICKER), None);
+    assert_eq!(tab(ctrl, DOWNLOADS), None);
+    assert_eq!(map.lookup_key(&KeyId::Left, alt, PICKER), Some(InputAction::SortPrev));
+    assert_eq!(map.lookup_key(&KeyId::Right, alt, SEARCH), Some(InputAction::SortNext));
+    let char_key =
+        |text: &str, mods, scopes| map.lookup_key(&KeyId::Char(text.into()), mods, scopes);
+    assert_eq!(char_key("r", ctrl, PICKER), Some(InputAction::RandomRotate));
+    assert_eq!(char_key("r", ctrl, SEARCH), Some(InputAction::RandomRotate));
+    assert_eq!(char_key("d", ctrl, PICKER), Some(InputAction::Downloads));
+    assert_eq!(char_key("d", ctrl, DOWNLOADS), Some(InputAction::Downloads));
+    for (digit, action) in [
+        ("1", InputAction::SourceWallhaven),
+        ("2", InputAction::SourceSteam),
+        ("3", InputAction::SourceUnsplash),
+        ("4", InputAction::SourcePexels),
+        ("5", InputAction::SourceYoutube),
+        ("6", InputAction::SourceBing),
+    ] {
+        assert_eq!(char_key(digit, Mods::NONE, DOWNLOADS), Some(action));
+        assert_eq!(char_key(digit, Mods::NONE, PICKER), None);
+        assert_eq!(char_key(digit, Mods::NONE, SEARCH), None);
+    }
+}
+
+#[test]
+fn scopes_limit_conflicts_and_stealing() {
+    assert!(!InputScope::Picker.overlaps(InputScope::Fields));
+    assert!(!InputScope::Downloads.overlaps(InputScope::Picker));
+    assert!(InputScope::Everywhere.overlaps(InputScope::Picker));
+    assert!(InputScope::Search.overlaps(InputScope::Fields));
+    let map = InputMap::from_bindings([(InputAction::SourceSteam, "1".to_string())]);
+    assert_eq!(map.conflicts(), vec![(InputAction::SourceWallhaven, InputAction::SourceSteam)]);
+    let map = InputMap::from_bindings([(InputAction::Playlists, "1".to_string())]);
+    assert_eq!(map.conflicts(), vec![(InputAction::Playlists, InputAction::SourceWallhaven)]);
+    let map = InputMap::default();
+    assert_eq!(holders(&map, InputAction::Autocomplete, "tab"), Vec::new());
+    assert_eq!(holders(&map, InputAction::TypeNext, "ctrl+d"), vec![InputAction::Downloads]);
+    assert_eq!(
+        holders(&map, InputAction::Playlists, "tab"),
+        vec![InputAction::Autocomplete, InputAction::TypeNext]
+    );
 }

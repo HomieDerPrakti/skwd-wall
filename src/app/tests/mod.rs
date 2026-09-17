@@ -9,6 +9,7 @@ mod frame_clock;
 mod input;
 mod library_events;
 mod overview;
+mod picker_keys;
 mod playlists;
 mod runtime;
 mod scene;

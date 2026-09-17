@@ -25,6 +25,13 @@ pub(super) fn update(app: &mut App, msg: TagMsg) -> Task<Message> {
         }
         TagMsg::QueryInput(text) => tag_query_input(app, text),
         TagMsg::SearchMode(mode) => set_search_mode(app, mode),
+        TagMsg::CycleSearchMode => {
+            let next = match app.tags.search_mode {
+                SearchMode::Tags => SearchMode::Describe,
+                SearchMode::Describe => SearchMode::Tags,
+            };
+            set_search_mode(app, next)
+        }
         TagMsg::CloudClick(tag, right) => tag_cloud_click(app, tag, right),
         TagMsg::CloudScroll(pos) => {
             app.tags.cloud_scroll.retarget(pos.max(0.0));

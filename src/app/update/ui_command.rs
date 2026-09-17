@@ -150,6 +150,7 @@ pub(crate) fn ui_state_json(app: &App) -> String {
             "show_hidden_folders": app.library_session.filters.show_hidden_folders,
             "tags": app.library_session.filters.tags,
             "kind": app.library_session.filters.kind,
+            "sort": app.library_session.filters.sort,
             "resolution": app.library_session.filters.resolution,
             "query": app.tags.tag_search
         },
@@ -158,6 +159,13 @@ pub(crate) fn ui_state_json(app: &App) -> String {
             "drawer_open": app.tags.card_drawer_open,
             "input": app.tags.input,
             "tags": edited_tags,
+        },
+        "downloads": {
+            "open": app.source_browser.browser.is_some(),
+            "source": app.source_browser.browser.as_ref().map_or_else(
+                || app.source_browser.last_source.key(),
+                |browser| browser.source.key(),
+            ),
         },
         "tag_organizer": {
             "cloud_open": app.tags.cloud_open,

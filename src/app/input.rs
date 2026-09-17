@@ -32,7 +32,8 @@ pub(crate) fn on_event(event: Event, status: event::Status, window: window::Id) 
         if matches!(
             key,
             keyboard::Key::Named(keyboard::key::Named::Escape | keyboard::key::Named::Tab)
-        ) {
+        ) || reaches_bindings_from_text(key, *modifiers)
+        {
             return Some(Message::KeyPressed(key.clone(), *modifiers));
         }
         return None;
@@ -47,6 +48,28 @@ pub(crate) fn on_event(event: Event, status: event::Status, window: window::Id) 
         }
         _ => None,
     }
+}
+
+pub(crate) fn reaches_bindings_from_text(
+    key: &keyboard::Key,
+    modifiers: keyboard::Modifiers,
+) -> bool {
+    use keyboard::key::Named;
+    if !modifiers.control() && !modifiers.alt() {
+        return false;
+    }
+    let edits_text = match key {
+        keyboard::Key::Character(character) => match character.as_str() {
+            "a" | "c" | "x" => modifiers.control(),
+            "v" => modifiers.control() && !modifiers.alt(),
+            _ => false,
+        },
+        keyboard::Key::Named(
+            Named::Backspace | Named::Delete | Named::ArrowLeft | Named::ArrowRight,
+        ) => modifiers.control(),
+        _ => false,
+    };
+    !edits_text
 }
 
 pub(crate) fn settings_key_message(
@@ -82,8 +105,13 @@ pub(crate) fn mods(modifiers: keyboard::Modifiers) -> crate::domain::input::Mods
     crate::domain::input::Mods::new(modifiers.control(), modifiers.alt(), modifiers.shift())
 }
 
+fn source_message(source: crate::frontend::browser::Source) -> Message {
+    Message::Browser(crate::frontend::browser::BrowserMsg::SwitchSource(source))
+}
+
 pub(crate) fn action_message(action: crate::domain::input::InputAction) -> Message {
     use crate::domain::input::InputAction;
+    use crate::frontend::browser::Source;
     match action {
         InputAction::Playlists => Message::OpenPlaylists,
         InputAction::Favourite => Message::KeyFavourite,
@@ -109,6 +137,19 @@ pub(crate) fn action_message(action: crate::domain::input::InputAction) -> Messa
         InputAction::NavDown => Message::KeyDown,
         InputAction::Select | InputAction::Apply => Message::ApplyCurrent,
         InputAction::Autocomplete => Message::Tag(crate::frontend::tagcloud::TagMsg::Autocomplete),
+        InputAction::TypePrev => Message::CycleType { backwards: true },
+        InputAction::TypeNext => Message::CycleType { backwards: false },
+        InputAction::SortPrev => Message::CycleSort { backwards: true },
+        InputAction::SortNext => Message::CycleSort { backwards: false },
+        InputAction::RandomRotate => Message::ToggleRandomRotate,
+        InputAction::Downloads => Message::ToggleDownloads,
+        InputAction::SearchMode => Message::Tag(crate::frontend::tagcloud::TagMsg::CycleSearchMode),
+        InputAction::SourceWallhaven => source_message(Source::Wallhaven),
+        InputAction::SourceSteam => source_message(Source::Steam),
+        InputAction::SourceUnsplash => source_message(Source::Unsplash),
+        InputAction::SourcePexels => source_message(Source::Pexels),
+        InputAction::SourceYoutube => source_message(Source::Youtube),
+        InputAction::SourceBing => source_message(Source::Bing),
     }
 }
 
@@ -116,12 +157,13 @@ pub(crate) fn key_message(
     map: &crate::domain::input::InputMap,
     key: &keyboard::Key,
     modifiers: keyboard::Modifiers,
+    scopes: crate::domain::input::ActiveScopes,
 ) -> Option<Message> {
     if matches!(key, keyboard::Key::Named(keyboard::key::Named::Escape)) {
         return Some(Message::Exit);
     }
     let id = key_id(key)?;
-    map.lookup_key(&id, mods(modifiers)).map(action_message)
+    map.lookup_key(&id, mods(modifiers), scopes).map(action_message)
 }
 
 pub(crate) fn mouse_button(

@@ -15,11 +15,18 @@ pub enum KeyBindingGroup {
     Filters,
     Folders,
     Navigation,
+    Downloads,
 }
 
 impl KeyBindingGroup {
-    pub const ALL: [Self; 5] =
-        [Self::Wallpaper, Self::Panels, Self::Filters, Self::Folders, Self::Navigation];
+    pub const ALL: [Self; 6] = [
+        Self::Wallpaper,
+        Self::Panels,
+        Self::Filters,
+        Self::Folders,
+        Self::Navigation,
+        Self::Downloads,
+    ];
 
     pub const fn title_key(self) -> &'static str {
         match self {
@@ -28,6 +35,7 @@ impl KeyBindingGroup {
             Self::Filters => "settings-keybinds-filters-card",
             Self::Folders => "settings-keybinds-folders-card",
             Self::Navigation => "settings-keybinds-navigation-card",
+            Self::Downloads => "settings-keybinds-downloads-card",
         }
     }
 
@@ -38,11 +46,12 @@ impl KeyBindingGroup {
             Self::Filters => "settings-keybinds-filters-card-desc",
             Self::Folders => "settings-keybinds-folders-card-desc",
             Self::Navigation => "settings-keybinds-navigation-card-desc",
+            Self::Downloads => "settings-keybinds-downloads-card-desc",
         }
     }
 }
 
-pub const KEY_BINDINGS: [KeyBindingDescriptor; 25] = [
+pub const KEY_BINDINGS: [KeyBindingDescriptor; 38] = [
     KeyBindingDescriptor {
         action: InputAction::Select,
         path: skwd_config::keys::keybind::SELECT,
@@ -192,5 +201,83 @@ pub const KEY_BINDINGS: [KeyBindingDescriptor; 25] = [
         path: skwd_config::keys::keybind::AUTOCOMPLETE,
         title_key: "keybind-autocomplete",
         group: KeyBindingGroup::Navigation,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::TypePrev,
+        path: skwd_config::keys::keybind::TYPE_PREV,
+        title_key: "keybind-type-prev",
+        group: KeyBindingGroup::Filters,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::TypeNext,
+        path: skwd_config::keys::keybind::TYPE_NEXT,
+        title_key: "keybind-type-next",
+        group: KeyBindingGroup::Filters,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SortPrev,
+        path: skwd_config::keys::keybind::SORT_PREV,
+        title_key: "keybind-sort-prev",
+        group: KeyBindingGroup::Filters,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SortNext,
+        path: skwd_config::keys::keybind::SORT_NEXT,
+        title_key: "keybind-sort-next",
+        group: KeyBindingGroup::Filters,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::RandomRotate,
+        path: skwd_config::keys::keybind::RANDOM_ROTATE,
+        title_key: "keybind-random-rotate",
+        group: KeyBindingGroup::Filters,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SearchMode,
+        path: skwd_config::keys::keybind::SEARCH_MODE,
+        title_key: "keybind-search-mode",
+        group: KeyBindingGroup::Filters,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::Downloads,
+        path: skwd_config::keys::keybind::DOWNLOADS,
+        title_key: "keybind-downloads",
+        group: KeyBindingGroup::Panels,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SourceWallhaven,
+        path: skwd_config::keys::keybind::SOURCE_WALLHAVEN,
+        title_key: "keybind-source-wallhaven",
+        group: KeyBindingGroup::Downloads,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SourceSteam,
+        path: skwd_config::keys::keybind::SOURCE_STEAM,
+        title_key: "keybind-source-steam",
+        group: KeyBindingGroup::Downloads,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SourceUnsplash,
+        path: skwd_config::keys::keybind::SOURCE_UNSPLASH,
+        title_key: "keybind-source-unsplash",
+        group: KeyBindingGroup::Downloads,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SourcePexels,
+        path: skwd_config::keys::keybind::SOURCE_PEXELS,
+        title_key: "keybind-source-pexels",
+        group: KeyBindingGroup::Downloads,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SourceYoutube,
+        path: skwd_config::keys::keybind::SOURCE_YOUTUBE,
+        title_key: "keybind-source-youtube",
+        group: KeyBindingGroup::Downloads,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::SourceBing,
+        path: skwd_config::keys::keybind::SOURCE_BING,
+        title_key: "keybind-source-bing",
+        group: KeyBindingGroup::Downloads,
     },
 ];

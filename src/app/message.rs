@@ -27,6 +27,12 @@ pub enum Message {
         backwards: bool,
     },
     ToggleFolder,
+    CycleType {
+        backwards: bool,
+    },
+    CycleSort {
+        backwards: bool,
+    },
     ToggleHiddenFolders,
     SetSort(String),
     SetOrient(String),
@@ -91,6 +97,7 @@ pub enum Message {
     ToggleHelp,
     ClearTags,
     OpenSourceBrowser,
+    ToggleDownloads,
     OpenBrowser(String),
     CloseBrowser,
     OpenPlaylists,

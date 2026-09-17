@@ -107,7 +107,7 @@ pub(super) fn click(
         return Task::none();
     }
     let spec = crate::domain::input::MouseSpec { mods: app.input.mods, button };
-    let Some(action) = app.input.bindings.lookup_mouse(spec) else {
+    let Some(action) = app.input.bindings.lookup_mouse(spec, app.input_scopes()) else {
         return Task::none();
     };
     run_action(app, action, hit_rect)

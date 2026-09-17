@@ -205,6 +205,17 @@ fn adopt_active_source(app: &mut App) {
     }
 }
 
+pub(super) fn toggle_downloads(app: &mut App) -> Task<Message> {
+    if app.source_browser.browser.is_some() {
+        return close_browser(app);
+    }
+    if app.menu_capturing() || !(app.config.wallhaven_enabled() || app.config.steam_enabled()) {
+        return Task::none();
+    }
+    let source = app.source_browser.last_source.key();
+    open_browser(app, source)
+}
+
 pub(super) fn close_browser(app: &mut App) -> Task<Message> {
     app.clear_browser_previews();
     app.source_browser.close();

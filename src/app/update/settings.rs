@@ -145,10 +145,10 @@ fn apply_keybind_capture(app: &mut App) -> Task<Message> {
     let stolen: Vec<_> = capture
         .triggers
         .iter()
-        .filter_map(|trigger| {
+        .flat_map(|trigger| {
             app.input
                 .bindings
-                .shared_trigger(capture.action, trigger)
+                .trigger_holders(capture.action, trigger)
                 .map(|other| (other, trigger.clone()))
         })
         .collect();

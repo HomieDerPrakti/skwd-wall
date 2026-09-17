@@ -1,5 +1,8 @@
 use super::*;
 
+const PICKER: crate::domain::input::ActiveScopes =
+    crate::domain::input::ActiveScopes { fields: false, search: false, downloads: false };
+
 #[test]
 fn key_event_routing() {
     use iced::event::Status;
@@ -66,44 +69,50 @@ fn key_event_routing() {
     let none = keyboard::Modifiers::default();
     let shift = keyboard::Modifiers::SHIFT;
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("s".into()), shift),
+        key_message(&km, &keyboard::Key::Character("s".into()), shift, PICKER),
         Some(Message::ToggleSettings)
     ));
-    assert!(key_message(&km, &keyboard::Key::Character("s".into()), none).is_none());
-    assert!(matches!(key_message(&km, &named(Named::ArrowLeft), none), Some(Message::KeyPrev)));
-    assert!(matches!(key_message(&km, &named(Named::ArrowRight), none), Some(Message::KeyNext)));
+    assert!(key_message(&km, &keyboard::Key::Character("s".into()), none, PICKER).is_none());
     assert!(matches!(
-        key_message(&km, &named(Named::ArrowLeft), shift),
+        key_message(&km, &named(Named::ArrowLeft), none, PICKER),
+        Some(Message::KeyPrev)
+    ));
+    assert!(matches!(
+        key_message(&km, &named(Named::ArrowRight), none, PICKER),
+        Some(Message::KeyNext)
+    ));
+    assert!(matches!(
+        key_message(&km, &named(Named::ArrowLeft), shift, PICKER),
         Some(Message::SetColorFilter(i64::MIN))
     ));
     assert!(matches!(
-        key_message(&km, &named(Named::ArrowRight), shift),
+        key_message(&km, &named(Named::ArrowRight), shift, PICKER),
         Some(Message::SetColorFilter(i64::MAX))
     ));
     assert!(matches!(
-        key_message(&km, &named(Named::ArrowUp), shift),
+        key_message(&km, &named(Named::ArrowUp), shift, PICKER),
         Some(Message::ToggleFilterBar)
     ));
     assert!(matches!(
-        key_message(&km, &named(Named::ArrowDown), shift),
+        key_message(&km, &named(Named::ArrowDown), shift, PICKER),
         Some(Message::OpenTagCloud)
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("p".into()), none),
+        key_message(&km, &keyboard::Key::Character("p".into()), none, PICKER),
         Some(Message::OpenPlaylists)
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("c".into()), none),
+        key_message(&km, &keyboard::Key::Character("c".into()), none, PICKER),
         Some(Message::ToggleThemePanel)
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("f".into()), none),
+        key_message(&km, &keyboard::Key::Character("f".into()), none, PICKER),
         Some(Message::KeyFavourite)
     ));
-    assert!(key_message(&km, &keyboard::Key::Character("i".into()), none).is_none());
-    assert!(key_message(&km, &keyboard::Key::Character("e".into()), none).is_none());
+    assert!(key_message(&km, &keyboard::Key::Character("i".into()), none, PICKER).is_none());
+    assert!(key_message(&km, &keyboard::Key::Character("e".into()), none, PICKER).is_none());
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("?".into()), shift),
+        key_message(&km, &keyboard::Key::Character("?".into()), shift, PICKER),
         Some(Message::ToggleHelp)
     ));
 }
@@ -636,37 +645,42 @@ fn custom_keymap() {
     let km = crate::infrastructure::config::load_bindings(&cfg);
     let none = keyboard::Modifiers::default();
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("x".into()), none),
+        key_message(&km, &keyboard::Key::Character("x".into()), none, PICKER),
         Some(Message::OpenPlaylists)
     ));
-    assert!(key_message(&km, &keyboard::Key::Character("p".into()), none).is_none());
+    assert!(key_message(&km, &keyboard::Key::Character("p".into()), none, PICKER).is_none());
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("h".into()), keyboard::Modifiers::CTRL),
+        key_message(&km, &keyboard::Key::Character("h".into()), keyboard::Modifiers::CTRL, PICKER),
         Some(Message::ToggleHelp)
     ));
-    assert!(key_message(&km, &keyboard::Key::Character("h".into()), none).is_none());
+    assert!(key_message(&km, &keyboard::Key::Character("h".into()), none, PICKER).is_none());
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("5".into()), none),
+        key_message(&km, &keyboard::Key::Character("5".into()), none, PICKER),
         Some(Message::KeyFavourite)
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Character("X".into()), keyboard::Modifiers::SHIFT),
+        key_message(&km, &keyboard::Key::Character("X".into()), keyboard::Modifiers::SHIFT, PICKER),
         Some(Message::OpenPlaylists)
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Named(Named::ArrowLeft), none),
+        key_message(&km, &keyboard::Key::Named(Named::ArrowLeft), none, PICKER),
         Some(Message::KeyPrev)
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Named(Named::ArrowLeft), keyboard::Modifiers::SHIFT),
+        key_message(
+            &km,
+            &keyboard::Key::Named(Named::ArrowLeft),
+            keyboard::Modifiers::SHIFT,
+            PICKER
+        ),
         Some(Message::SetColorFilter(i64::MIN))
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Named(Named::Escape), none),
+        key_message(&km, &keyboard::Key::Named(Named::Escape), none, PICKER),
         Some(Message::Exit)
     ));
     assert!(matches!(
-        key_message(&km, &keyboard::Key::Named(Named::Enter), none),
+        key_message(&km, &keyboard::Key::Named(Named::Enter), none, PICKER),
         Some(Message::ApplyCurrent)
     ));
 }
@@ -676,7 +690,11 @@ fn rebind_live() {
     use crate::domain::input::{InputAction, KeyId, Mods};
     let mut app = test_app();
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("p".into()), Mods::new(false, false, false)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("p".into()),
+            Mods::new(false, false, false),
+            PICKER
+        ),
         Some(InputAction::Playlists)
     );
     let _ = update(
@@ -687,11 +705,19 @@ fn rebind_live() {
         )),
     );
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("x".into()), Mods::new(false, false, false)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("x".into()),
+            Mods::new(false, false, false),
+            PICKER
+        ),
         Some(InputAction::Playlists)
     );
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("p".into()), Mods::new(false, false, false)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("p".into()),
+            Mods::new(false, false, false),
+            PICKER
+        ),
         None
     );
     let rows = crate::frontend::ui::help::help_rows(&app.input.bindings);
@@ -704,7 +730,11 @@ fn rebind_live() {
         )),
     );
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("p".into()), Mods::new(false, false, false)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("p".into()),
+            Mods::new(false, false, false),
+            PICKER
+        ),
         Some(InputAction::Playlists)
     );
 }
@@ -737,7 +767,11 @@ fn keybind_capture_popup_flow() {
     assert!(app.panels.settings.keybind_capture.is_none());
     assert_eq!(app.config.str_path("keys.playlists"), "x");
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("x".into()), Mods::new(false, false, false)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("x".into()),
+            Mods::new(false, false, false),
+            PICKER
+        ),
         Some(InputAction::Playlists)
     );
     let _ =
@@ -756,7 +790,11 @@ fn keybind_capture_popup_flow() {
     assert!(app.panels.settings.keybind_capture.is_none());
     assert!(app.panels.settings.open);
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("x".into()), Mods::new(false, false, false)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("x".into()),
+            Mods::new(false, false, false),
+            PICKER
+        ),
         Some(InputAction::Playlists)
     );
     let _ =
@@ -764,7 +802,11 @@ fn keybind_capture_popup_flow() {
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureDefault));
     assert!(app.panels.settings.keybind_capture.is_none());
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("p".into()), Mods::new(false, false, false)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("p".into()),
+            Mods::new(false, false, false),
+            PICKER
+        ),
         Some(InputAction::Playlists)
     );
 }
@@ -788,7 +830,11 @@ fn keybind_capture_binds_and_resets() {
     );
     assert_eq!(app.config.str_path("keys.flip"), "ctrl+alt+shift+d");
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("d".into()), Mods::new(true, true, true)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("d".into()),
+            Mods::new(true, true, true),
+            PICKER
+        ),
         Some(InputAction::Flip)
     );
 
@@ -800,10 +846,10 @@ fn keybind_capture_binds_and_resets() {
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureApply));
     assert_eq!(app.config.str_path("keys.playlists"), "alt+middle-click");
     assert_eq!(
-        app.input.bindings.lookup_mouse(MouseSpec {
-            mods: Mods::new(false, true, false),
-            button: MouseButton::Middle
-        }),
+        app.input.bindings.lookup_mouse(
+            MouseSpec { mods: Mods::new(false, true, false), button: MouseButton::Middle },
+            PICKER
+        ),
         Some(InputAction::Playlists)
     );
 
@@ -812,7 +858,9 @@ fn keybind_capture_binds_and_resets() {
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureApply));
     assert_eq!(app.config.str_path("keys.select"), "none");
     assert_eq!(
-        app.input.bindings.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Left }),
+        app.input
+            .bindings
+            .lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Left }, PICKER),
         None
     );
 
@@ -822,11 +870,15 @@ fn keybind_capture_binds_and_resets() {
     assert_eq!(app.config.str_path("keys.flip"), "");
     assert_eq!(app.config.str_path("keys.select"), "");
     assert_eq!(
-        app.input.bindings.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Right }),
+        app.input
+            .bindings
+            .lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Right }, PICKER),
         Some(InputAction::Flip)
     );
     assert_eq!(
-        app.input.bindings.lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Left }),
+        app.input
+            .bindings
+            .lookup_mouse(MouseSpec { mods: Mods::NONE, button: MouseButton::Left }, PICKER),
         Some(InputAction::Select)
     );
 }
@@ -845,7 +897,7 @@ fn capture_steals_trigger() {
     );
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureApply));
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("p".into()), Mods::NONE),
+        app.input.bindings.lookup_key(&KeyId::Char("p".into()), Mods::NONE, PICKER),
         Some(InputAction::Settings)
     );
     assert_eq!(app.config.str_path("keys.playlists"), "none");
@@ -875,7 +927,7 @@ fn external_config_adopt() {
     assert_eq!(app.config.num_path("transition.durationMs"), 750.0);
     let none = keyboard::Modifiers::default();
     assert!(matches!(
-        key_message(&app.input.bindings, &keyboard::Key::Character("x".into()), none),
+        key_message(&app.input.bindings, &keyboard::Key::Character("x".into()), none, PICKER),
         Some(Message::KeyFavourite)
     ));
     assert!(!app.adopt_external_config());
@@ -1039,14 +1091,18 @@ fn choose_displays_shortcut_can_be_rebound_and_reset() {
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureApply));
     assert_eq!(app.config.str_path("keys.effects"), "shift+m");
     assert_eq!(
-        app.input.bindings.lookup_key(&KeyId::Char("m".into()), Mods::new(false, false, true)),
+        app.input.bindings.lookup_key(
+            &KeyId::Char("m".into()),
+            Mods::new(false, false, true),
+            PICKER
+        ),
         Some(InputAction::Effects)
     );
     assert_ne!(
-        app.input.bindings.lookup_mouse(MouseSpec {
-            mods: Mods::new(true, false, false),
-            button: MouseButton::Left
-        }),
+        app.input.bindings.lookup_mouse(
+            MouseSpec { mods: Mods::new(true, false, false), button: MouseButton::Left },
+            PICKER
+        ),
         Some(InputAction::Effects)
     );
     let _ = update(&mut app, Message::ToggleSettings);
@@ -1067,19 +1123,19 @@ fn choose_displays_shortcut_can_be_rebound_and_reset() {
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureApply));
     assert_eq!(app.config.str_path("keys.effects"), "alt+middle-click");
     assert_eq!(
-        app.input.bindings.lookup_mouse(MouseSpec {
-            mods: Mods::new(false, true, false),
-            button: MouseButton::Middle
-        }),
+        app.input.bindings.lookup_mouse(
+            MouseSpec { mods: Mods::new(false, true, false), button: MouseButton::Middle },
+            PICKER
+        ),
         Some(InputAction::Effects)
     );
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCapture("keys.effects".into())));
     let _ = update(&mut app, Message::Settings(SettingsMsg::KeybindCaptureDefault));
     assert_eq!(
-        app.input.bindings.lookup_mouse(MouseSpec {
-            mods: Mods::new(true, false, false),
-            button: MouseButton::Left
-        }),
+        app.input.bindings.lookup_mouse(
+            MouseSpec { mods: Mods::new(true, false, false), button: MouseButton::Left },
+            PICKER
+        ),
         Some(InputAction::Effects)
     );
 }

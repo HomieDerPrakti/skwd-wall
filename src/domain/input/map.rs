@@ -1,4 +1,4 @@
-use super::action::InputAction;
+use super::action::{ActiveScopes, InputAction};
 use super::trigger::{KeyId, Mods, MouseSpec, Trigger, binding_label, parse_binding};
 
 #[derive(Debug, Clone)]
@@ -44,8 +44,12 @@ impl InputMap {
         binding_label(self.triggers(action))
     }
 
-    pub fn lookup_key(&self, id: &KeyId, mods: Mods) -> Option<InputAction> {
-        let exact = self.bindings.iter().find(|(_, triggers)| {
+    fn active(&self, scopes: ActiveScopes) -> impl Iterator<Item = &(InputAction, Vec<Trigger>)> {
+        self.bindings.iter().filter(move |(action, _)| scopes.contains(action.scope()))
+    }
+
+    pub fn lookup_key(&self, id: &KeyId, mods: Mods, scopes: ActiveScopes) -> Option<InputAction> {
+        let exact = self.active(scopes).find(|(_, triggers)| {
             triggers.iter().any(|trigger| {
                 matches!(trigger, Trigger::Key(spec) if spec.id == *id && spec.mods == mods)
             })
@@ -57,8 +61,7 @@ impl InputMap {
             return None;
         }
         let relaxed = Mods { shift: false, ..mods };
-        self.bindings
-            .iter()
+        self.active(scopes)
             .find(|(_, triggers)| {
                 triggers.iter().any(|trigger| {
                     matches!(trigger, Trigger::Key(spec)
@@ -70,9 +73,8 @@ impl InputMap {
             .map(|(action, _)| *action)
     }
 
-    pub fn lookup_mouse(&self, spec: MouseSpec) -> Option<InputAction> {
-        self.bindings
-            .iter()
+    pub fn lookup_mouse(&self, spec: MouseSpec, scopes: ActiveScopes) -> Option<InputAction> {
+        self.active(scopes)
             .find(|(_, triggers)| triggers.contains(&Trigger::Mouse(spec)))
             .map(|(action, _)| *action)
     }
@@ -81,7 +83,9 @@ impl InputMap {
         let mut conflicts = Vec::new();
         for (index, (left, left_triggers)) in self.bindings.iter().enumerate() {
             for (right, right_triggers) in self.bindings.iter().skip(index + 1) {
-                if left_triggers.iter().any(|trigger| right_triggers.contains(trigger)) {
+                if left.scope().overlaps(right.scope())
+                    && left_triggers.iter().any(|trigger| right_triggers.contains(trigger))
+                {
                     conflicts.push((*left, *right));
                 }
             }
@@ -89,10 +93,18 @@ impl InputMap {
         conflicts
     }
 
-    pub fn shared_trigger(&self, action: InputAction, trigger: &Trigger) -> Option<InputAction> {
+    pub fn trigger_holders(
+        &self,
+        action: InputAction,
+        trigger: &Trigger,
+    ) -> impl Iterator<Item = InputAction> {
         self.bindings
             .iter()
-            .find(|(candidate, triggers)| *candidate != action && triggers.contains(trigger))
+            .filter(move |(candidate, triggers)| {
+                *candidate != action
+                    && candidate.scope().overlaps(action.scope())
+                    && triggers.contains(trigger)
+            })
             .map(|(candidate, _)| *candidate)
     }
 }

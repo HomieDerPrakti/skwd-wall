@@ -9,7 +9,7 @@ mod view;
 pub use action::{BarAction, BarIntent};
 pub use canvas::FilterBar;
 pub(crate) use catalog::ICON_FAV;
-pub use catalog::{MENU_MAX_ROWS, MENU_ROW_H, SORTS, TYPES, sort_label_key};
+pub use catalog::{MENU_MAX_ROWS, MENU_ROW_H, SORTS, TYPES, cycle_key, sort_label_key};
 pub use menu::MenuKind;
 pub(in crate::frontend::ui) use menu::item_contains;
 pub use model::{BarItem, BarShow, BarVisualStyle, build_bar_with_tasks, verticalize_bar};

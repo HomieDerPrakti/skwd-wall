@@ -71,7 +71,34 @@ pub(super) fn set_color_filter(app: &mut App, val: i64) -> Task<Message> {
     Task::none()
 }
 
+pub(super) fn cycle_type(app: &mut App, backwards: bool) -> Task<Message> {
+    if app.menu_capturing() {
+        return Task::none();
+    }
+    let shown = crate::app::view::bar_show(app).types;
+    if let Some(kind) =
+        crate::frontend::ui::cycle_key(&shown, &app.library_session.filters.kind, backwards)
+    {
+        app.change_filters(|filters| filters.kind = kind.to_string());
+    }
+    Task::none()
+}
+
+pub(super) fn cycle_sort(app: &mut App, backwards: bool) -> Task<Message> {
+    if app.menu_capturing() {
+        return Task::none();
+    }
+    let shown = crate::app::view::bar_show(app).sorts;
+    match crate::frontend::ui::cycle_key(&shown, &app.library_session.filters.sort, backwards) {
+        Some(sort) => super::update_inner(app, Message::SetSort(sort.to_string())),
+        None => Task::none(),
+    }
+}
+
 pub(super) fn toggle_random_rotate(app: &mut App) -> Task<Message> {
+    if app.menu_capturing() {
+        return Task::none();
+    }
     let on = !app.config.flag_default_config(skwd_config::keys::general::RANDOM_ROTATE);
     app.config.set_key(skwd_config::keys::general::RANDOM_ROTATE, serde_json::json!(on));
     app.config.persist();
