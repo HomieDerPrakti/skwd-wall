@@ -47,6 +47,10 @@ https://github.com/user-attachments/assets/336fec28-0cc1-4f19-adf3-fc80652b6a13
 >
 > \- FutureKismo
 
+> i honestly loved v1. such an amazing piece of kit, and my machine didn't mind running it. but v2 is like going from "family sedan fast" to "ferrari fast"
+>
+> \- WanderingAstarael
+
 Skwd-wall v2 is what happens when someone says "hey so your wallpaper program is built in Quickshell and it is great but Quickshell is so-so for my 8 GB laptop, are you going to rewrite it?" and I go "challenge accepted".
 
 ### What does it do besides apply wallpapers? well...

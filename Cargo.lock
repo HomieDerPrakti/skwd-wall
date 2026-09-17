@@ -1249,7 +1249,7 @@ dependencies = [
 [[package]]
 name = "iced_layershell"
 version = "0.19.1"
-source = "git+ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git?rev=07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0#07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0"
+source = "git+https://github.com/liixini/skwd-iced-layershell.git?rev=0329bd09e66ff4cbd4d354f6925543341710e394#0329bd09e66ff4cbd4d354f6925543341710e394"
 dependencies = [
  "enumflags2",
  "futures",
@@ -1677,7 +1677,7 @@ dependencies = [
 [[package]]
 name = "layershellev"
 version = "0.19.1"
-source = "git+ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git?rev=07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0#07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0"
+source = "git+https://github.com/liixini/skwd-iced-layershell.git?rev=0329bd09e66ff4cbd4d354f6925543341710e394#0329bd09e66ff4cbd4d354f6925543341710e394"
 dependencies = [
  "calloop 0.14.4",
  "calloop-wayland-source 0.4.1",
@@ -2969,7 +2969,7 @@ dependencies = [
 
 [[package]]
 name = "skwd-config"
-version = "1.0.0-beta.14.1"
+version = "1.0.0-beta.15"
 dependencies = [
  "dirs",
  "serde_json",
@@ -2977,7 +2977,7 @@ dependencies = [
 
 [[package]]
 name = "skwd-lens-proto"
-version = "1.0.0-beta.14.1"
+version = "1.0.0-beta.15"
 dependencies = [
  "serde",
  "serde_json",
@@ -2985,7 +2985,7 @@ dependencies = [
 
 [[package]]
 name = "skwd-log"
-version = "1.0.0-beta.14.1"
+version = "1.0.0-beta.15"
 dependencies = [
  "libc",
  "log",
@@ -2993,7 +2993,7 @@ dependencies = [
 
 [[package]]
 name = "skwd-palette"
-version = "1.0.0-beta.14.1"
+version = "1.0.0-beta.15"
 dependencies = [
  "material-colors",
  "serde_json",
@@ -3001,7 +3001,7 @@ dependencies = [
 
 [[package]]
 name = "skwd-wall"
-version = "1.0.0-beta.14.1"
+version = "1.0.0-beta.15"
 dependencies = [
  "ash",
  "bit-set",
@@ -3681,7 +3681,7 @@ dependencies = [
 
 [[package]]
 name = "wall-proto"
-version = "1.0.0-beta.14.1"
+version = "1.0.0-beta.15"
 dependencies = [
  "libc",
  "serde",
