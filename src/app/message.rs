@@ -17,6 +17,7 @@ pub enum Message {
     KeyNext,
     KeyFavourite,
     KeyFlip,
+    KeyReveal,
     KeyEffects,
     KeyStudio,
     ApplyCurrent,

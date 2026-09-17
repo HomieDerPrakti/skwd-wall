@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = ویڈیو کا پیش منظر
 keybind-select = منتخب کریں، پھر لاگو کریں
 keybind-apply = وال پیپر لاگو کریں
 keybind-flip = تفصیلات کے لیے کارڈ پلٹیں
+keybind-reveal = پیش منظر کے لیے پتے پلٹیں
 keybind-favourite = کارڈ پسندیدہ بنائیں
 keybind-effects = ڈسپلے منتخب کریں
 keybind-studio = اثرات اسٹوڈیو

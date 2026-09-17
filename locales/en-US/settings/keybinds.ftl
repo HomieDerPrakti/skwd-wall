@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = Preview videos
 keybind-select = Select, then apply
 keybind-apply = Apply wallpaper
 keybind-flip = Flip card for details
+keybind-reveal = Flip the hand to preview
 keybind-favourite = Favourite card
 keybind-effects = Choose displays
 keybind-studio = Effects studio

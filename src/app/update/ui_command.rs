@@ -369,6 +369,7 @@ pub(super) fn run_ui_command(app: &mut App, cmd: &str) -> Task<Message> {
         }
         "select" if !arg.is_empty() => select_key(app, &arg),
         "flip" => super::update_inner(app, Message::KeyFlip),
+        "reveal" => super::update_inner(app, Message::KeyReveal),
         "bar" => {
             match arg.as_str() {
                 "show" => app.chrome.filter_bar_visible = true,

@@ -52,6 +52,7 @@ const RIBBON_COLUMNS: u32 = 4096u;
 const GHOST: u32 = 8192u;
 const BACKDROP: u32 = 16384u;
 const BACKFACE: u32 = 32768u;
+const MUTED: u32 = 65536u;
 
 @vertex
 fn vs_main(@builtin(vertex_index) vi: u32, inst: Instance) -> VsOut {
@@ -563,7 +564,7 @@ fn fs_main(in: VsOut) -> @location(0) vec4<f32> {
         if ((in.misc.w & GHOST) != 0u) {
             rgb = vec3(luma(rgb) * 1.7);
         }
-        if ((in.misc.w & BACKFACE) != 0u) {
+        if ((in.misc.w & (BACKFACE | MUTED)) != 0u) {
             rgb = vec3(clamp((luma(rgb) - 0.5) * 1.15 + 0.5, 0.0, 1.0) * 0.5);
         }
         base = mix(in.fill, vec4(rgb, 1.0), fade);

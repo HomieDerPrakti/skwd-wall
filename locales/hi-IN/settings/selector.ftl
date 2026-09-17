@@ -278,6 +278,8 @@ settings-selector-hand-skew-label = तिरछापन
 settings-selector-hand-skew-desc = कार्ड की रूपरेखा को समांतर चतुर्भुज में तिरछा करें, क्षैतिज ऑफ़सेट के पिक्सेल में।
 settings-selector-hand-backdrop-blur-label = पृष्ठभूमि धुँधलापन
 settings-selector-hand-backdrop-blur-desc = पृष्ठभूमि के धुँधलेपन की त्रिज्या, 100 = डिफ़ॉल्ट।
+settings-selector-hand-reveal-fill-label = पूर्वावलोकन फ़्रेम भरता है
+settings-selector-hand-reveal-fill-desc = जब हाथ पलटकर पूर्वावलोकन दिखाता है, तो कार्ड खिंचकर पूरे आकार की तस्वीर बनाते हैं। बंद होने पर हर कार्ड अपनी चौड़ाई और ऊँचाई रखता है और पंक्ति समाने के लिए छोटी-बड़ी होती है।
 
 settings-selector-start-position-label = आरंभिक स्थिति
 settings-selector-start-position-desc = शुरुआत से, आपके अंतिम लागू किए वॉलपेपर से, या जहाँ आपने ब्राउज़ करना रोका था वहाँ से खोलें। वर्तमान फ़िल्टर उपयोग करता है।

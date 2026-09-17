@@ -277,6 +277,8 @@ settings-selector-hand-skew-label = Наклон
 settings-selector-hand-skew-desc = Скосить контур карты в параллелограмм, в пикселях горизонтального смещения.
 settings-selector-hand-backdrop-blur-label = Размытие фона
 settings-selector-hand-backdrop-blur-desc = Радиус размытия фона, 100 = по умолчанию.
+settings-selector-hand-reveal-fill-label = Предпросмотр заполняет рамку
+settings-selector-hand-reveal-fill-desc = Когда рука переворачивается в предпросмотр, карты растягиваются в картинку полного размера. Выключено: каждая карта сохраняет свою ширину и высоту, а ряд масштабируется по экрану.
 
 settings-selector-start-position-label = Начальная позиция
 settings-selector-start-position-desc = Открывать начало списка, последние применённые обои или место, где вы остановились. Используются текущие фильтры.

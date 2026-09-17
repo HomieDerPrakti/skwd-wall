@@ -24,6 +24,7 @@ settings-keybinds-mouse-hover-desc = Предпросмотр видео
 keybind-select = Выбрать, затем применить
 keybind-apply = Применить обои
 keybind-flip = Перевернуть карточку для сведений
+keybind-reveal = Перевернуть руку для предпросмотра
 keybind-favourite = Добавить карточку в избранное
 keybind-effects = Выбрать дисплеи
 keybind-studio = Студия эффектов

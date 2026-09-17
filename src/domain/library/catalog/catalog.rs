@@ -56,6 +56,12 @@ impl Wallpaper {
         self.path.clone()
     }
 
+    pub fn is_tall(&self) -> bool {
+        self.height > self.width
+            && self.width > 0
+            && matches!(self.effective_kind(), WallpaperKind::Static | WallpaperKind::Video)
+    }
+
     pub fn effective_kind(&self) -> WallpaperKind {
         if self.kind == WallpaperKind::We && !self.video_file.is_empty() {
             WallpaperKind::Video

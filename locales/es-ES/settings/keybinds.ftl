@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = Previsualizar vídeos
 keybind-select = Seleccionar y aplicar
 keybind-apply = Aplicar fondo
 keybind-flip = Girar tarjeta para detalles
+keybind-reveal = Voltear la mano para previsualizar
 keybind-favourite = Marcar favorito
 keybind-effects = Elegir pantallas
 keybind-studio = Estudio de efectos

@@ -86,6 +86,7 @@ impl Config {
         map.insert("handGhosts".into(), Value::from(self.hand_ghosts()));
         map.insert("handBob".into(), Value::from(self.hand_bob()));
         map.insert("handBackdrop".into(), Value::from(self.hand_backdrop()));
+        map.insert("handRevealFill".into(), Value::from(self.hand_reveal_fill()));
     }
 
     fn snapshot_sandy(&self, map: &mut serde_json::Map<String, Value>) {

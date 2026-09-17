@@ -277,6 +277,8 @@ settings-selector-hand-skew-label = 傾き
 settings-selector-hand-skew-desc = カードの輪郭を平行四辺形にせん断します。単位は水平方向のずれのピクセルです。
 settings-selector-hand-backdrop-blur-label = 背景のぼかし
 settings-selector-hand-backdrop-blur-desc = 背景のぼかしの半径です（100 = デフォルト）。
+settings-selector-hand-reveal-fill-label = プレビューをフレームいっぱいに
+settings-selector-hand-reveal-fill-desc = 手札をプレビューに裏返すとき、カードを引き伸ばしてフルサイズの画像を作ります。オフにすると各カードの幅と高さを保ち、列を画面に収まるよう縮小します。
 
 settings-selector-start-position-label = 開始位置
 settings-selector-start-position-desc = 先頭、最後に適用した壁紙、または前回閲覧を終えた位置から開きます。現在のフィルターを使用します。

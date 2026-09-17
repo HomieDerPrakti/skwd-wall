@@ -387,6 +387,7 @@ fn hand_params(config: &Config) -> crate::frontend::scene::hand::HandParams {
         ghosts: config.hand_ghosts(),
         bob: config.hand_bob(),
         backdrop: config.hand_backdrop(),
+        reveal_fill: config.hand_reveal_fill(),
     }
 }
 

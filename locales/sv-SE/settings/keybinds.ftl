@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = Förhandsvisa videor
 keybind-select = Välj, tillämpa sedan
 keybind-apply = Använd bakgrundsbild
 keybind-flip = Vänd kort för detaljer
+keybind-reveal = Vänd handen för förhandsvisning
 keybind-favourite = Favoritmarkera kort
 keybind-effects = Välj skärmar
 keybind-studio = Effektstudio

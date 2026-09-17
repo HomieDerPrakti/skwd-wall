@@ -278,6 +278,8 @@ settings-selector-hand-skew-label = الميل
 settings-selector-hand-skew-desc = يحرف حدود البطاقة إلى متوازي أضلاع، ببكسلات الإزاحة الأفقية.
 settings-selector-hand-backdrop-blur-label = تمويه الخلفية
 settings-selector-hand-backdrop-blur-desc = نصف قطر تمويه الخلفية، 100 = الافتراضي.
+settings-selector-hand-reveal-fill-label = المعاينة تملأ الإطار
+settings-selector-hand-reveal-fill-desc = عند قلب اليد إلى المعاينة، تتمدد البطاقات لتكوّن صورة بالحجم الكامل. عند الإيقاف تحتفظ كل بطاقة بعرضها وارتفاعها ويُغيَّر حجم الصف ليتسع.
 
 settings-selector-start-position-label = موضع البداية
 settings-selector-start-position-desc = يفتح عند البداية، أو عند آخر خلفية طبّقتها، أو حيث توقفت عن التصفح. يستخدم عوامل التصفية الحالية.

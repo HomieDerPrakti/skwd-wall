@@ -277,6 +277,8 @@ settings-selector-hand-skew-label = 倾斜
 settings-selector-hand-skew-desc = 将卡片轮廓错切成平行四边形，单位为水平偏移像素。
 settings-selector-hand-backdrop-blur-label = 背景模糊
 settings-selector-hand-backdrop-blur-desc = 背景的模糊半径，100 = 默认。
+settings-selector-hand-reveal-fill-label = 预览填满画框
+settings-selector-hand-reveal-fill-desc = 手牌翻转为预览时，卡牌会拉伸拼成全尺寸画面。关闭后每张卡牌保持自身宽高，并缩放整排以适应屏幕。
 
 settings-selector-start-position-label = 起始位置
 settings-selector-start-position-desc = 从开头、上次应用的壁纸或上次浏览的位置打开。使用当前筛选条件。

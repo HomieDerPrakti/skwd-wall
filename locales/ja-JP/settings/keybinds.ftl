@@ -24,6 +24,7 @@ settings-keybinds-mouse-hover-desc = 動画をプレビュー
 keybind-select = 選択してから適用
 keybind-apply = 壁紙を適用
 keybind-flip = カードを裏返して詳細を表示
+keybind-reveal = 手札を裏返してプレビュー
 keybind-favourite = カードをお気に入りに追加
 keybind-effects = ディスプレイを選択
 keybind-studio = エフェクトスタジオ

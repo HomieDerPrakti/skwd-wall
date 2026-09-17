@@ -289,6 +289,34 @@ impl App {
         }
     }
 
+    fn request_tall_thumb(&mut self) {
+        if self.scene.mode != Mode::Hand || !self.scene.hand_reveal_open() {
+            return;
+        }
+        let Some(&store) = self.library_session.filtered.get(self.scene.current) else {
+            return;
+        };
+        let Some(item) = self.library_session.library.catalog().items.get(store as usize) else {
+            return;
+        };
+        if !item.is_tall() || !self.scene.tall_needs(store as usize) {
+            return;
+        }
+        let video = item.effective_kind() == WallpaperKind::Video;
+        let source = if video && !item.video_file.is_empty() {
+            item.video_file.clone()
+        } else {
+            item.path.clone()
+        };
+        crate::infrastructure::preview::ensure_tall(
+            store as usize,
+            source,
+            item.thumb.clone(),
+            video,
+            self.preview_resources.decoder.clone(),
+        );
+    }
+
     pub(in crate::app) fn run_tick(&mut self, now: Instant) {
         crate::app::update::drive_transition_preview(self);
         self.scene.input_idle =
@@ -323,6 +351,7 @@ impl App {
             crate::zone!("preheat");
             self.preheat_focused(now);
         }
+        self.request_tall_thumb();
         {
             crate::zone!("browser_anim");
             self.tick_browser_anim(now);

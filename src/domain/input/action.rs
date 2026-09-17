@@ -41,6 +41,7 @@ pub enum InputAction {
     Select,
     Apply,
     Flip,
+    Reveal,
     Favourite,
     Effects,
     Studio,
@@ -79,10 +80,11 @@ pub enum InputAction {
 }
 
 impl InputAction {
-    pub const ALL: [Self; 38] = [
+    pub const ALL: [Self; 39] = [
         Self::Select,
         Self::Apply,
         Self::Flip,
+        Self::Reveal,
         Self::Favourite,
         Self::Effects,
         Self::Studio,
@@ -125,6 +127,7 @@ impl InputAction {
             Self::Select => "click",
             Self::Apply => "enter",
             Self::Flip => "right-click",
+            Self::Reveal => "v",
             Self::Favourite => "f",
             Self::Effects => "ctrl+click",
             Self::Studio => "shift+right-click",

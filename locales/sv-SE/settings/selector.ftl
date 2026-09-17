@@ -278,6 +278,8 @@ settings-selector-hand-skew-label = Skevning
 settings-selector-hand-skew-desc = Skjuva kortets kontur till ett parallellogram, i pixlar horisontell förskjutning.
 settings-selector-hand-backdrop-blur-label = Bakgrundsoskärpa
 settings-selector-hand-backdrop-blur-desc = Bakgrundens oskärperadie, 100 = standard.
+settings-selector-hand-reveal-fill-label = Förhandsvisningen fyller ramen
+settings-selector-hand-reveal-fill-desc = När handen vänds till förhandsvisning sträcks korten ut till en bild i full storlek. Av behåller varje korts egen bredd och höjd och skalar raden så den får plats.
 
 settings-selector-start-position-label = Startposition
 settings-selector-start-position-desc = Öppna från början, vid den senast använda bakgrunden eller där du slutade bläddra. Använder de aktuella filtren.

@@ -109,7 +109,9 @@ impl App {
             Overlay::Playlists => self.panels.playlists.is_some(),
             Overlay::TagMode => self.tags.mode,
             Overlay::TagEditing => self.tags.editing || self.tags.card_drawer_open,
-            Overlay::Detail => self.detail_open() || self.scene.flip_open(),
+            Overlay::Detail => {
+                self.detail_open() || self.scene.flip_open() || self.scene.hand_reveal_open()
+            }
             Overlay::BrowserPreview => {
                 self.source_browser.browser.as_ref().is_some_and(|br| br.session.preview.is_some())
             }
@@ -171,7 +173,11 @@ impl App {
             Overlay::Detail => {
                 self.tags.editing = false;
                 self.tags.card_drawer_open = false;
-                self.scene.close_flip();
+                if self.scene.flip_open() || self.detail_open() {
+                    self.scene.close_flip();
+                } else {
+                    self.scene.hand_reveal_close();
+                }
                 self.retick();
             }
             Overlay::BrowserPreview => {

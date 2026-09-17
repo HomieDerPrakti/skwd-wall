@@ -392,6 +392,11 @@ pub(super) fn tab_selector(builder: &mut Builder<'_>) {
                 tr("settings-selector-hand-bob-desc"),
                 keys::selector::HAND_BOB,
             );
+            builder.toggle_default_true(
+                tr("settings-selector-hand-reveal-fill-label"),
+                tr("settings-selector-hand-reveal-fill-desc"),
+                keys::selector::HAND_REVEAL_FILL,
+            );
         }
         "sandy" => {
             let grain = cfg.sandy_grain();

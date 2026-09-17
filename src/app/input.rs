@@ -116,6 +116,7 @@ pub(crate) fn action_message(action: crate::domain::input::InputAction) -> Messa
         InputAction::Playlists => Message::OpenPlaylists,
         InputAction::Favourite => Message::KeyFavourite,
         InputAction::Flip => Message::KeyFlip,
+        InputAction::Reveal => Message::KeyReveal,
         InputAction::Effects => Message::KeyEffects,
         InputAction::Studio => Message::KeyStudio,
         InputAction::SceneProperties => Message::OpenSceneProps,

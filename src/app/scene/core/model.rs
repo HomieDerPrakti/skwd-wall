@@ -238,6 +238,42 @@ pub(super) struct HandState {
     pub(super) backdrop_store: Option<usize>,
     pub(super) backdrop_prev: Option<usize>,
     pub(super) backdrop_fade: Tween,
+    pub(super) reveal: Option<Reveal>,
+    pub(super) tall_ready: Option<usize>,
+    pub(super) tall_failed: Option<usize>,
+    pub(super) tall_requested: Option<usize>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Face {
+    Card,
+    Back { store: usize, column: bool },
+    Slice { store: usize, column: bool },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Layout {
+    Fan,
+    Row,
+    Column,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum RevealPhase {
+    Turning,
+    Held,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(super) struct Reveal {
+    pub(super) open: bool,
+    pub(super) phase: RevealPhase,
+    pub(super) from: Layout,
+    pub(super) to: Layout,
+    pub(super) turn: f32,
+    pub(super) turns_done: u32,
+    pub(super) faces: [Face; 2],
+    pub(super) len: usize,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
@@ -288,6 +324,10 @@ impl HandState {
             backdrop_store: None,
             backdrop_prev: None,
             backdrop_fade: motion.override_tween(1.0, BACKDROP_FADE_MS),
+            reveal: None,
+            tall_ready: None,
+            tall_failed: None,
+            tall_requested: None,
         }
     }
 }

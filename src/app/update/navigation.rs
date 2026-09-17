@@ -106,6 +106,18 @@ pub(super) fn key_favourite(app: &mut App) -> Task<Message> {
     Task::none()
 }
 
+pub(super) fn key_reveal(app: &mut App) -> Task<Message> {
+    if app.menu_capturing()
+        || app.scene.mode != Mode::Hand
+        || app.library_session.filtered.is_empty()
+    {
+        return Task::none();
+    }
+    app.scene.hand_reveal_toggle();
+    app.retick();
+    Task::none()
+}
+
 pub(super) fn key_flip(app: &mut App) -> Task<Message> {
     if app.menu_capturing() {
         return Task::none();
