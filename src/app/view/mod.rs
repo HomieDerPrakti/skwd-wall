@@ -10,6 +10,7 @@ pub(crate) use chrome::filter_bar_footprint;
 pub(super) use chrome::overview_set;
 #[cfg(test)]
 pub(crate) use composition::tag_cloud_visible;
+pub(crate) use composition::view_count;
 pub use composition::{view, view_single};
 #[cfg(test)]
 pub(crate) use tags::{cloud_fit_height, cloud_fit_width};

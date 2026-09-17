@@ -376,7 +376,15 @@ fn ui_state_query() {
     assert_eq!(snap["count"], 2);
     assert_eq!(snap["current"], 0);
     assert_eq!(snap["selection"], "a.png");
-    assert_eq!(snap["demo_protocol"], 15);
+    assert_eq!(snap["demo_protocol"], 16);
+    assert!(snap["views"].is_u64());
+    assert_eq!(snap["language"]["active"], crate::i18n::active_tag());
+    assert_eq!(snap["language"]["rtl"], crate::i18n::is_rtl());
+    assert_eq!(
+        snap["language"]["available"].as_array().map(Vec::len),
+        Some(crate::i18n::LANGUAGES.len())
+    );
+    assert!(snap["language"]["available"].as_array().unwrap().iter().any(|tag| tag == "ar-SA"));
     assert_eq!(snap["demo_active"], false);
     assert_eq!(snap["semantic"]["pending"], false);
     assert_eq!(snap["semantic"]["ranked"], 0);

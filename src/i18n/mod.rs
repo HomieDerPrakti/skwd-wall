@@ -3,7 +3,7 @@ mod catalog;
 #[cfg(test)]
 pub(crate) use catalog::Catalog;
 pub use catalog::{
-    LANGUAGES, Script, active_script, audio_live_mix_summary, audio_outputs_summary,
+    LANGUAGES, Script, active_script, active_tag, audio_live_mix_summary, audio_outputs_summary,
     browser_downloading_count, browser_downloading_queued, browser_masthead, browser_queued_count,
     browser_results_page, card_back_applied_times, effects_apply_count, effects_of_total_displays,
     format, is_rtl, language_choice, playlists_active_assignments, playlists_count_detail,

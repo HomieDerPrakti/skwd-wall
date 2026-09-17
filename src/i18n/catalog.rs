@@ -255,6 +255,10 @@ pub fn is_rtl() -> bool {
     LANGUAGES[active_index()].rtl
 }
 
+pub fn active_tag() -> &'static str {
+    LANGUAGES[active_index()].tag
+}
+
 pub fn catalog() -> &'static Catalog {
     let index = active_index();
     CATALOGS[index].get_or_init(|| Catalog::for_locale(LANGUAGES[index].tag))

@@ -13,6 +13,12 @@ use super::tags::{
 };
 use super::transient::{help_layer, hud_layer, library_hint, toast_layer};
 
+static VIEWS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
+pub(crate) fn view_count() -> u64 {
+    VIEWS.load(std::sync::atomic::Ordering::Relaxed)
+}
+
 pub fn view(app: &App, window: iced::window::Id) -> Element<'_, Message> {
     if app.runtime_state.overlay != Some(window) {
         return iced::widget::Space::new().into();
@@ -27,6 +33,7 @@ pub fn view_single(app: &App) -> Element<'_, Message> {
 
 fn overlay_view(app: &App) -> Element<'_, Message> {
     crate::zone!("overlay_view");
+    VIEWS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
     if app.theme.audition_open {
         let current_value = app
             .theme

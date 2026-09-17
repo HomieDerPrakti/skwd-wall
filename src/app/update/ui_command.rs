@@ -80,7 +80,14 @@ pub(crate) fn ui_state_json(app: &App) -> String {
         })
     });
     json!({
-        "demo_protocol": 15,
+        "demo_protocol": 16,
+        "views": crate::app::view::view_count(),
+        "language": {
+            "setting": app.config.str_path(skwd_config::keys::general::LANGUAGE),
+            "active": crate::i18n::active_tag(),
+            "rtl": crate::i18n::is_rtl(),
+            "available": crate::i18n::LANGUAGES.iter().map(|language| language.tag).collect::<Vec<_>>(),
+        },
         "picker_output": app.runtime_state.picker_output.clone().or_else(|| app.runtime_state.overlay.and_then(crate::shell::picker_output)),
         "mode": mode,
         "count": app.library_session.filtered.len(),
