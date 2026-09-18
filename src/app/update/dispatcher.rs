@@ -61,6 +61,7 @@ pub(crate) fn update_inner(app: &mut App, message: Message) -> Task<Message> {
         Message::ApplyCurrent => navigation::apply_current(app),
         Message::KeyFavourite => navigation::key_favourite(app),
         Message::KeyFlip => navigation::key_flip(app),
+        Message::KeyReveal => navigation::key_reveal(app),
         Message::KeyEffects => navigation::key_effects(app),
         Message::KeyStudio => navigation::key_studio(app),
         Message::SetColorFilter(value) => filters::set_color_filter(app, value),

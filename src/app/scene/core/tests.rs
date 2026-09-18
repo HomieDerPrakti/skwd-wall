@@ -2417,6 +2417,339 @@ fn hand_backdrop_crossfades_between_selections() {
 }
 
 #[test]
+fn hand_reveal_flips_every_slat_into_the_row_and_back_home() {
+    use super::model::{Face, Layout, RevealPhase};
+    use crate::rendering::scene::{GHOST, PROJECTED};
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(12);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    let cur = fixture.1[scene.current] as usize;
+    let atlas = fixture.5.as_mut().expect("atlas");
+    atlas.near.acquire(cur);
+    atlas.near.mark_ready(cur);
+    scene.touch();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    let fan: Vec<(usize, i32, i32)> =
+        scene.render.hits.iter().map(|hit| (hit.index, hit.cx as i32, hit.cy as i32)).collect();
+    let fan_left = scene.render.hits.iter().map(|hit| hit.cx).fold(f32::MAX, f32::min);
+    scene.hand_reveal_toggle();
+    assert!(scene.hand_reveal_open() && scene.is_animating());
+    hand_frames(&mut scene, &mut fixture, &mut now, 1);
+    assert_eq!(scene.anim_reason(), "hand_reveal");
+    let (phase, turns, faces, layouts) = scene.hand_reveal_phase().expect("reveal");
+    assert_eq!((phase, turns, layouts), (RevealPhase::Turning, 0, (Layout::Fan, Layout::Row)));
+    assert_eq!(faces, [Face::Card, Face::Slice { store: cur, column: false }]);
+    let mut slices = 0;
+    let mut ghosts = 0;
+    let mut moved_before_flat = false;
+    while matches!(scene.hand_reveal_phase(), Some((RevealPhase::Turning, ..))) {
+        hand_frames(&mut scene, &mut fixture, &mut now, 1);
+        let last = scene.render.hits.iter().find(|hit| hit.index == fan[0].0);
+        if let Some(hit) = last
+            && (hit.cx as i32 - fan[0].1).abs() > 4
+            && scene.render.instances.iter().any(|inst| inst.misc[3] & GHOST != 0)
+        {
+            moved_before_flat = true;
+        }
+        ghosts = ghosts
+            .max(scene.render.instances.iter().filter(|inst| inst.misc[3] & GHOST != 0).count());
+        slices = slices.max(
+            scene
+                .render
+                .instances
+                .iter()
+                .filter(|inst| {
+                    inst.misc[3] & PROJECTED != 0
+                        && inst.misc[3] & GHOST == 0
+                        && inst.misc[0] == 1
+                        && inst.crop[2] < 0.3
+                })
+                .count(),
+        );
+    }
+    assert_eq!(slices, 5, "every slat ends up showing its column of the preview");
+    assert!(ghosts >= 2, "turning slats trail ghosts: {ghosts}");
+    assert!(moved_before_flat, "slats travel while they flip, not before");
+    assert!(scene.render.instances.iter().all(|inst| inst.misc[3] & GHOST == 0));
+    assert!(matches!(
+        scene.hand_reveal_phase(),
+        Some((RevealPhase::Held, 1, _, (Layout::Row, Layout::Row)))
+    ));
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    let mut xs: Vec<f32> = scene.render.hits.iter().map(|hit| hit.cx).collect();
+    xs.sort_by(f32::total_cmp);
+    let gaps: Vec<f32> = xs.windows(2).map(|pair| pair[1] - pair[0]).collect();
+    assert!(gaps.iter().all(|gap| (gap - gaps[0]).abs() < 2.0), "orderly row: {gaps:?}");
+    let right = scene.render.hits.iter().map(|hit| hit.cx + hit.hw).fold(f32::MIN, f32::max);
+    assert!(xs[0] < fan_left && right < 1440.0, "the row spreads wider than the fan yet fits");
+    let crops: Vec<[f32; 4]> = scene
+        .render
+        .instances
+        .iter()
+        .filter(|inst| inst.misc[3] & PROJECTED != 0)
+        .map(|inst| inst.crop)
+        .collect();
+    assert_eq!(crops.len(), 5);
+    assert!(crops.iter().all(|crop| (crop[3] - 1.0).abs() < 1e-4 && crop[2] < 0.25));
+    let frame = crate::frontend::scene::hand::reveal_frame(1440.0, 900.0, false);
+    let left = scene.render.hits.iter().map(|hit| hit.cx - hit.hw).fold(f32::MAX, f32::min);
+    assert!(
+        (right - left - frame.0).abs() < 12.0,
+        "slats span the 16:9 frame: {} vs {}",
+        right - left,
+        frame.0
+    );
+    assert!(scene.render.hits.iter().all(|hit| hit.index == scene.current));
+    scene.hand_pointer(700.0, 450.0, Some(scene.current + 1));
+    hand_frames(&mut scene, &mut fixture, &mut now, 30);
+    assert!(!scene.is_animating(), "hover does not lift a revealed slat: {}", scene.anim_reason());
+    let next = scene.current + 1;
+    let next_store = fixture.1[next] as usize;
+    let atlas = fixture.5.as_mut().expect("atlas");
+    atlas.near.acquire(next_store);
+    atlas.near.mark_ready(next_store);
+    scene.set_current(next, 12);
+    assert!(scene.card.selection.values().all(Spring::settled), "selection snaps while revealed");
+    hand_frames(&mut scene, &mut fixture, &mut now, 8);
+    let (phase, turns, faces, layouts) = scene.hand_reveal_phase().expect("reveal");
+    assert_eq!((phase, turns, layouts), (RevealPhase::Turning, 1, (Layout::Row, Layout::Row)));
+    assert_eq!(
+        faces,
+        [
+            Face::Slice { store: next_store, column: false },
+            Face::Slice { store: cur, column: false }
+        ]
+    );
+    hand_frames(&mut scene, &mut fixture, &mut now, 90);
+    assert!(matches!(scene.hand_reveal_phase(), Some((RevealPhase::Held, 2, _, _))));
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    scene.hand_reveal_toggle();
+    assert!(!scene.hand_reveal_open());
+    hand_frames(&mut scene, &mut fixture, &mut now, 8);
+    let (phase, turns, faces, layouts) = scene.hand_reveal_phase().expect("reveal");
+    assert_eq!((phase, turns, layouts), (RevealPhase::Turning, 2, (Layout::Row, Layout::Fan)));
+    assert_eq!(faces[1], Face::Card);
+    hand_frames(&mut scene, &mut fixture, &mut now, 20);
+    assert!(scene.hand_reveal_phase().is_some(), "still travelling home");
+    hand_frames(&mut scene, &mut fixture, &mut now, 40);
+    assert!(scene.hand_reveal_phase().is_none(), "no separate release stage");
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    let back: Vec<(usize, i32, i32)> =
+        scene.render.hits.iter().map(|hit| (hit.index, hit.cx as i32, hit.cy as i32)).collect();
+    let moved: Vec<_> = fan
+        .iter()
+        .zip(&back)
+        .filter(|(a, b)| a.0 != b.0 || (a.1 - b.1).abs() > 2 || (a.2 - b.2).abs() > 2)
+        .collect();
+    assert!(
+        moved.len() <= 2,
+        "the fan returns to the press state except the moved selection: {moved:?}"
+    );
+}
+
+#[test]
+fn hand_reveal_stacks_tall_wallpapers_in_a_column_once_the_tall_tile_lands() {
+    use super::model::{Face, Layout, RevealPhase};
+    use crate::rendering::scene::PROJECTED;
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(12);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    let cur = fixture.1[scene.current] as usize;
+    fixture.0.items[cur].width = 1080;
+    fixture.0.items[cur].height = 1920;
+    assert!(fixture.0.items[cur].is_tall());
+    let atlas = fixture.5.as_mut().expect("atlas");
+    atlas.near.acquire(cur);
+    atlas.near.mark_ready(cur);
+    scene.touch();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    assert!(!scene.tall_needs(cur), "nothing is requested while the fan is closed");
+    scene.hand_reveal_toggle();
+    assert!(scene.tall_needs(cur));
+    assert!(!scene.tall_needs(cur), "one request per store");
+    hand_frames(&mut scene, &mut fixture, &mut now, 30);
+    assert!(
+        matches!(scene.hand_reveal_phase(), Some((RevealPhase::Held, 0, ..))),
+        "waits for the tall tile: {:?}",
+        scene.hand_reveal_phase()
+    );
+    assert!(!scene.is_animating() || scene.anim_reason() != "hand_reveal");
+    scene.tall_ready(cur);
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    let (phase, _, faces, layouts) = scene.hand_reveal_phase().expect("reveal");
+    assert_eq!((phase, layouts), (RevealPhase::Turning, (Layout::Fan, Layout::Column)));
+    assert_eq!(faces[1], Face::Slice { store: cur, column: true });
+    assert!(scene.hand_tall_in_use());
+    hand_frames(&mut scene, &mut fixture, &mut now, 80);
+    assert!(matches!(
+        scene.hand_reveal_phase(),
+        Some((RevealPhase::Held, 1, _, (Layout::Column, Layout::Column)))
+    ));
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    let mut ys: Vec<f32> = scene.render.hits.iter().map(|hit| hit.cy).collect();
+    ys.sort_by(f32::total_cmp);
+    let gaps: Vec<f32> = ys.windows(2).map(|pair| pair[1] - pair[0]).collect();
+    assert!(gaps.iter().all(|&gap| gap > 20.0 && (gap - gaps[0]).abs() < 2.0), "stack: {gaps:?}");
+    let xs: Vec<f32> = scene.render.hits.iter().map(|hit| hit.cx).collect();
+    assert!(xs.iter().all(|x| (x - xs[0]).abs() < 2.0), "one column: {xs:?}");
+    let top = ys[0] - scene.render.hits[0].hh;
+    assert!(top > 40.0 && ys[4] + scene.render.hits[0].hh < 900.0, "fits under the bar");
+    let slices: Vec<&InstanceRaw> =
+        scene.render.instances.iter().filter(|inst| inst.misc[3] & PROJECTED != 0).collect();
+    assert_eq!(slices.len(), 5);
+    assert!(
+        slices.iter().all(|inst| inst.misc[0] == 3 && inst.crop[2] < 0.25 && inst.crop[3] > 0.8)
+    );
+    let fixture_failed = cur;
+    scene.hand_reveal_toggle();
+    hand_frames(&mut scene, &mut fixture, &mut now, 120);
+    assert!(scene.hand_reveal_phase().is_none());
+    scene.tall_failed(fixture_failed);
+    scene.hand.tall_ready = None;
+    scene.hand_reveal_toggle();
+    hand_frames(&mut scene, &mut fixture, &mut now, 80);
+    let (_, _, faces, layouts) = scene.hand_reveal_phase().expect("reveal");
+    assert_eq!(layouts.1, Layout::Row, "a failed tall tile falls back to the row");
+    assert!(faces.contains(&Face::Slice { store: cur, column: false }));
+}
+
+#[test]
+fn hand_reveal_right_click_flips_the_preview_to_the_details_panel() {
+    use super::model::{Face, RevealPhase};
+    let mut scene = hand_scene();
+    scene.set_card_flip_options(400.0, true, true);
+    let mut fixture = hand_fixture(12);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    let cur = fixture.1[scene.current] as usize;
+    let atlas = fixture.5.as_mut().expect("atlas");
+    atlas.near.acquire(cur);
+    atlas.near.mark_ready(cur);
+    scene.touch();
+    scene.hand_reveal_toggle();
+    hand_frames(&mut scene, &mut fixture, &mut now, 90);
+    assert!(matches!(scene.hand_reveal_phase(), Some((RevealPhase::Held, 1, ..))));
+    assert!(scene.render.back.is_none());
+    scene.toggle_flip(scene.current);
+    assert!(scene.flip_open());
+    hand_frames(&mut scene, &mut fixture, &mut now, 6);
+    let (phase, turns, faces, _) = scene.hand_reveal_phase().expect("reveal");
+    assert_eq!((phase, turns), (RevealPhase::Turning, 1));
+    assert_eq!(faces[0], Face::Back { store: cur, column: false }, "the muted artwork turns in");
+    hand_frames(&mut scene, &mut fixture, &mut now, 90);
+    assert!(matches!(scene.hand_reveal_phase(), Some((RevealPhase::Held, 2, ..))));
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    let muted = scene
+        .render
+        .instances
+        .iter()
+        .filter(|inst| inst.misc[3] & crate::rendering::scene::MUTED != 0)
+        .count();
+    assert_eq!(muted, 5, "every slat shows the muted artwork behind the panel");
+    assert!(
+        scene
+            .render
+            .instances
+            .iter()
+            .filter(|inst| inst.misc[3] & crate::rendering::scene::MUTED != 0)
+            .all(|inst| inst.misc[0] == 1)
+    );
+    let back = scene.render.back.clone().expect("details panel over the preview");
+    assert!(back.progress >= 0.999 && back.embedded && back.picture_behind);
+    let frame = crate::frontend::scene::hand::reveal_frame(1440.0, 900.0, false);
+    assert!(
+        (back.hw * 2.0 - frame.0).abs() < 16.0,
+        "panel spans the frame: {} vs {}",
+        back.hw * 2.0,
+        frame.0
+    );
+    assert!(scene.render.hits.iter().all(|hit| hit.index == scene.current));
+    scene.close_flip();
+    hand_frames(&mut scene, &mut fixture, &mut now, 6);
+    let (phase, _, faces, _) = scene.hand_reveal_phase().expect("reveal");
+    assert_eq!(phase, RevealPhase::Turning);
+    assert!(faces.contains(&Face::Slice { store: cur, column: false }));
+    hand_frames(&mut scene, &mut fixture, &mut now, 120);
+    assert!(scene.render.back.is_none() && !scene.flip_open());
+    assert!(matches!(scene.hand_reveal_phase(), Some((RevealPhase::Held, 3, ..))));
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    scene.toggle_flip(scene.current);
+    hand_frames(&mut scene, &mut fixture, &mut now, 100);
+    assert!(scene.render.back.is_some());
+    scene.hand_reveal_toggle();
+    hand_frames(&mut scene, &mut fixture, &mut now, 140);
+    assert!(scene.hand_reveal_phase().is_none() && !scene.flip_open());
+    assert!(scene.render.back.is_none(), "closing the reveal drops the details too");
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+}
+
+#[test]
+fn hand_reveal_keep_mode_preserves_card_shape() {
+    use super::model::RevealPhase;
+    let mut scene = hand_scene();
+    scene.xp.hand.reveal_fill = false;
+    scene.xp_target.hand.reveal_fill = false;
+    let mut fixture = hand_fixture(12);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    let cur = fixture.1[scene.current] as usize;
+    let atlas = fixture.5.as_mut().expect("atlas");
+    atlas.near.acquire(cur);
+    atlas.near.mark_ready(cur);
+    scene.touch();
+    let card = scene.render.hits.iter().find(|hit| hit.index == 0).map(|hit| hit.hh).expect("card");
+    scene.hand_reveal_toggle();
+    hand_frames(&mut scene, &mut fixture, &mut now, 90);
+    assert!(matches!(scene.hand_reveal_phase(), Some((RevealPhase::Held, 1, ..))));
+    let slat = scene.render.hits[0];
+    assert!(
+        (slat.hh / slat.hw - 432.0 / 168.0).abs() < 0.15,
+        "card aspect kept: {} x {}",
+        slat.hw,
+        slat.hh
+    );
+    assert!(slat.hh <= card + 2.0, "never larger than the card itself");
+    let crops: Vec<[f32; 4]> = scene
+        .render
+        .instances
+        .iter()
+        .filter(|inst| inst.misc[3] & crate::rendering::scene::PROJECTED != 0)
+        .map(|inst| inst.crop)
+        .collect();
+    assert!(crops.iter().all(|crop| crop[3] < 0.95), "a card-shaped row shows a centred band");
+}
+
+#[test]
+fn hand_page_change_stays_revealed_and_lands_on_the_new_page() {
+    let mut scene = hand_scene();
+    let mut fixture = hand_fixture(12);
+    let mut now = Instant::now();
+    hand_frames(&mut scene, &mut fixture, &mut now, 2);
+    scene.hand_reveal_toggle();
+    hand_frames(&mut scene, &mut fixture, &mut now, 40);
+    let store = fixture.1[9] as usize;
+    let atlas = fixture.5.as_mut().expect("atlas");
+    atlas.near.acquire(store);
+    atlas.near.mark_ready(store);
+    scene.set_current(9, 12);
+    assert!(!scene.hand_dealing(), "no hand swap while revealed");
+    assert!(scene.hand_reveal_phase().is_some());
+    assert_eq!((scene.current, scene.hand_offset()), (9, 5));
+    hand_frames(&mut scene, &mut fixture, &mut now, 120);
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+    assert!(scene.render.hits.iter().all(|hit| hit.index == 9));
+    scene.hand_reveal_toggle();
+    hand_frames(&mut scene, &mut fixture, &mut now, 120);
+    assert!(scene.hand_reveal_phase().is_none() && !scene.hand_dealing());
+    let shown: Vec<usize> = scene.render.hits.iter().map(|hit| hit.index).collect();
+    assert!(shown.contains(&9) && shown.contains(&5) && !shown.contains(&4), "{shown:?}");
+    assert!(!scene.is_animating(), "held by {}", scene.anim_reason());
+}
+
+#[test]
 fn hand_starts_on_the_middle_card() {
     let mut scene = hand_scene();
     scene.reset_to_index(0, 20);

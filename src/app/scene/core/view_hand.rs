@@ -9,10 +9,10 @@ use crate::frontend::scene::hand::{
 use crate::frontend::scene::layout::{HexShape, Hit};
 use crate::frontend::scene::{Chrome, InstanceRaw};
 use crate::rendering::scene::atlas::AtlasMap;
-use crate::rendering::scene::{BACKDROP, BACKFACE, GHOST, PROJECTED, RIBBON_COLUMNS};
+use crate::rendering::scene::{BACKDROP, BACKFACE, GHOST, MUTED, PROJECTED, RIBBON_COLUMNS};
 
 use super::layout_helpers::{chrome_kind, color4};
-use super::model::{RebuildCtx, RebuildSinks, SceneCore};
+use super::model::{Face, Layout, RebuildCtx, RebuildSinks, RevealPhase, SceneCore};
 
 pub(super) struct Stage {
     pub(super) k: f32,
@@ -30,6 +30,18 @@ struct Draw {
     depth: f32,
     inst: InstanceRaw,
     hit: Option<Hit>,
+}
+
+struct Slat {
+    store: usize,
+    idx: usize,
+    slot: usize,
+    len: usize,
+    n: f32,
+    layouts: (Layout, Layout),
+    turn: f32,
+    turns: u32,
+    faces: [Face; 2],
 }
 
 impl SceneCore {
@@ -134,6 +146,9 @@ impl SceneCore {
             let len = hand::hand_len(offset, count, size);
             self.hand.shown = (0..len).map(|slot| ctx.filtered[offset + slot] as usize).collect();
             let push = self.hand_push();
+            let reveal = self.hand.reveal.as_ref().map(|reveal| {
+                ((reveal.from, reveal.to), reveal.turn, reveal.turns_done, reveal.faces)
+            });
             for slot in 0..len {
                 let idx = offset + slot;
                 let store = ctx.filtered[idx] as usize;
@@ -142,7 +157,10 @@ impl SceneCore {
                 let lift_t = self.hand_lift_t(idx);
                 let pose = self.hand_rest_pose(slot, len, push);
                 let opacity = entrance;
-                if self.card.flipped == Some(idx) {
+                if let Some((layouts, turn, turns, faces)) = reveal {
+                    let slat = Slat { store, idx, slot, len, n, layouts, turn, turns, faces };
+                    self.hand_slat(ctx, sinks, &mut draws, &stage, &pose, &slat, opacity);
+                } else if self.card.flipped == Some(idx) {
                     if let Some(hit) = self.hand_flipped(
                         ctx, sinks, &mut draws, &stage, store, idx, slot, n, &pose, opacity,
                     ) {
@@ -166,6 +184,7 @@ impl SceneCore {
                 }
             }
         }
+        self.hand_reveal_panel(ctx, &draws, cur_store);
         draws.sort_by(|a, b| a.depth.total_cmp(&b.depth));
         for draw in draws {
             if let Some(hit) = draw.hit {
@@ -207,14 +226,16 @@ impl SceneCore {
         stage: &Stage,
         columns: bool,
         shift: (f32, f32),
+        extent: (f32, f32),
     ) -> InstanceRaw {
+        let (hw, hh) = extent;
         let [cx, cy, _, _] = quad.bounds();
         let mut inst = self.body_instance(
             ctx,
             wanted,
             store,
-            [cx, cy, stage.hw, stage.hh],
-            [stage.radius; 4],
+            [cx, cy, hw, hh],
+            [stage.radius.min((hw.min(hh) - 1.0).max(0.0)); 4],
             stage.skew,
             0.0,
             true,
@@ -224,8 +245,8 @@ impl SceneCore {
             let [x, y, w, h] = inst.crop;
             let nw = w / CROP_ZOOM;
             let nh = h / CROP_ZOOM;
-            let sx = shift.0 / (stage.hw * 2.0).max(1.0) * nw;
-            let sy = shift.1 / (stage.hh * 2.0).max(1.0) * nh;
+            let sx = shift.0 / (hw * 2.0).max(1.0) * nw;
+            let sy = shift.1 / (hh * 2.0).max(1.0) * nh;
             inst.crop = [
                 (x + (w - nw) * 0.5 + sx).clamp(x, x + w - nw),
                 (y + (h - nh) * 0.5 + sy).clamp(y, y + h - nh),
@@ -297,6 +318,7 @@ impl SceneCore {
             stage,
             false,
             shift,
+            (stage.hw, stage.hh),
         );
         inst.params[2] = opacity;
         let prim = ctx.palette.primary;
@@ -397,8 +419,17 @@ impl SceneCore {
             }
             let locals = hand::ribbon_locals(cut, axis);
             if quad.facing() {
-                let mut inst =
-                    self.hand_quad(ctx, sinks.wanted, store, &quad, locals, stage, columns, shift);
+                let mut inst = self.hand_quad(
+                    ctx,
+                    sinks.wanted,
+                    store,
+                    &quad,
+                    locals,
+                    stage,
+                    columns,
+                    shift,
+                    (stage.hw, stage.hh),
+                );
                 inst.params[2] = opacity;
                 if seam > 0.001 {
                     inst.border = [1.0, 1.0, 1.0, 0.11 * seam];
@@ -412,8 +443,17 @@ impl SceneCore {
                     &hand::ribbon_corners(&mirrored, axis, stage.hw, stage.hh, pad_cross),
                 );
                 let locals = hand::ribbon_locals(&mirrored, axis);
-                let mut inst =
-                    self.hand_quad(ctx, sinks.wanted, store, &quad, locals, stage, columns, shift);
+                let mut inst = self.hand_quad(
+                    ctx,
+                    sinks.wanted,
+                    store,
+                    &quad,
+                    locals,
+                    stage,
+                    columns,
+                    shift,
+                    (stage.hw, stage.hh),
+                );
                 if inst.misc[0] == 0 {
                     inst =
                         Self::hand_plate(&quad, locals, stage, columns, plate_fill, opacity, seam);
@@ -429,6 +469,223 @@ impl SceneCore {
             }
         }
         (!quads.is_empty()).then(|| hand::union_bounds(&quads))
+    }
+
+    fn hand_reveal_panel(&mut self, ctx: &RebuildCtx<'_>, draws: &[Draw], cur_store: usize) {
+        let Some(reveal) = self.hand.reveal.as_ref() else { return };
+        let visible = reveal.faces[hand::reveal_face(reveal.turns_done, 0.0)];
+        let incoming = reveal.faces[((reveal.turns_done + 1) % 2) as usize];
+        let ss = self.xp.hand.speed_scale();
+        let f = (reveal.turn / hand::reveal_turn_end(reveal.len, ss).max(0.001)).clamp(0.0, 1.0);
+        let turning = reveal.phase == RevealPhase::Turning;
+        let is_back = |face: Face| matches!(face, Face::Back { .. });
+        let progress = if !turning && is_back(visible) {
+            1.0
+        } else if turning && is_back(incoming) {
+            0.74 + 0.26 * ((f - 0.75) / 0.25).clamp(0.0, 1.0)
+        } else if turning && is_back(visible) {
+            1.0 - f * 1.2
+        } else {
+            0.0
+        };
+        if progress < hand::FLIP_LAND_AT - 0.04 {
+            return;
+        }
+        let hits = draws.iter().filter_map(|draw| draw.hit.as_ref());
+        let (mut x0, mut y0, mut x1, mut y1) = (f32::MAX, f32::MAX, f32::MIN, f32::MIN);
+        for hit in hits {
+            x0 = x0.min(hit.cx - hit.hw);
+            y0 = y0.min(hit.cy - hit.hh);
+            x1 = x1.max(hit.cx + hit.hw);
+            y1 = y1.max(hit.cy + hit.hh);
+        }
+        if x1 <= x0 || y1 <= y0 {
+            return;
+        }
+        let (cx, cy, hw, hh) = ((x0 + x1) * 0.5, (y0 + y1) * 0.5, (x1 - x0) * 0.5, (y1 - y0) * 0.5);
+        self.card.pending_back = Some(
+            self.make_back_panel(ctx, cur_store, cx, cy, hw, hh, 0.0, 0.0, [0.0; 4], progress),
+        );
+    }
+
+    fn hand_slat(
+        &mut self,
+        ctx: &mut RebuildCtx<'_>,
+        sinks: &mut RebuildSinks<'_>,
+        draws: &mut Vec<Draw>,
+        stage: &Stage,
+        rest: &Pose,
+        slat: &Slat,
+        opacity: f32,
+    ) {
+        let hp = self.xp.hand;
+        let ss = hp.speed_scale();
+        let order = hand::reveal_order(slat.slot, slat.len, slat.turns);
+        let t = hand::reveal_turn(slat.turn, order, ss);
+        if t > 0.0 && t < 1.0 {
+            for (lag, alpha, blur) in hand::REVEAL_GHOST_LAG {
+                let lagged = hand::reveal_turn(slat.turn - lag * ss, order, ss);
+                if lagged <= 0.0 || (lagged - t).abs() < 1e-4 {
+                    continue;
+                }
+                if let Some((mut inst, quad, _)) =
+                    self.slat_instance(ctx, sinks.wanted, stage, rest, slat, lagged)
+                    && inst.misc[0] > 0
+                {
+                    inst.misc[3] |= GHOST;
+                    inst.flip[3] = blur;
+                    inst.border = [0.0; 4];
+                    inst.params[1] = 0.0;
+                    inst.params[2] = alpha * opacity;
+                    draws.push(Draw { depth: quad.depth, inst, hit: None });
+                }
+            }
+        }
+        let Some((mut inst, quad, index)) =
+            self.slat_instance(ctx, sinks.wanted, stage, rest, slat, t)
+        else {
+            return;
+        };
+        inst.params[2] = opacity;
+        let [cx, cy, hw, hh] = quad.bounds();
+        let hit = Hit {
+            index,
+            cx,
+            cy,
+            hw,
+            hh,
+            skew: 0.0,
+            edge_tilt: 0.0,
+            hex: false,
+            hex_shape: HexShape::Hexagon,
+            triangle_direction: 0,
+        };
+        draws.push(Draw { depth: quad.depth, inst, hit: Some(hit) });
+    }
+
+    fn slat_instance(
+        &mut self,
+        ctx: &mut RebuildCtx<'_>,
+        wanted: &mut HashSet<usize>,
+        stage: &Stage,
+        rest: &Pose,
+        slat: &Slat,
+        t: f32,
+    ) -> Option<(InstanceRaw, Quad, usize)> {
+        let (vw, vh) = stage.viewport;
+        let gap = hand::REVEAL_GAP * stage.k;
+        let row_frame = hand::reveal_frame(vw, vh, false);
+        let column_frame = hand::reveal_frame(vw, vh, true);
+        let fill = self.xp.hand.reveal_fill;
+        let card = (stage.hw, stage.hh);
+        let extent = |layout: Layout| match (layout, fill) {
+            (Layout::Fan, _) => card,
+            (Layout::Row, true) => hand::slat_half_extent(slat.len, row_frame, gap, false),
+            (Layout::Column, true) => hand::slat_half_extent(slat.len, column_frame, gap, true),
+            (Layout::Row, false) => hand::keep_extent(slat.len, card, row_frame, gap, false),
+            (Layout::Column, false) => hand::keep_extent(slat.len, card, column_frame, gap, true),
+        };
+        let layout_pose = |layout: Layout| match layout {
+            Layout::Fan => *rest,
+            Layout::Row => hand::row_pose(slat.n, extent(Layout::Row).0 * 2.0, gap),
+            Layout::Column => hand::column_pose(slat.n, extent(Layout::Column).0 * 2.0, gap),
+        };
+        let (from, to) = slat.layouts;
+        let travel = hand::EASE_REVEAL_TRAVEL.at(t);
+        let (pose, (hw, hh)) = if from == to {
+            (layout_pose(to), extent(to))
+        } else {
+            let (fw, fh) = extent(from);
+            let (tw, th) = extent(to);
+            (
+                Pose::mix(&layout_pose(from), &layout_pose(to), travel),
+                (fw + (tw - fw) * travel, fh + (th - fh) * travel),
+            )
+        };
+        let gather = match (from, to) {
+            (Layout::Fan, Layout::Fan) => 0.0,
+            (Layout::Fan, _) => t,
+            (_, Layout::Fan) => 1.0 - t,
+            _ => 1.0,
+        };
+        let dir = hand::reveal_dir(slat.slot, slat.turns);
+        let (turn, e) = hand::slat_turn_pose(t, dir, stage.k);
+        let m = self.hand_card_matrix(stage, &pose, slat.slot, 1.0)
+            * hand::rot(Y, 180.0 * slat.turns as f32 * dir)
+            * turn.matrix();
+        let quad = hand::project_quad(
+            &stage.cam,
+            &m,
+            &hand::card_corners(hw, hh, PAD + stage.skew.abs() * 0.5, PAD),
+        );
+        if !quad.visible(vw, vh) {
+            return None;
+        }
+        let quad = if quad.facing() { quad } else { quad.mirrored() };
+        let locals = hand::card_locals(hh, PAD);
+        let face = slat.faces[hand::reveal_face(slat.turns, e)];
+        let prim = ctx.palette.primary;
+        let depth_factor = 1.0 - 0.16 * slat.n.abs() * (1.0 - gather);
+        let shift = (stage.parallax.0 * depth_factor, stage.parallax.1 * depth_factor);
+        let n = slat.len as f32;
+        let (row_w, row_h) = {
+            let (rw, rh) = extent(Layout::Row);
+            (n * rw * 2.0 + (n - 1.0) * gap, rh * 2.0)
+        };
+        let (stack_w, stack_h) = {
+            let (cw, ch) = extent(Layout::Column);
+            (ch * 2.0, n * cw * 2.0 + (n - 1.0) * gap)
+        };
+        Some(match face {
+            Face::Card => {
+                let mut inst = self.hand_quad(
+                    ctx,
+                    wanted,
+                    slat.store,
+                    &quad,
+                    locals,
+                    stage,
+                    false,
+                    shift,
+                    (hw, hh),
+                );
+                inst.border = [prim.r, prim.g, prim.b, 0.5];
+                (inst, quad, slat.idx)
+            }
+            Face::Slice { store, column } | Face::Back { store, column } => {
+                let [cx, cy, _, _] = quad.bounds();
+                let mut inst = self.body_instance(
+                    ctx,
+                    wanted,
+                    store,
+                    [cx, cy, hw, hh],
+                    [stage.radius.min((hw.min(hh) - 1.0).max(0.0)); 4],
+                    stage.skew,
+                    0.0,
+                    true,
+                );
+                if column {
+                    inst.misc[0] = 3;
+                    inst.misc[1] = 0;
+                    inst.uv = [0.0, 0.0, 1.0, 1.0];
+                    inst.params[3] = 1.0;
+                    inst.crop = hand::column_crop(slat.slot, slat.len, stack_w, stack_h, gap);
+                } else if inst.misc[0] > 0 {
+                    inst.crop = hand::slice_crop(slat.slot, slat.len, row_w, row_h, gap);
+                }
+                inst.shape[1] = stage.skew.abs() * 0.5;
+                inst.misc[3] |= PROJECTED;
+                if matches!(face, Face::Back { .. }) {
+                    inst.misc[3] |= MUTED;
+                    let pv = ctx.palette.surface_variant;
+                    inst.fill = [pv.r, pv.g, pv.b, 1.0];
+                }
+                inst.border = [prim.r, prim.g, prim.b, 0.35];
+                inst.params[1] = 1.0;
+                set_quad(&mut inst, &quad, locals);
+                (inst, quad, self.current)
+            }
+        })
     }
 
     fn hand_flipped(
@@ -543,6 +800,7 @@ impl SceneCore {
             stage,
             false,
             (0.0, 0.0),
+            (stage.hw, stage.hh),
         );
         if inst.misc[0] == 0 {
             return;

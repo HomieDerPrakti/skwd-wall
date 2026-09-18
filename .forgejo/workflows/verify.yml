@@ -40,32 +40,16 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: liixini/skwd-deck
-          ref: 32592c0eec0a8324c6374e2b64be4a66b4225fc6
+          ref: 90cbe2c20638dda8f1835484543b5b21b559b12e
           path: suite/skwd-deck
           token: ${{ secrets.SKWD_SUITE_READ_TOKEN }}
           persist-credentials: false
-
-      - name: Check out layer-shell adapter
-        uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          repository: liixini/skwd-iced-layershell
-          ref: 07c4ce4cd539364eb8cf9b95b5d7d56d2e97b2f0
-          path: suite/skwd-iced-layershell
-          token: ${{ secrets.SKWD_SUITE_READ_TOKEN }}
-          persist-credentials: false
-
-      - name: Resolve the private adapter from its verified checkout
-        shell: bash
-        run: |
-          echo "GIT_CONFIG_COUNT=1" >> "$GITHUB_ENV"
-          echo "GIT_CONFIG_KEY_0=url.file://$GITHUB_WORKSPACE/suite/skwd-iced-layershell.insteadOf" >> "$GITHUB_ENV"
-          echo "GIT_CONFIG_VALUE_0=ssh://git@192.168.1.41:2222/liixini/skwd-iced-layershell.git" >> "$GITHUB_ENV"
 
       - name: Check out Lens contracts
         uses: https://code.forgejo.org/actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           repository: liixini/skwd-lens
-          ref: 20e8ddcfd9f1f45b3b18b1142f6d2170a1aa46b6
+          ref: e28740963668835ee45a28e197173e96d63a8f31
           path: suite/skwd-lens
           token: ${{ secrets.SKWD_SUITE_READ_TOKEN }}
           persist-credentials: false

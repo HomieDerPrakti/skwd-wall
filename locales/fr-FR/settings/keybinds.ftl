@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = Aperçu des vidéos
 keybind-select = Sélectionner, puis appliquer
 keybind-apply = Appliquer le fond d’écran
 keybind-flip = Retourner la carte pour les détails
+keybind-reveal = Retourner la main pour l’aperçu
 keybind-favourite = Mettre la carte en favori
 keybind-effects = Choisir les écrans
 keybind-studio = Studio d’effets

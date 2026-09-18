@@ -14,7 +14,7 @@ use crate::infrastructure::runtime::Wake;
 const DECODER_ENV: &str = "SKWD_LIVE_PREVIEW_DECODER";
 const THREADS_ENV: &str = "SKWD_LIVE_PREVIEW_THREADS";
 
-fn scanner_bin() -> PathBuf {
+pub(super) fn scanner_bin() -> PathBuf {
     std::env::current_exe()
         .ok()
         .and_then(|executable| {

@@ -278,6 +278,8 @@ settings-selector-hand-skew-label = Cisaillement
 settings-selector-hand-skew-desc = Déforme le contour de la carte en parallélogramme, en pixels de décalage horizontal.
 settings-selector-hand-backdrop-blur-label = Flou de l’arrière-plan
 settings-selector-hand-backdrop-blur-desc = Rayon de flou de l’arrière-plan, 100 = par défaut.
+settings-selector-hand-reveal-fill-label = L’aperçu remplit le cadre
+settings-selector-hand-reveal-fill-desc = Quand la main se retourne vers l’aperçu, les cartes s’étirent pour former une image en taille réelle. Désactivé, chaque carte garde sa largeur et sa hauteur, et la ligne est mise à l’échelle pour tenir.
 
 settings-selector-start-position-label = Position de départ
 settings-selector-start-position-desc = Ouvre au début, sur le dernier fond d’écran appliqué ou là où vous avez arrêté de parcourir. Utilise les filtres actuels.

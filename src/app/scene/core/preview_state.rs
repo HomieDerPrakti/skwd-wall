@@ -123,7 +123,11 @@ impl SceneCore {
     pub(super) fn manage_preview(&mut self, ctx: &mut RebuildCtx<'_>) -> bool {
         let before = self.preview_slot_idx();
         let now = self.motion.last_tick.unwrap_or_else(Instant::now);
-        let target = if self.preview_state.preview_enabled && !self.hidden() && !self.input_idle {
+        let target = if self.preview_state.preview_enabled
+            && !self.hidden()
+            && !self.input_idle
+            && !self.hand_tall_in_use()
+        {
             self.focused_video(ctx)
         } else {
             None

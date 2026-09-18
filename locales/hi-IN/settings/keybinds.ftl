@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = वीडियो का पूर्व�
 keybind-select = चुनें, फिर लागू करें
 keybind-apply = वॉलपेपर लागू करें
 keybind-flip = विवरण के लिए कार्ड पलटें
+keybind-reveal = पूर्वावलोकन के लिए हाथ पलटें
 keybind-favourite = कार्ड पसंदीदा करें
 keybind-effects = डिस्प्ले चुनें
 keybind-studio = प्रभाव स्टूडियो

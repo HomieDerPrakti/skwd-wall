@@ -292,3 +292,162 @@ fn mirrored_cut_lands_the_back_in_the_ribbon_slot() {
     assert!(close(flip(back.a0), outer.b0) && close(flip(back.a1), outer.b1));
     assert!(close(flip(back.b0), outer.a0) && close(flip(back.b1), outer.a1));
 }
+
+#[test]
+fn slats_tile_a_fixed_aspect_frame_whatever_the_count() {
+    let frame = reveal_frame(1440.0, 900.0, false);
+    assert!(close(frame.0 / frame.1, THUMB_ASPECT));
+    assert!(frame.0 <= 1440.0 * ROW_FIT + 0.5 && frame.1 <= 900.0 * COLUMN_FIT + 0.5);
+    assert!(close(frame.1, 900.0 * COLUMN_FIT), "height is the limit on a 16:10 stage");
+    let wide = reveal_frame(2560.0, 900.0, false);
+    assert!(close(wide.1, 900.0 * COLUMN_FIT));
+    let narrow = reveal_frame(1024.0, 900.0, false);
+    assert!(close(narrow.0, 1024.0 * ROW_FIT), "width is the limit on a narrow stage");
+    let tall = reveal_frame(1440.0, 900.0, true);
+    assert!(close(tall.0 / tall.1, TALL_ASPECT) && close(tall.1, 900.0 * COLUMN_FIT));
+    for len in [3usize, 5, 10, 16] {
+        let (hw, hh) = slat_half_extent(len, frame, REVEAL_GAP, false);
+        let total = len as f32 * hw * 2.0 + (len as f32 - 1.0) * REVEAL_GAP;
+        assert!(close(total, frame.0), "{len} slats span the frame width: {total}");
+        assert!(close(hh * 2.0, frame.1));
+        let edge = row_pose((len as f32 - 1.0) * 0.5, hw * 2.0, REVEAL_GAP);
+        assert!(close(edge.t[0] + hw, frame.0 * 0.5));
+        assert!(edge.rots[..edge.n].iter().all(|rot| rot.deg == 0.0));
+        let (chw, chh) = slat_half_extent(len, tall, REVEAL_GAP, true);
+        let stack = len as f32 * chw * 2.0 + (len as f32 - 1.0) * REVEAL_GAP;
+        assert!(close(stack, tall.1) && close(chh * 2.0, tall.0));
+        let bottom = column_pose((len as f32 - 1.0) * 0.5, chw * 2.0, REVEAL_GAP);
+        assert!(close(bottom.t[1] + chw, tall.1 * 0.5) && close(bottom.rots[1].deg, -90.0));
+    }
+    let five = slat_half_extent(5, frame, REVEAL_GAP, false);
+    let ten = slat_half_extent(10, frame, REVEAL_GAP, false);
+    assert!(ten.0 < five.0 && close(ten.1, five.1), "more cards means thinner slats, same height");
+}
+
+#[test]
+fn reveal_turns_stagger_slot_by_slot() {
+    let stagger = REVEAL_STAGGER_MS / 1000.0;
+    assert_eq!(reveal_turn(0.0, 0, 1.0), 0.0);
+    assert!(reveal_turn(stagger * 1.5, 0, 1.0) > 0.0);
+    assert_eq!(reveal_turn(stagger * 1.5, 2, 1.0), 0.0);
+    assert!(reveal_turn(stagger * 2.5, 2, 1.0) > 0.0);
+    let end = reveal_turn_end(5, 1.0);
+    assert!(close(end, (4.0 * REVEAL_STAGGER_MS + REVEAL_TURN_MS) / 1000.0));
+    for slot in 0..5 {
+        assert_eq!(reveal_turn(end, slot, 1.0), 1.0);
+    }
+    assert!(reveal_turn_end(5, 2.0) > end);
+    assert!(reveal_turn(end * 0.5, 4, 1.0) < reveal_turn(end * 0.5, 0, 1.0));
+}
+
+#[test]
+fn slats_lift_slap_past_flat_and_land_flat() {
+    let (start, e0) = slat_turn_pose(0.0, 1.0, 1.0);
+    assert_eq!(e0, 0.0);
+    assert!(close(start.t[2], 0.0) && close(start.rots[0].deg, 0.0) && close(start.s, 1.0));
+    let (mid, _) = slat_turn_pose(0.5, 1.0, 1.0);
+    assert!(mid.t[2] > 100.0 && mid.t[1] < 0.0, "lifts toward the camera: {mid:?}");
+    assert!(mid.rots[1].deg < 0.0 && mid.rots[2].deg > 0.0 && mid.s > 1.0);
+    let overshoot =
+        (1..100).map(|i| slat_turn_pose(i as f32 / 100.0, 1.0, 1.0).1).fold(0.0, f32::max);
+    assert!(overshoot > 1.02, "slaps past flat: {overshoot}");
+    let (end, e1) = slat_turn_pose(1.0, 1.0, 1.0);
+    assert_eq!(e1, 1.0);
+    assert!(close(end.rots[0].deg, 180.0) && close(end.t[2], 0.0) && close(end.s, 1.0));
+    let (mirror, _) = slat_turn_pose(0.5, -1.0, 1.0);
+    assert!(close(mirror.rots[0].deg, -mid.rots[0].deg));
+    assert_eq!(EASE_REVEAL_TRAVEL.at(0.0), 0.0);
+    assert_eq!(EASE_REVEAL_TRAVEL.at(1.0), 1.0);
+    assert!(EASE_REVEAL_TRAVEL.at(0.5) > 0.3 && EASE_REVEAL_TRAVEL.at(0.5) < 0.9);
+}
+
+#[test]
+fn reveal_sweeps_alternate_direction_and_spin() {
+    assert_eq!(reveal_order(0, 5, 0), 0);
+    assert_eq!(reveal_order(0, 5, 1), 4);
+    assert_eq!(reveal_order(4, 5, 1), 0);
+    assert_eq!(reveal_order(2, 5, 2), 2);
+    assert_eq!(reveal_dir(0, 0), 1.0);
+    assert_eq!(reveal_dir(1, 0), -1.0);
+    assert_eq!(reveal_dir(0, 1), -1.0);
+    assert_eq!(reveal_dir(1, 1), 1.0);
+}
+
+#[test]
+fn reveal_face_swaps_at_the_quarter_turn() {
+    assert_eq!(reveal_face(0, 0.0), 0);
+    assert_eq!(reveal_face(0, 0.49), 0);
+    assert_eq!(reveal_face(0, 0.51), 1);
+    assert_eq!(reveal_face(1, 0.0), 1);
+    assert_eq!(reveal_face(1, 0.51), 0);
+    assert_eq!(reveal_face(2, 0.0), 0);
+    assert_eq!(reveal_face(3, 0.6), 0);
+}
+
+#[test]
+fn slice_crops_tile_the_row_edge_to_edge() {
+    let len = 10;
+    let (row_w, row_h) = (1248.0, 702.0);
+    let gap = REVEAL_GAP;
+    let crops: Vec<[f32; 4]> =
+        (0..len).map(|slot| slice_crop(slot, len, row_w, row_h, gap)).collect();
+    assert!(close(crops[0][0], 0.0));
+    let last = crops[len - 1];
+    assert!(close(last[0] + last[2], 1.0));
+    for crop in &crops {
+        assert!(close(crop[1], 0.0) && close(crop[3], 1.0), "a 16:9 row crops nothing away");
+    }
+    for pair in crops.windows(2) {
+        let hole = pair[1][0] - (pair[0][0] + pair[0][2]);
+        assert!(close(hole, gap / row_w), "the picture continues across the gap: {hole}");
+    }
+    let strip = slice_crop(0, 10, 1752.0, 432.0, gap);
+    assert!(strip[1] > 0.2 && strip[3] < 0.6, "a card-sized row keeps a centred band: {strip:?}");
+    assert!(close(strip[0], 0.0));
+}
+
+#[test]
+fn mirrored_quad_faces_with_swapped_columns() {
+    let cam = Camera { d: 1700.0, origin: [720.0, 432.0], shift: [0.0, 0.0] };
+    let corners = card_corners(84.0, 216.0, 2.0, 2.0);
+    let back = project_quad(&cam, &rot(Y, 180.0), &corners);
+    assert!(!back.facing());
+    let front = back.mirrored();
+    assert!(front.facing());
+    assert!(front.pts[0][0] < front.pts[1][0]);
+    assert!(close(front.depth, back.depth));
+}
+
+#[test]
+fn column_crops_walk_the_rotated_tile_from_right_to_left() {
+    let len = 5;
+    let (stack_w, stack_h) = (395.0, 702.0);
+    let gap = REVEAL_GAP;
+    let crops: Vec<[f32; 4]> =
+        (0..len).map(|slot| column_crop(slot, len, stack_w, stack_h, gap)).collect();
+    assert!(close(crops[0][0] + crops[0][2], 1.0), "the top slat reads the right edge");
+    assert!(close(crops[len - 1][0], 0.0), "the bottom slat reads the left edge");
+    for crop in &crops {
+        assert!(close(crop[1], 0.0) && close(crop[3], 1.0));
+    }
+    for pair in crops.windows(2) {
+        assert!(close(pair[0][0] - (pair[1][0] + pair[1][2]), gap / stack_h));
+    }
+    let narrow = column_crop(0, 5, 200.0, 702.0, gap);
+    assert!(narrow[1] > 0.0 && narrow[3] < 1.0, "a narrow stack keeps a centred strip");
+}
+
+#[test]
+fn keep_mode_scales_whole_cards_to_fit_the_frame() {
+    let frame = reveal_frame(1440.0, 900.0, false);
+    let card = (84.0, 216.0);
+    let five = keep_extent(5, card, frame, REVEAL_GAP, false);
+    assert!(close(five.0, 84.0) && close(five.1, 216.0), "five cards already fit: {five:?}");
+    let ten = keep_extent(10, card, frame, REVEAL_GAP, false);
+    assert!(ten.0 < 84.0 && close(ten.1 / ten.0, 216.0 / 84.0), "same shape, smaller: {ten:?}");
+    assert!(close(10.0 * ten.0 * 2.0 + 9.0 * REVEAL_GAP, frame.0));
+    let tall = reveal_frame(1440.0, 900.0, true);
+    let stack = keep_extent(5, card, tall, REVEAL_GAP, true);
+    assert!(5.0 * stack.0 * 2.0 + 4.0 * REVEAL_GAP <= tall.1 + 0.5);
+    assert!(stack.1 * 2.0 <= tall.0 + 0.5);
+}

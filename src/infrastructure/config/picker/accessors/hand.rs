@@ -125,4 +125,8 @@ impl Config {
     pub fn hand_backdrop(&self) -> bool {
         self.flag_default_config(skwd_config::keys::selector::HAND_BACKDROP)
     }
+
+    pub fn hand_reveal_fill(&self) -> bool {
+        self.flag_default_config(skwd_config::keys::selector::HAND_REVEAL_FILL)
+    }
 }

@@ -51,7 +51,7 @@ impl KeyBindingGroup {
     }
 }
 
-pub const KEY_BINDINGS: [KeyBindingDescriptor; 38] = [
+pub const KEY_BINDINGS: [KeyBindingDescriptor; 39] = [
     KeyBindingDescriptor {
         action: InputAction::Select,
         path: skwd_config::keys::keybind::SELECT,
@@ -68,6 +68,12 @@ pub const KEY_BINDINGS: [KeyBindingDescriptor; 38] = [
         action: InputAction::Flip,
         path: skwd_config::keys::keybind::FLIP,
         title_key: "keybind-flip",
+        group: KeyBindingGroup::Wallpaper,
+    },
+    KeyBindingDescriptor {
+        action: InputAction::Reveal,
+        path: skwd_config::keys::keybind::REVEAL,
+        title_key: "keybind-reveal",
         group: KeyBindingGroup::Wallpaper,
     },
     KeyBindingDescriptor {

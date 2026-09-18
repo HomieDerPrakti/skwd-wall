@@ -262,11 +262,12 @@ fn hand_layout_params_follow_config() {
     assert_eq!(hand.moves, [true; 5]);
     assert_eq!(hand.axis, Axis::Rows);
     assert!(hand.ghosts && hand.backdrop && !hand.bob);
+    assert!(hand.reveal_fill);
     let cfg = Config::from_data(json!({
         "components": {"wallpaperSelector": {
             "displayMode": "hand", "handMove": "cascade", "handCut": "slant",
             "handCutVariance": "soft", "handRibbonAxis": "columns", "handRibbons": 8,
-            "handSpeed": 150, "handStageY": 20
+            "handSpeed": 150, "handStageY": 20, "handRevealFill": false
         }}
     }));
     let params = layout_params(&cfg);
@@ -279,6 +280,7 @@ fn hand_layout_params_follow_config() {
     assert_eq!(params.extra.hand.ribbons, 8);
     assert!((params.extra.hand.speed - 1.5).abs() < 1e-6);
     assert!((params.extra.hand.offset_y - 0.2).abs() < 1e-6);
+    assert!(!params.extra.hand.reveal_fill);
 }
 
 fn compact_app(selector: &serde_json::Value) -> App {

@@ -278,6 +278,8 @@ settings-selector-hand-skew-label = Sesgo
 settings-selector-hand-skew-desc = Inclina el contorno de la carta hasta un paralelogramo, en píxeles de desplazamiento horizontal.
 settings-selector-hand-backdrop-blur-label = Desenfoque del fondo
 settings-selector-hand-backdrop-blur-desc = Radio de desenfoque del fondo, 100 = predeterminado.
+settings-selector-hand-reveal-fill-label = La vista previa llena el marco
+settings-selector-hand-reveal-fill-desc = Al voltear la mano a la vista previa, las cartas se estiran para formar una imagen a tamaño completo. Desactivado conserva el ancho y alto de cada carta y ajusta la fila a la pantalla.
 
 settings-selector-start-position-label = Posición inicial
 settings-selector-start-position-desc = Abre al principio, en el último fondo aplicado o donde dejaste de navegar. Usa los filtros actuales.

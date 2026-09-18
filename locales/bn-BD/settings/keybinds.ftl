@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = ভিডিও প্রিভিউ
 keybind-select = নির্বাচন, তারপর প্রয়োগ
 keybind-apply = ওয়ালপেপার প্রয়োগ
 keybind-flip = বিবরণের জন্য কার্ড উল্টান
+keybind-reveal = প্রিভিউয়ের জন্য তাসের হাত উল্টান
 keybind-favourite = কার্ড পছন্দের করুন
 keybind-effects = ডিসপ্লে বেছে নিন
 keybind-studio = ইফেক্ট স্টুডিও

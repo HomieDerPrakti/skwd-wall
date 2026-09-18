@@ -278,6 +278,8 @@ settings-selector-hand-skew-label = ترچھا پن
 settings-selector-hand-skew-desc = کارڈ کے خاکے کو متوازی الاضلاع میں ترچھا کریں، افقی آفسیٹ کے پکسلز میں۔
 settings-selector-hand-backdrop-blur-label = پس منظر کا دھندلاپن
 settings-selector-hand-backdrop-blur-desc = پس منظر کے دھندلاپن کا نصف قطر، 100 = ڈیفالٹ۔
+settings-selector-hand-reveal-fill-label = پیش منظر فریم بھرتا ہے
+settings-selector-hand-reveal-fill-desc = جب پتے پلٹ کر پیش منظر دکھاتے ہیں تو کارڈ پھیل کر پوری جسامت کی تصویر بناتے ہیں۔ بند ہونے پر ہر کارڈ اپنی چوڑائی اور اونچائی برقرار رکھتا ہے اور قطار سمانے کے لیے چھوٹی بڑی ہوتی ہے۔
 
 settings-selector-start-position-label = ابتدائی پوزیشن
 settings-selector-start-position-desc = شروع سے، آخری لاگو کردہ وال پیپر پر، یا جہاں آپ نے براؤز کرنا چھوڑا تھا وہاں سے کھولیں۔ موجودہ فلٹر استعمال ہوتے ہیں۔

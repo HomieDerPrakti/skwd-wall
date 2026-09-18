@@ -24,6 +24,7 @@ settings-keybinds-mouse-hover-desc = Pré-visualizar vídeos
 keybind-select = Selecionar e depois aplicar
 keybind-apply = Aplicar papel de parede
 keybind-flip = Virar o cartão para ver detalhes
+keybind-reveal = Virar a mão para pré-visualizar
 keybind-favourite = Favoritar cartão
 keybind-effects = Escolher telas
 keybind-studio = Estúdio de efeitos

@@ -1320,6 +1320,7 @@ fn hand_mode_exposes_every_hand_knob_in_the_picker_page() {
         keys::selector::HAND_BACKDROP,
         keys::selector::HAND_BACKDROP_BLUR,
         keys::selector::HAND_BOB,
+        keys::selector::HAND_REVEAL_FILL,
     ] {
         assert!(paths.iter().any(|path| path == key), "missing {key}");
     }

@@ -278,6 +278,8 @@ settings-selector-hand-skew-label = তির্যকতা
 settings-selector-hand-skew-desc = কার্ডের আকৃতিকে সামান্তরিকে হেলায়, অনুভূমিক অফসেটের পিক্সেলে।
 settings-selector-hand-backdrop-blur-label = পটভূমির ঝাপসা
 settings-selector-hand-backdrop-blur-desc = পটভূমির ঝাপসার ব্যাসার্ধ, 100 = ডিফল্ট।
+settings-selector-hand-reveal-fill-label = প্রিভিউ ফ্রেম পূর্ণ করে
+settings-selector-hand-reveal-fill-desc = তাসের হাত উল্টে প্রিভিউ দেখালে কার্ডগুলো প্রসারিত হয়ে পূর্ণ আকারের ছবি তৈরি করে। বন্ধ থাকলে প্রতিটি কার্ড নিজের প্রস্থ ও উচ্চতা রাখে এবং সারিটি জায়গামতো আঁটতে আকার বদলায়।
 
 settings-selector-start-position-label = শুরুর অবস্থান
 settings-selector-start-position-desc = শুরুতে, সর্বশেষ প্রয়োগ করা ওয়ালপেপারে, বা যেখানে ব্রাউজ থামিয়েছিলেন সেখানে খোলে। বর্তমান ফিল্টার ব্যবহার করে।

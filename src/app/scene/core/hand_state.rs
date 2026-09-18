@@ -6,9 +6,13 @@ use crate::frontend::scene::hand::{
 };
 use crate::frontend::scene::layout::Mode;
 
-use super::model::{CardAnim, DealPhase, HandDeal, RebuildCtx, SceneCore};
+use super::model::{
+    CardAnim, DealPhase, Face, HandDeal, Layout, RebuildCtx, Reveal, RevealPhase, SceneCore,
+};
 
 const FLIP_KICK: f32 = 260.0;
+const REVEAL_KICK: f32 = 300.0;
+const SLAT_KICK: f32 = 90.0;
 const DEAL_KICK_Y: f32 = 620.0;
 const DEAL_KICK_X: f32 = 280.0;
 const DRAG_GAIN_X: f32 = 0.34;
@@ -83,7 +87,8 @@ impl SceneCore {
             self.hand.rig_y.retarget(ty);
         }
         let motion_ms = self.motion_ms(MotionTier::Fast);
-        let hovered = if self.hand.deal.is_some() { None } else { hit };
+        let hovered =
+            if self.hand.deal.is_some() || self.hand.reveal.is_some() { None } else { hit };
         for (idx, spring) in &mut self.hand.lift {
             if Some(*idx) != hovered {
                 spring.retarget(0.0);
@@ -114,6 +119,12 @@ impl SceneCore {
         let len = hand::hand_len(self.hand.offset, count, size);
         let inside = idx >= self.hand.offset && idx < self.hand.offset + len;
         if inside && self.hand.deal.is_none() {
+            if self.hand.reveal.is_some() {
+                let old = self.current;
+                self.card.selection.insert(old, self.motion.profile.override_spring(0.0, 1.0));
+                self.card.selection.insert(idx, self.motion.profile.override_spring(1.0, 1.0));
+                return;
+            }
             let motion_ms = self.motion_ms(MotionTier::Standard);
             let old = self.current;
             let mut off = self
@@ -134,6 +145,14 @@ impl SceneCore {
             return;
         }
         let new_offset = hand::hand_window(idx, count, size);
+        if self.hand.reveal.is_some() {
+            let old = self.current;
+            self.card.selection.insert(old, self.motion.profile.override_spring(0.0, 1.0));
+            self.card.selection.insert(idx, self.motion.profile.override_spring(1.0, 1.0));
+            self.hand.offset = new_offset;
+            self.motion.needs_frame = true;
+            return;
+        }
         self.current = idx;
         self.hand_deal(new_offset);
     }
@@ -231,6 +250,7 @@ impl SceneCore {
         };
         let end = Self::deal_end(&cards) + SWAP_GAP_MS * ss / 1000.0;
         self.hand.deal = Some(HandDeal { phase: DealPhase::Out, t: 0.0, mv, cards, end });
+        self.hand.reveal = None;
         self.hand.offset = new_offset;
         self.card.selection.clear();
         self.hand.lift.clear();
@@ -338,6 +358,143 @@ impl SceneCore {
             }
         }
         self.hand_flip_clock(step);
+        self.hand_reveal_clock(ctx, step);
+    }
+
+    pub fn hand_reveal_toggle(&mut self) {
+        let opening = self.hand.reveal.as_ref().is_none_or(|reveal| !reveal.open);
+        if !opening && self.card.flipped.is_some() {
+            self.close_flip();
+        }
+        self.hand.rig_y.v += if opening { REVEAL_KICK } else { -REVEAL_KICK };
+        self.hand.rig_x.v -= REVEAL_KICK * 0.4;
+        for spring in self.card.selection.values_mut() {
+            spring.snap(spring.target);
+        }
+        match self.hand.reveal.as_mut() {
+            None => {
+                if self.card.flipped.is_some() {
+                    self.close_flip();
+                }
+                self.hand.lift.clear();
+                self.hand.reveal = Some(Reveal {
+                    open: true,
+                    phase: RevealPhase::Held,
+                    from: Layout::Fan,
+                    to: Layout::Fan,
+                    turn: 0.0,
+                    turns_done: 0,
+                    faces: [Face::Card; 2],
+                    len: self.hand.shown.len(),
+                });
+            }
+            Some(reveal) => reveal.open = !reveal.open,
+        }
+        self.motion.needs_frame = true;
+    }
+
+    pub fn hand_reveal_close(&mut self) {
+        if let Some(reveal) = self.hand.reveal.as_mut() {
+            reveal.open = false;
+            self.motion.needs_frame = true;
+        }
+    }
+
+    pub fn hand_reveal_open(&self) -> bool {
+        self.hand.reveal.as_ref().is_some_and(|reveal| reveal.open)
+    }
+
+    fn hand_reveal_clock(&mut self, ctx: &RebuildCtx<'_>, step: f32) {
+        let ss = self.xp.hand.speed_scale();
+        let cur = ctx.filtered.get(self.current).map(|&store| store as usize);
+        let near_ready = cur.filter(|&store| {
+            ctx.atlas.as_ref().is_some_and(|atlas| atlas.near.ready(store).is_some())
+        });
+        let tall = cur.is_some_and(|store| ctx.catalog.items[store].is_tall());
+        let column = tall && self.hand.tall_ready == cur;
+        let cur_ready = if tall && !column {
+            near_ready.filter(|&store| self.hand.tall_failed == Some(store))
+        } else {
+            near_ready
+        };
+        let details = self.card.flipped == Some(self.current) && self.card.flip.target > 0.5;
+        let Some(reveal) = self.hand.reveal.as_mut() else { return };
+        if reveal.phase == RevealPhase::Turning {
+            reveal.turn += step;
+            if reveal.turn < hand::reveal_turn_end(reveal.len, ss) {
+                return;
+            }
+            reveal.turns_done += 1;
+            reveal.turn = 0.0;
+            reveal.phase = RevealPhase::Held;
+            reveal.from = reveal.to;
+            if reveal.to == Layout::Fan && !reveal.open {
+                self.hand.reveal = None;
+                return;
+            }
+        }
+        let visible = reveal.faces[hand::reveal_face(reveal.turns_done, 0.0)];
+        let (incoming, to) = if reveal.open && details {
+            let store = cur_ready.or(cur).unwrap_or(0);
+            let back = Face::Back { store, column: column && cur_ready.is_some() };
+            if visible == back { (None, reveal.to) } else { (Some(back), reveal.to) }
+        } else if reveal.open {
+            match cur_ready {
+                Some(store) if visible != (Face::Slice { store, column }) => (
+                    Some(Face::Slice { store, column }),
+                    if column { Layout::Column } else { Layout::Row },
+                ),
+                _ => (None, reveal.to),
+            }
+        } else if reveal.turns_done == 0 {
+            self.hand.reveal = None;
+            return;
+        } else {
+            (Some(Face::Card), Layout::Fan)
+        };
+        if let Some(face) = incoming {
+            reveal.faces[((reveal.turns_done + 1) % 2) as usize] = face;
+            reveal.len = self.hand.shown.len().max(1);
+            reveal.turn = 0.0;
+            reveal.phase = RevealPhase::Turning;
+            reveal.to = to;
+            let dir = hand::reveal_dir(0, reveal.turns_done);
+            self.hand.rig_y.v += dir * SLAT_KICK;
+            self.hand.rig_x.v += SLAT_KICK * 0.5;
+        }
+    }
+
+    pub fn tall_ready(&mut self, store: usize) {
+        self.hand.tall_ready = Some(store);
+        self.motion.needs_frame = true;
+    }
+
+    pub fn tall_failed(&mut self, store: usize) {
+        self.hand.tall_failed = Some(store);
+        self.motion.needs_frame = true;
+    }
+
+    pub fn tall_needs(&mut self, store: usize) -> bool {
+        let wanted = self.mode == Mode::Hand
+            && self.hand.reveal.as_ref().is_some_and(|reveal| reveal.open)
+            && self.hand.tall_ready != Some(store)
+            && self.hand.tall_failed != Some(store)
+            && self.hand.tall_requested != Some(store);
+        if wanted {
+            self.hand.tall_requested = Some(store);
+        }
+        wanted
+    }
+
+    pub(super) fn hand_tall_in_use(&self) -> bool {
+        self.mode == Mode::Hand
+            && self.hand.reveal.as_ref().is_some_and(|reveal| {
+                reveal.faces.iter().any(|face| matches!(face, Face::Slice { column: true, .. }))
+            })
+    }
+
+    fn hand_reveal_running(&self) -> bool {
+        self.hand.reveal.as_ref().is_some_and(|reveal| reveal.phase != RevealPhase::Held)
     }
 
     pub(super) fn hand_flip_begin(&mut self, closing: bool) {
@@ -393,6 +550,7 @@ impl SceneCore {
         self.mode == Mode::Hand
             && (self.hand.deal.is_some()
                 || self.hand_flip_running()
+                || self.hand_reveal_running()
                 || !self.hand.backdrop_fade.settled()
                 || !self.hand.rig_x.settled()
                 || !self.hand.rig_y.settled()
@@ -408,6 +566,8 @@ impl SceneCore {
             Some("hand_deal")
         } else if self.hand_flip_running() {
             Some("hand_flip")
+        } else if self.hand_reveal_running() {
+            Some("hand_reveal")
         } else if !self.hand.backdrop_fade.settled() {
             Some("hand_backdrop")
         } else if !self.hand.rig_x.settled() || !self.hand.rig_y.settled() {
@@ -452,6 +612,7 @@ impl SceneCore {
     pub(super) fn hand_reset(&mut self, count: usize) {
         self.hand_start_middle(count);
         self.hand.deal = None;
+        self.hand.reveal = None;
         self.hand.lift.clear();
         self.hand.drag = None;
         self.motion.needs_frame = true;
@@ -461,6 +622,16 @@ impl SceneCore {
         if pos <= self.hand.offset && self.hand.offset > 0 {
             self.hand.offset += 1;
         }
+    }
+
+    #[cfg(test)]
+    pub(super) fn hand_reveal_phase(
+        &self,
+    ) -> Option<(RevealPhase, u32, [Face; 2], (Layout, Layout))> {
+        self.hand
+            .reveal
+            .as_ref()
+            .map(|reveal| (reveal.phase, reveal.turns_done, reveal.faces, (reveal.from, reveal.to)))
     }
 
     #[cfg(test)]

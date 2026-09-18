@@ -77,7 +77,7 @@ impl App {
             mark_decoded(atlas, &mut self.scene, decoded.store_idx, decoded.tier);
         }
         if !drained.failed.is_empty() {
-            release_failed(atlas, &drained.failed);
+            release_failed(atlas, &mut self.scene, &drained.failed);
         }
     }
 
@@ -100,7 +100,7 @@ impl App {
             mark_decoded(atlas, &mut wall.scene, decoded.store_idx, decoded.tier);
         }
         if !drained.failed.is_empty() {
-            release_failed(atlas, &drained.failed);
+            release_failed(atlas, &mut wall.scene, &drained.failed);
         }
         if !drained.failed.is_empty() || count > 0 {
             wall.chrome_cache.clear();
@@ -114,6 +114,11 @@ fn mark_decoded(
     index: usize,
     tier: u32,
 ) {
+    if tier == 3 {
+        scene.tall_ready(index);
+        scene.touch();
+        return;
+    }
     if tier != 1 {
         atlas.far.mark_ready(index);
         scene.touch();
@@ -127,9 +132,15 @@ fn mark_decoded(
     }
 }
 
-fn release_failed(atlas: &mut AtlasMap, failed: &[DecodeFailed]) {
+fn release_failed(
+    atlas: &mut AtlasMap,
+    scene: &mut crate::app::scene::SceneCore,
+    failed: &[DecodeFailed],
+) {
     for entry in failed {
-        if entry.tier == 1 {
+        if entry.tier == 3 {
+            scene.tall_failed(entry.store_idx);
+        } else if entry.tier == 1 {
             atlas.near.release(entry.store_idx);
             atlas.near_failed.insert(entry.store_idx);
         } else {

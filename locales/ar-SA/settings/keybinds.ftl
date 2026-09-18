@@ -23,6 +23,7 @@ settings-keybinds-mouse-hover-desc = معاينة الفيديو
 keybind-select = تحديد ثم تطبيق
 keybind-apply = تطبيق الخلفية
 keybind-flip = قلب البطاقة للتفاصيل
+keybind-reveal = قلب اليد للمعاينة
 keybind-favourite = تفضيل البطاقة
 keybind-effects = اختيار الشاشات
 keybind-studio = استوديو التأثيرات

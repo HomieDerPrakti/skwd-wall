@@ -1011,6 +1011,35 @@ fn hand_right_click_flips_and_esc_closes() {
 }
 
 #[test]
+fn hand_v_key_reveals_and_esc_folds_the_row() {
+    let (mut app, mut now) = hand_app(8);
+    let press = |app: &mut App, key: &str| {
+        let _ = update(
+            app,
+            Message::KeyPressed(
+                keyboard::Key::Character(key.into()),
+                keyboard::Modifiers::default(),
+            ),
+        );
+    };
+    press(&mut app, "v");
+    assert!(app.scene.hand_reveal_open());
+    tick_frames(&mut app, &mut now, 20);
+    assert!(app.scene.is_animating());
+    press(&mut app, "v");
+    assert!(!app.scene.hand_reveal_open());
+    tick_frames(&mut app, &mut now, 200);
+    assert!(!app.scene.is_animating());
+    press(&mut app, "v");
+    assert!(app.scene.hand_reveal_open());
+    let _ = update(&mut app, Message::Exit);
+    assert!(!app.scene.hand_reveal_open(), "escape folds the row instead of quitting");
+    let _ = update(&mut app, Message::ToggleSettings);
+    press(&mut app, "v");
+    assert!(!app.scene.hand_reveal_open(), "typing in settings never reaches the picker");
+}
+
+#[test]
 fn hand_wheel_past_edge_deals_next_hand() {
     let (mut app, mut now) = hand_app(12);
     for _ in 0..4 {

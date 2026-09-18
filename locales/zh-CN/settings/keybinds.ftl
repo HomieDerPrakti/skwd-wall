@@ -24,6 +24,7 @@ settings-keybinds-mouse-hover-desc = 预览视频
 keybind-select = 选择，然后应用
 keybind-apply = 应用壁纸
 keybind-flip = 翻转卡片查看详细信息
+keybind-reveal = 翻转手牌以预览
 keybind-favourite = 收藏卡片
 keybind-effects = 选择显示器
 keybind-studio = 效果工作室

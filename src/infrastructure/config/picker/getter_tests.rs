@@ -506,6 +506,8 @@ fn hand_getters_default_and_clamp() {
     assert!(def.hand_ghosts());
     assert!(!def.hand_bob());
     assert!(def.hand_backdrop());
+    assert!(def.hand_reveal_fill());
+    assert!(!sel(json!({"handRevealFill": false})).hand_reveal_fill());
 
     let wild = sel(json!({
         "handCount": 40, "handRibbons": 0, "handSpeed": 5, "handPerspective": 10,

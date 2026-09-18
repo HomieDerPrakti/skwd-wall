@@ -28,6 +28,14 @@ pub const TILT_X_DEG: f32 = 4.5;
 pub const TILT_Y_DEG: f32 = 6.0;
 pub const RELAX_WINDOW: (f32, f32) = (0.3, 0.68);
 pub const FLIP_LAND_AT: f32 = 0.72;
+pub const REVEAL_TURN_MS: f32 = 440.0;
+pub const REVEAL_STAGGER_MS: f32 = 55.0;
+pub const REVEAL_GHOST_LAG: [(f32, f32, f32); 2] = [(0.05, 0.42, 0.7), (0.1, 0.24, 1.3)];
+pub const REVEAL_GAP: f32 = 8.0;
+pub const THUMB_ASPECT: f32 = 16.0 / 9.0;
+pub const ROW_FIT: f32 = 0.92;
+pub const COLUMN_FIT: f32 = 0.78;
+pub const TALL_ASPECT: f32 = 9.0 / 16.0;
 
 pub const X: [f32; 3] = [1.0, 0.0, 0.0];
 pub const Y: [f32; 3] = [0.0, 1.0, 0.0];
@@ -95,6 +103,7 @@ pub struct HandParams {
     pub ghosts: bool,
     pub bob: bool,
     pub backdrop: bool,
+    pub reveal_fill: bool,
 }
 
 impl Default for HandParams {
@@ -124,6 +133,7 @@ impl Default for HandParams {
             ghosts: true,
             bob: false,
             backdrop: true,
+            reveal_fill: true,
         }
     }
 }
@@ -154,6 +164,7 @@ impl HandParams {
         self.ghosts = target.ghosts;
         self.bob = target.bob;
         self.backdrop = target.backdrop;
+        self.reveal_fill = target.reveal_fill;
     }
 
     pub fn settled_to(&self, target: &Self) -> bool {
@@ -181,6 +192,7 @@ impl HandParams {
             && self.ghosts == target.ghosts
             && self.bob == target.bob
             && self.backdrop == target.backdrop
+            && self.reveal_fill == target.reveal_fill
     }
 
     pub fn speed_scale(&self) -> f32 {
@@ -228,6 +240,8 @@ pub const EASE_FLIP_LIFT: Bezier = Bezier(0.38, 0.02, 0.28, 1.0);
 pub const EASE_FLIP_LAND: Bezier = Bezier(0.2, 1.12, 0.3, 1.0);
 pub const EASE_FLIP_CLOSE: Bezier = Bezier(0.2, 1.14, 0.3, 1.0);
 pub const EASE_TWIST: Bezier = Bezier(0.34, 1.36, 0.32, 1.0);
+pub const EASE_REVEAL_TRAVEL: Bezier = Bezier(0.3, 0.0, 0.25, 1.08);
+pub const EASE_REVEAL_TURN: Bezier = Bezier(0.36, 0.0, 0.2, 1.24);
 #[cfg(test)]
 pub const EASE_LINEAR: Bezier = Bezier(0.25, 0.25, 0.75, 0.75);
 
@@ -394,6 +408,111 @@ pub fn fan_pose(n: f32, fan: &Fan, k: f32, push: f32, lift: f32, zback: f32, s: 
         &[Rot::new(Y, n * -fan.angle), Rot::new(Z, n * fan.roll)],
         s,
     )
+}
+
+pub fn reveal_frame(viewport_width: f32, viewport_height: f32, tall: bool) -> (f32, f32) {
+    let aspect = if tall { TALL_ASPECT } else { THUMB_ASPECT };
+    let w = (viewport_width * ROW_FIT).min(viewport_height * COLUMN_FIT * aspect);
+    (w, w / aspect)
+}
+
+pub fn slat_half_extent(len: usize, frame: (f32, f32), gap: f32, tall: bool) -> (f32, f32) {
+    let len = len.max(1) as f32;
+    if tall {
+        let slat_h = (frame.1 - (len - 1.0) * gap) / len;
+        (slat_h * 0.5, frame.0 * 0.5)
+    } else {
+        let slat_w = (frame.0 - (len - 1.0) * gap) / len;
+        (slat_w * 0.5, frame.1 * 0.5)
+    }
+}
+
+pub fn row_pose(n: f32, slat_w: f32, gap: f32) -> Pose {
+    Pose::new([n * (slat_w + gap), 0.0, 0.0], &[Rot::new(Y, 0.0), Rot::new(Z, 0.0)], 1.0)
+}
+
+pub fn column_pose(n: f32, slat_h: f32, gap: f32) -> Pose {
+    Pose::new([0.0, n * (slat_h + gap), 0.0], &[Rot::new(Y, 0.0), Rot::new(Z, -90.0)], 1.0)
+}
+
+fn cover(tile_aspect: f32, box_aspect: f32) -> (f32, f32, f32, f32) {
+    if box_aspect >= tile_aspect {
+        let h = tile_aspect / box_aspect;
+        (0.0, (1.0 - h) * 0.5, 1.0, h)
+    } else {
+        let w = box_aspect / tile_aspect;
+        ((1.0 - w) * 0.5, 0.0, w, 1.0)
+    }
+}
+
+pub fn slice_crop(slot: usize, len: usize, row_w: f32, row_h: f32, gap: f32) -> [f32; 4] {
+    let len = len.max(1);
+    let row_w = row_w.max(1.0);
+    let (x0, y0, w, h) = cover(THUMB_ASPECT, row_w / row_h.max(1.0));
+    let band = (row_w - (len as f32 - 1.0) * gap) / len as f32;
+    let start = slot.min(len - 1) as f32 * (band + gap) / row_w;
+    [x0 + w * start, y0, w * band / row_w, h]
+}
+
+pub fn column_crop(slot: usize, len: usize, stack_w: f32, stack_h: f32, gap: f32) -> [f32; 4] {
+    let len = len.max(1);
+    let stack_h = stack_h.max(1.0);
+    let (u0, v0, uw, vh) = cover(TALL_ASPECT, stack_w.max(1.0) / stack_h);
+    let band = (stack_h - (len as f32 - 1.0) * gap) / len as f32;
+    let v = v0 + vh * slot.min(len - 1) as f32 * (band + gap) / stack_h;
+    let bv = vh * band / stack_h;
+    [1.0 - v - bv, u0, bv, uw]
+}
+
+pub fn keep_extent(
+    len: usize,
+    card: (f32, f32),
+    frame: (f32, f32),
+    gap: f32,
+    tall: bool,
+) -> (f32, f32) {
+    let len = len.max(1) as f32;
+    let (hw, hh) = card;
+    let along = (len * hw * 2.0).max(1.0);
+    let (limit_along, limit_cross) = if tall { (frame.1, frame.0) } else { (frame.0, frame.1) };
+    let fit = ((limit_along - (len - 1.0) * gap) / along).min(limit_cross / (hh * 2.0).max(1.0));
+    let fit = fit.min(1.0);
+    (hw * fit, hh * fit)
+}
+
+pub fn reveal_turn(clock_s: f32, order: usize, speed_scale: f32) -> f32 {
+    let delay = order as f32 * REVEAL_STAGGER_MS * speed_scale / 1000.0;
+    let dur = REVEAL_TURN_MS * speed_scale / 1000.0;
+    ((clock_s - delay) / dur).clamp(0.0, 1.0)
+}
+
+pub fn reveal_order(slot: usize, len: usize, turns_done: u32) -> usize {
+    if turns_done.is_multiple_of(2) { slot } else { len.saturating_sub(1).saturating_sub(slot) }
+}
+
+pub fn reveal_dir(slot: usize, turns_done: u32) -> f32 {
+    if (slot as u32 + turns_done).is_multiple_of(2) { 1.0 } else { -1.0 }
+}
+
+pub fn slat_turn_pose(t: f32, dir: f32, k: f32) -> (Pose, f32) {
+    let t = t.clamp(0.0, 1.0);
+    let e = EASE_REVEAL_TURN.at(t);
+    let s = (t * std::f32::consts::PI).sin();
+    let pose = Pose::new(
+        [0.0, -46.0 * k * s, 150.0 * k * s],
+        &[Rot::new(Y, dir * 180.0 * e), Rot::new(X, dir * -14.0 * s), Rot::new(Z, dir * 9.0 * s)],
+        1.0 + 0.07 * s,
+    );
+    (pose, e)
+}
+
+pub fn reveal_turn_end(len: usize, speed_scale: f32) -> f32 {
+    (len.saturating_sub(1) as f32 * REVEAL_STAGGER_MS + REVEAL_TURN_MS) * speed_scale / 1000.0
+}
+
+pub fn reveal_face(turns_done: u32, t: f32) -> usize {
+    let angle = 180.0 * (turns_done as f32 + t.clamp(0.0, 1.0));
+    (((angle + 90.0) / 180.0).floor() as u32 % 2) as usize
 }
 
 pub fn sel_pose(k: f32) -> Pose {
@@ -742,6 +861,11 @@ pub fn project_quad(cam: &Camera, m: &Mat4, corners: &[[f32; 3]; 4]) -> Quad {
 }
 
 impl Quad {
+    pub fn mirrored(&self) -> Quad {
+        let [tl, tr, br, bl] = self.pts;
+        Quad { pts: [tr, tl, bl, br], depth: self.depth }
+    }
+
     pub fn facing(&self) -> bool {
         let [tl, tr, _, bl] = self.pts;
         let ax = tr[0] - tl[0];
