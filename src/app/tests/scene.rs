@@ -171,7 +171,7 @@ fn scene_props_load_and_write() {
     }));
 
     app.on_result(
-        Pending::SceneProperties { we_id: "scene-42".into() },
+        Pending::SceneProperties { we_id: "scene-42".into(), revision: 0, writes: Vec::new() },
         &json!({
             "we_id": "scene-42",
             "properties": [{

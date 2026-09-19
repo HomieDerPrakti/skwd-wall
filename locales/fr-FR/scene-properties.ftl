@@ -4,7 +4,8 @@ scene-props-reset = Restaurer les valeurs par défaut
 scene-props-loading = Lecture des propriétés de la scène…
 scene-props-empty = Cette scène ne publie aucune propriété réglable.
 scene-props-unsupported = Non réglable ici
-scene-props-changed = ••
 scene-props-default = Valeur par défaut de l'auteur : { $value }
 scene-props-on = Activé
 scene-props-off = Désactivé
+
+scene-props-scheme-colour = Couleur du thème

@@ -4,7 +4,8 @@ scene-props-reset = Восстановить значения по умолча�
 scene-props-loading = Чтение свойств сцены…
 scene-props-empty = Эта сцена не предоставляет настраиваемых свойств.
 scene-props-unsupported = Здесь не настраивается
-scene-props-changed = ••
 scene-props-default = По умолчанию у автора: { $value }
 scene-props-on = Вкл.
 scene-props-off = Выкл.
+
+scene-props-scheme-colour = Цвет схемы

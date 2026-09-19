@@ -4,7 +4,8 @@ scene-props-reset = استعادة الافتراضيات
 scene-props-loading = جارٍ قراءة خصائص المشهد…
 scene-props-empty = لا ينشر هذا المشهد أي خصائص قابلة للتعديل.
 scene-props-unsupported = غير قابل للتعديل هنا
-scene-props-changed = ••
 scene-props-default = افتراضي المؤلف: { $value }
 scene-props-on = تشغيل
 scene-props-off = إيقاف
+
+scene-props-scheme-colour = لون المخطط

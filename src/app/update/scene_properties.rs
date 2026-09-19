@@ -32,7 +32,7 @@ impl App {
         self.call_tracked(
             wall_proto::rpc::WALL_WE_PROPERTIES,
             json!({ "we_id": we_id }),
-            Pending::SceneProperties { we_id: we_id.to_string() },
+            Pending::SceneProperties { we_id: we_id.to_string(), revision: 0, writes: Vec::new() },
         );
     }
 
@@ -43,10 +43,11 @@ impl App {
         let we_id = panel.we_id.clone();
         let encoded = crate::infrastructure::scene_properties::encode(&value);
         panel.set_local(name, value);
+        let revision = panel.revision;
         self.call_tracked(
             wall_proto::rpc::WALL_SET_WE_PROPERTY,
             json!({ "we_id": we_id, "name": name, "value": encoded }),
-            Pending::SceneProperties { we_id },
+            Pending::SceneProperties { we_id, revision, writes: vec![name.to_string()] },
         );
         self.retick();
     }
@@ -54,9 +55,11 @@ impl App {
     pub(in crate::app) fn on_scene_properties(
         &mut self,
         result: crate::contracts::daemon::ScenePropertiesResult,
+        revision: u64,
+        writes: &[String],
     ) {
         if let Some(panel) = self.panels.scene_properties.as_mut() {
-            panel.accept(&result.we_id, result.rows);
+            panel.accept(&result.we_id, revision, writes, result.rows);
         }
         self.retick();
     }
@@ -97,11 +100,22 @@ pub(super) fn update(app: &mut App, message: ScenePropMsg) {
                 .panels
                 .scene_properties
                 .as_ref()
-                .and_then(|panel| panel.row(&name).map(|row| row.value.number()))
+                .and_then(|panel| panel.row(&name).map(|row| row.value.clone()))
             else {
                 return;
             };
-            app.write_scene_property(&name, ScenePropertyValue::Number(value));
+            app.write_scene_property(&name, value);
+        }
+        ScenePropMsg::ColourSlide(name, channel, value) => {
+            if let Some(panel) = app.panels.scene_properties.as_mut()
+                && let Some(mut colour) = panel.row(&name).and_then(|row| row.value.colour())
+                && let Some(component) = colour.get_mut(channel)
+                && value.is_finite()
+            {
+                *component = value.clamp(0.0, 1.0) as f32;
+                panel.set_local(&name, ScenePropertyValue::Vector(colour.to_vec()));
+            }
+            app.retick();
         }
         ScenePropMsg::ColourInput(name, text) => {
             if let Some(panel) = app.panels.scene_properties.as_mut() {
@@ -124,14 +138,17 @@ pub(super) fn update(app: &mut App, message: ScenePropMsg) {
             app.write_scene_property(&name, ScenePropertyValue::Vector(parts));
         }
         ScenePropMsg::Reset => {
-            let Some(we_id) = app.panels.scene_properties.as_ref().map(|panel| panel.we_id.clone())
-            else {
+            let Some(panel) = app.panels.scene_properties.as_mut() else {
                 return;
             };
+            panel.reset_local();
+            let we_id = panel.we_id.clone();
+            let revision = panel.revision;
+            let writes = panel.rows.iter().map(|row| row.name.clone()).collect();
             app.call_tracked(
                 wall_proto::rpc::WALL_SET_WE_PROPERTY,
                 json!({ "we_id": we_id, "reset": true }),
-                Pending::SceneProperties { we_id },
+                Pending::SceneProperties { we_id, revision, writes },
             );
             app.retick();
         }

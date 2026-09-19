@@ -7,6 +7,7 @@ pub enum ScenePropMsg {
     Commit(String),
     Choose(String, f64),
     ColourInput(String, String),
+    ColourSlide(String, usize, f64),
     ColourCommit(String),
     Reset,
     Close,
@@ -18,6 +19,9 @@ pub struct SceneProperties {
     pub rows: Vec<SceneProperty>,
     pub loading: bool,
     pub error: Option<String>,
+    pub revision: u64,
+    accepted_revision: u64,
+    edits: std::collections::BTreeMap<String, u64>,
     pub colour_drafts: std::collections::BTreeMap<String, String>,
 }
 
@@ -30,18 +34,48 @@ impl SceneProperties {
             rows: Vec::new(),
             loading: true,
             error: None,
+            revision: 0,
+            accepted_revision: 0,
+            edits: std::collections::BTreeMap::new(),
             colour_drafts: std::collections::BTreeMap::new(),
         }
     }
 
-    pub fn accept(&mut self, we_id: &str, rows: Vec<SceneProperty>) {
+    pub fn accept(
+        &mut self,
+        we_id: &str,
+        revision: u64,
+        writes: &[String],
+        mut rows: Vec<SceneProperty>,
+    ) {
         if we_id != self.we_id {
             return;
         }
-        self.colour_drafts.clear();
-        for property in rows.iter().filter(|row| row.kind == ScenePropertyKind::Colour) {
-            self.colour_drafts.insert(property.name.clone(), property.value.display());
+        if revision < self.accepted_revision {
+            self.edits.retain(|name, edited| *edited > revision || !writes.contains(name));
+            return;
         }
+        for property in &mut rows {
+            if let Some(current) = self.row(&property.name) {
+                if self
+                    .edits
+                    .get(&property.name)
+                    .is_some_and(|edited| *edited > revision || !writes.contains(&property.name))
+                {
+                    property.value = current.value.clone();
+                    property.overridden = current.overridden;
+                }
+                if property.kind == ScenePropertyKind::Colour
+                    && self.colour_draft(&property.name) == Some(current.value.display().as_str())
+                {
+                    self.colour_drafts.insert(property.name.clone(), property.value.display());
+                }
+            } else if property.kind == ScenePropertyKind::Colour {
+                self.colour_drafts.insert(property.name.clone(), property.value.display());
+            }
+        }
+        self.edits.retain(|name, edited| *edited > revision || !writes.contains(name));
+        self.accepted_revision = revision;
         self.rows = rows;
         self.loading = false;
         self.error = None;
@@ -64,12 +98,12 @@ impl SceneProperties {
 
     #[must_use]
     pub fn editable_count(&self) -> usize {
-        self.rows.iter().filter(|row| row.editable()).count()
+        self.rows.iter().filter(|row| row.editable() && row.shown(&self.rows)).count()
     }
 
     #[must_use]
-    pub fn overridden_count(&self) -> usize {
-        self.rows.iter().filter(|row| row.overridden).count()
+    pub fn changed_count(&self) -> usize {
+        self.rows.iter().filter(|row| row.changed()).count()
     }
 
     #[must_use]
@@ -81,10 +115,29 @@ impl SceneProperties {
         self.colour_drafts.insert(name.to_string(), text.to_string());
     }
 
+    pub fn reset_local(&mut self) {
+        self.revision += 1;
+        for row in &mut self.rows {
+            row.value = row.default.clone();
+            row.overridden = false;
+            self.edits.insert(row.name.clone(), self.revision);
+            if row.kind == ScenePropertyKind::Colour {
+                self.colour_drafts.insert(row.name.clone(), row.value.display());
+            }
+        }
+        self.error = None;
+    }
+
     pub fn set_local(&mut self, name: &str, value: ScenePropertyValue) {
         if let Some(row) = self.rows.iter_mut().find(|row| row.name == name) {
-            row.overridden = value != row.default;
+            self.revision += 1;
+            self.edits.insert(name.to_string(), self.revision);
+            if row.kind == ScenePropertyKind::Colour {
+                self.colour_drafts.insert(name.to_string(), value.display());
+            }
             row.value = value;
+            row.overridden = row.changed();
+            self.error = None;
         }
     }
 }

@@ -6,14 +6,14 @@ use crate::app::Message;
 use crate::domain::scene_properties::{SceneProperty, ScenePropertyKind, format_number};
 use crate::frontend::theme::Palette;
 use crate::frontend::ui::{
-    FOLIO_INDEX_WIDTH, TYPE_SMALL, folio_action, folio_action_wrap, folio_field, folio_ghost_field,
-    folio_index_shell, folio_masthead, folio_scroll_padding, folio_sheet, folio_slider, label, row,
-    with_alpha,
+    FOLIO_INDEX_WIDTH, TYPE_SMALL, folio_action, folio_action_width, folio_action_wrap,
+    folio_ghost_field, folio_index_shell, folio_masthead, folio_rule, folio_scroll_padding,
+    folio_sheet, folio_sheet_dims, folio_slider, label, row, with_alpha,
 };
 use crate::i18n::{tr, tr_args};
 
 const SECTION_SPACING: f32 = 14.0;
-const CONTROL_WIDTH: f32 = 420.0;
+const LABEL_WIDTH: f32 = 218.0;
 
 fn wrap(message: ScenePropMsg) -> Message {
     Message::SceneProps(message)
@@ -34,6 +34,7 @@ fn swatch<'a>(property: &SceneProperty, scale: f32, palette: &Palette) -> Elemen
 fn control<'a>(
     property: &'a SceneProperty,
     panel: &'a SceneProperties,
+    available: f32,
     scale: f32,
     palette: &'a Palette,
 ) -> Element<'a, Message> {
@@ -87,26 +88,66 @@ fn control<'a>(
                     (caption, active, wrap(ScenePropMsg::Choose(name.clone(), choice.value)))
                 })
                 .collect();
-            folio_action_wrap(actions, CONTROL_WIDTH * scale, scale, palette)
+            folio_action_wrap(actions, available, scale, palette)
         }
         ScenePropertyKind::Colour => {
             let draft = panel.colour_draft(&property.name).unwrap_or_default();
             let input_name = name.clone();
-            row![
-                swatch(property, scale, palette),
-                folio_ghost_field(
-                    draft,
-                    "1.000 1.000 1.000",
-                    move |next| wrap(ScenePropMsg::ColourInput(input_name.clone(), next)),
-                    wrap(ScenePropMsg::ColourCommit(name)),
-                    Length::Fixed(190.0 * scale),
-                    scale,
-                    palette,
-                ),
+            let mut editor = column![
+                row![
+                    swatch(property, scale, palette),
+                    folio_ghost_field(
+                        draft,
+                        "1.000 1.000 1.000",
+                        move |next| wrap(ScenePropMsg::ColourInput(input_name.clone(), next)),
+                        wrap(ScenePropMsg::ColourCommit(name.clone())),
+                        Length::Fill,
+                        scale,
+                        palette,
+                    ),
+                    folio_action(
+                        tr("theme-designer-set-colour"),
+                        false,
+                        Some(wrap(ScenePropMsg::ColourCommit(name.clone()))),
+                        Length::Fixed(folio_action_width(tr("theme-designer-set-colour"), scale)),
+                        scale,
+                        palette,
+                    ),
+                ]
+                .spacing(8.0 * scale)
+                .align_y(Alignment::Center)
             ]
-            .spacing(10.0 * scale)
-            .align_y(Alignment::Center)
-            .into()
+            .spacing(5.0 * scale);
+            for (channel, (caption, value)) in ["browser-red", "browser-green", "browser-blue"]
+                .into_iter()
+                .zip(property.value.colour().unwrap_or([1.0; 3]))
+                .enumerate()
+            {
+                let slide_name = name.clone();
+                editor = editor.push(
+                    row![
+                        container(label(tr(caption), TYPE_SMALL, scale, palette.surface_text))
+                            .width(Length::Fixed(58.0 * scale)),
+                        container(folio_slider(
+                            0.0,
+                            1.0,
+                            f64::from(value).clamp(0.0, 1.0),
+                            0.001,
+                            move |next| wrap(ScenePropMsg::ColourSlide(
+                                slide_name.clone(),
+                                channel,
+                                next
+                            )),
+                            wrap(ScenePropMsg::Commit(name.clone())),
+                            palette,
+                        ))
+                        .width(Length::Fill),
+                    ]
+                    .spacing(8.0 * scale)
+                    .align_y(Alignment::Center),
+                );
+            }
+            editor.into()
         }
         ScenePropertyKind::Group | ScenePropertyKind::Unsupported => label(
             tr("scene-props-unsupported"),
@@ -124,21 +165,24 @@ fn notice(message: &str, colour: Color, scale: f32) -> Element<'_, Message> {
 
 fn reading<'a>(
     panel: &'a SceneProperties,
+    available: f32,
     scale: f32,
     palette: &'a Palette,
 ) -> Element<'a, Message> {
     if panel.loading {
         return notice(tr("scene-props-loading"), palette.surface_text, scale);
     }
-    if let Some(error) = &panel.error {
-        return notice(error.as_str(), palette.primary, scale);
-    }
     if panel.rows.is_empty() {
+        if let Some(error) = &panel.error {
+            return notice(error.as_str(), palette.primary, scale);
+        }
         return notice(tr("scene-props-empty"), palette.surface_text, scale);
     }
 
     let mut body = column![].spacing(SECTION_SPACING * scale);
-    let mut index = 0_usize;
+    if let Some(error) = &panel.error {
+        body = body.push(notice(error.as_str(), palette.primary, scale));
+    }
     for property in panel.shown_rows() {
         if property.is_group() {
             body = body.push(
@@ -147,25 +191,37 @@ fn reading<'a>(
             );
             continue;
         }
-        index += 1;
-        let marker = if property.overridden {
-            tr("scene-props-changed").to_string()
+        let caption = if property.label == "ui_browse_properties_scheme_color" {
+            tr("scene-props-scheme-colour")
         } else {
-            format!("{index:02}")
+            property.label.as_str()
         };
-        let description = if property.overridden {
-            tr_args!("scene-props-default", value => property.default.display())
+        let mut title =
+            column![label(caption, 13.0, scale, palette.surface_text)].spacing(5.0 * scale);
+        if property.changed() {
+            title = title.push(label(
+                tr_args!("scene-props-default", value => property.default.display()),
+                TYPE_SMALL,
+                scale,
+                with_alpha(palette.surface_text, 0.58),
+            ));
+        }
+        let stacked = available < 590.0 * scale;
+        let controls_width =
+            if stacked { available } else { available - (LABEL_WIDTH + 20.0) * scale };
+        let controls = control(property, panel, controls_width, scale, palette);
+        let contents: Element<'a, Message> = if stacked {
+            column![title, controls].spacing(9.0 * scale).into()
         } else {
-            property.name.clone()
+            row![
+                container(title).width(Length::Fixed(LABEL_WIDTH * scale)),
+                container(controls).width(Length::Fill),
+            ]
+            .spacing(20.0 * scale)
+            .align_y(Alignment::Center)
+            .into()
         };
-        body = body.push(folio_field(
-            marker,
-            property.label.as_str(),
-            description,
-            control(property, panel, scale, palette),
-            scale,
-            palette,
-        ));
+        body = body.push(column![folio_rule(palette), contents].spacing(12.0 * scale));
     }
 
     container(scrollable(body.padding(folio_scroll_padding(23.0, 27.0, scale))))
@@ -182,12 +238,12 @@ fn index_column<'a>(
     let note = tr_args!(
         "scene-props-count",
         editable => panel.editable_count(),
-        changed => panel.overridden_count()
+        changed => panel.changed_count()
     );
     let reset = folio_action(
         tr("scene-props-reset"),
         false,
-        (panel.overridden_count() > 0).then(|| wrap(ScenePropMsg::Reset)),
+        panel.rows.iter().any(|row| row.overridden).then(|| wrap(ScenePropMsg::Reset)),
         Length::Fill,
         scale,
         palette,
@@ -209,7 +265,12 @@ pub fn view<'a>(
             palette,
         ),
         index_column(panel, scale, palette),
-        reading(panel, scale, palette),
+        reading(
+            panel,
+            folio_sheet_dims(viewport, scale).0 - FOLIO_INDEX_WIDTH * scale.max(0.9) - 54.0 * scale,
+            scale,
+            palette,
+        ),
         Message::Noop,
         viewport,
         scale,

@@ -39,7 +39,7 @@ pub(crate) enum Pending {
     TaskList,
     Status,
     Weather,
-    SceneProperties { we_id: String },
+    SceneProperties { we_id: String, revision: u64, writes: Vec<String> },
     ResetThumbnail { key: String },
 }
 

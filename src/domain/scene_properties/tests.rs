@@ -111,3 +111,10 @@ fn conditions_follow_the_engine_expression_shapes() {
     assert!(shown(""));
     assert!(SceneProperty::default().shown(&rows));
 }
+
+#[test]
+fn malformed_colour_components_cannot_be_silently_discarded() {
+    for value in ["1 wrong 0 0", "NaN 0 0", "inf 0 0", "1e99 0 0"] {
+        assert_eq!(parse_vector(value), None, "{value}");
+    }
+}

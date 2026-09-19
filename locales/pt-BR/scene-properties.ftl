@@ -4,7 +4,8 @@ scene-props-reset = Restaurar padrões
 scene-props-loading = Lendo as propriedades da cena…
 scene-props-empty = Esta cena não publica nenhuma propriedade ajustável.
 scene-props-unsupported = Não ajustável aqui
-scene-props-changed = ••
 scene-props-default = Padrão do autor: { $value }
 scene-props-on = Ligado
 scene-props-off = Desligado
+
+scene-props-scheme-colour = Cor do esquema

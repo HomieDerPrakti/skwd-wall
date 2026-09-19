@@ -70,7 +70,7 @@ fn reply_populates_edits_write_back() {
     let panel = app.panels.scene_properties.as_ref().expect("panel stays open");
     assert!(!panel.loading);
     assert_eq!(panel.editable_count(), 3);
-    assert_eq!(panel.overridden_count(), 0);
+    assert_eq!(panel.changed_count(), 0);
     drain_calls(&app);
 
     let _ = update(
@@ -84,7 +84,7 @@ fn reply_populates_edits_write_back() {
         .expect("toggle writes");
     assert_eq!(params.get("name").and_then(Value::as_str), Some("glow"));
     assert_eq!(params.get("value"), Some(&json!(false)));
-    assert_eq!(app.panels.scene_properties.as_ref().unwrap().overridden_count(), 1);
+    assert_eq!(app.panels.scene_properties.as_ref().unwrap().changed_count(), 1);
 }
 
 #[test]
@@ -184,4 +184,80 @@ fn failed_request_surfaces_error() {
     let panel = app.panels.scene_properties.as_ref().expect("panel stays open");
     assert!(!panel.loading);
     assert!(panel.error.as_deref().is_some_and(|error| error.contains("no such item")));
+}
+
+#[test]
+fn save_reply_preserves_a_later_slider_drag_and_colour_draft() {
+    let mut app = test_app();
+    open_on_scene(&mut app);
+    let id = *app.daemon.pending.keys().next().unwrap();
+    respond(&mut app, id, rows());
+    drain_calls(&app);
+
+    let _ = update(
+        &mut app,
+        Message::SceneProps(crate::frontend::scene_properties::ScenePropMsg::Toggle("glow".into())),
+    );
+    let save_id = *app.daemon.pending.keys().next().unwrap();
+    let _ = update(
+        &mut app,
+        Message::SceneProps(crate::frontend::scene_properties::ScenePropMsg::Slide(
+            "zoom".into(),
+            2.5,
+        )),
+    );
+    let _ = update(
+        &mut app,
+        Message::SceneProps(crate::frontend::scene_properties::ScenePropMsg::ColourInput(
+            "tint".into(),
+            "0.25 0".into(),
+        )),
+    );
+    let mut saved = rows();
+    saved["properties"][0]["value"] = json!(false);
+    respond(&mut app, save_id, saved);
+    let panel = app.panels.scene_properties.as_ref().unwrap();
+    assert_eq!(panel.row("zoom").unwrap().value.number(), 2.5);
+    assert_eq!(panel.colour_draft("tint"), Some("0.25 0"));
+    drain_calls(&app);
+
+    let _ = update(
+        &mut app,
+        Message::SceneProps(crate::frontend::scene_properties::ScenePropMsg::Commit("zoom".into())),
+    );
+    let calls = drain_calls(&app);
+    assert!(calls.iter().any(|(method, params)| {
+        method == wall_proto::rpc::WALL_SET_WE_PROPERTY && params["value"] == json!(2.5)
+    }));
+}
+
+#[test]
+fn colour_slider_writes_the_whole_colour_on_release() {
+    let mut app = test_app();
+    open_on_scene(&mut app);
+    let id = *app.daemon.pending.keys().next().unwrap();
+    respond(&mut app, id, rows());
+    drain_calls(&app);
+    let _ = update(
+        &mut app,
+        Message::SceneProps(crate::frontend::scene_properties::ScenePropMsg::ColourSlide(
+            "tint".into(),
+            1,
+            0.25,
+        )),
+    );
+    assert!(drain_calls(&app).is_empty());
+    assert_eq!(
+        app.panels.scene_properties.as_ref().unwrap().colour_draft("tint"),
+        Some("1.000 0.250 1.000")
+    );
+    let _ = update(
+        &mut app,
+        Message::SceneProps(crate::frontend::scene_properties::ScenePropMsg::Commit("tint".into())),
+    );
+    let calls = drain_calls(&app);
+    assert!(calls.iter().any(|(method, params)| {
+        method == wall_proto::rpc::WALL_SET_WE_PROPERTY
+            && params["value"] == json!("1.000 0.250 1.000")
+    }));
 }

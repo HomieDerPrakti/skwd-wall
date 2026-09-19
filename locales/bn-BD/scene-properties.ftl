@@ -4,7 +4,8 @@ scene-props-reset = ডিফল্টে ফিরিয়ে আনুন
 scene-props-loading = দৃশ্যের বৈশিষ্ট্য পড়া হচ্ছে…
 scene-props-empty = এই দৃশ্যে কোনো সমন্বয়যোগ্য বৈশিষ্ট্য নেই।
 scene-props-unsupported = এখানে সমন্বয় করা যায় না
-scene-props-changed = ••
 scene-props-default = লেখকের ডিফল্ট: { $value }
 scene-props-on = চালু
 scene-props-off = বন্ধ
+
+scene-props-scheme-colour = স্কিমের রং

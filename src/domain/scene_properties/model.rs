@@ -98,6 +98,18 @@ pub struct SceneProperty {
 
 impl SceneProperty {
     #[must_use]
+    pub fn changed(&self) -> bool {
+        match self.kind {
+            ScenePropertyKind::Flag => self.value.flag() != self.default.flag(),
+            ScenePropertyKind::Range | ScenePropertyKind::Choice => {
+                self.value.number() != self.default.number()
+            }
+            ScenePropertyKind::Colour => self.value.colour() != self.default.colour(),
+            _ => self.value != self.default,
+        }
+    }
+
+    #[must_use]
     pub fn shown(&self, rows: &[SceneProperty]) -> bool {
         let Some(condition) = self.condition.as_deref() else {
             return true;
@@ -136,7 +148,10 @@ impl SceneProperty {
 
 #[must_use]
 pub fn parse_vector(text: &str) -> Option<Vec<f32>> {
-    let parts: Vec<f32> = text.split_whitespace().filter_map(|part| part.parse().ok()).collect();
+    let parts = text
+        .split_whitespace()
+        .map(|part| part.parse::<f32>().ok().filter(|value| value.is_finite()))
+        .collect::<Option<Vec<_>>>()?;
     (!parts.is_empty()).then_some(parts)
 }
 

@@ -4,7 +4,8 @@ scene-props-reset = طے شدہ بحال کریں
 scene-props-loading = سین کی خصوصیات پڑھی جا رہی ہیں…
 scene-props-empty = یہ سین کوئی قابل تبدیلی خصوصیت شائع نہیں کرتا۔
 scene-props-unsupported = یہاں تبدیل نہیں ہو سکتا
-scene-props-changed = ••
 scene-props-default = مصنف کی طے شدہ قدر: { $value }
 scene-props-on = آن
 scene-props-off = آف
+
+scene-props-scheme-colour = اسکیم کا رنگ

@@ -90,8 +90,13 @@ impl App {
                     self.retick();
                 }
             }
-            Pending::SceneProperties { we_id } => {
-                if self.panels.scene_properties.as_ref().is_some_and(|panel| panel.we_id == we_id) {
+            Pending::SceneProperties { we_id, revision, .. } => {
+                if self
+                    .panels
+                    .scene_properties
+                    .as_ref()
+                    .is_some_and(|panel| panel.we_id == we_id && panel.revision <= revision)
+                {
                     self.on_scene_properties_error(&err);
                 }
             }
@@ -359,11 +364,15 @@ impl App {
                 self.show_toast(crate::i18n::tr(message));
                 self.retick();
             }
-            Pending::SceneProperties { .. } => self.on_scene_properties(decoded!(
-                "wall.we_properties",
-                result,
-                crate::infrastructure::rpc_results::decode_scene_properties,
-            )),
+            Pending::SceneProperties { revision, writes, .. } => self.on_scene_properties(
+                decoded!(
+                    "wall.we_properties",
+                    result,
+                    crate::infrastructure::rpc_results::decode_scene_properties,
+                ),
+                revision,
+                &writes,
+            ),
         }
     }
 }

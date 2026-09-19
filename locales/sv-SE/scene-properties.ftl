@@ -4,7 +4,8 @@ scene-props-reset = Återställ standard
 scene-props-loading = Läser scenens egenskaper…
 scene-props-empty = Den här scenen publicerar inga justerbara egenskaper.
 scene-props-unsupported = Kan inte justeras här
-scene-props-changed = ••
 scene-props-default = Upphovspersonens standard: { $value }
 scene-props-on = På
 scene-props-off = Av
+
+scene-props-scheme-colour = Schemafärg
