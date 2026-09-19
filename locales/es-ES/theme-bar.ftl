@@ -55,3 +55,4 @@ theme-bar-style = Estilo
 theme-bar-scheme = Esquema
 theme-bar-oled-black = Negro OLED
 theme-bar-current = Tema · { $backend }
+theme-bar-pin-settings = Fijar ajustes

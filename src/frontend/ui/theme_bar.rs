@@ -130,4 +130,5 @@ pub struct ThemeBar {
     pub noctalia_scheme: String,
     pub noctalia_pure_black: bool,
     pub backend_count: usize,
+    pub wallpaper_settings_pinned: bool,
 }

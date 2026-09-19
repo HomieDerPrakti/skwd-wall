@@ -56,3 +56,6 @@ settings-paper-awww-type-top = ऊपर
 settings-paper-awww-type-bottom = नीचे
 settings-paper-awww-type-any = कोई भी
 settings-paper-awww-type-random = यादृच्छिक
+
+settings-paper-load-timeout-label = वॉलपेपर लोड होने की समय-सीमा
+settings-paper-load-timeout-desc = 16K वॉलपेपर जैसी बड़ी तस्वीरों को लोड होने के लिए अधिक समय दें। इससे ट्रांज़िशन की गति नहीं बदलती।

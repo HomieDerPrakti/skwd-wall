@@ -3,6 +3,7 @@ pub enum ThemeMsg {
     LoadCurrent,
     SaveWallpaper,
     ToggleWallpaper(bool),
+    ToggleWallpaperSettings,
     Variant(bool),
     BackendMenu,
     Option(&'static str, &'static str),

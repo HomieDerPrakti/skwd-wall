@@ -55,3 +55,4 @@ theme-bar-style = انداز
 theme-bar-scheme = اسکیم
 theme-bar-oled-black = OLED سیاہ
 theme-bar-current = تھیم · { $backend }
+theme-bar-pin-settings = ترتیبات پن کریں

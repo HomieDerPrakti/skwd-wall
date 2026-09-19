@@ -56,3 +56,6 @@ settings-paper-awww-type-top = Uppe
 settings-paper-awww-type-bottom = Nere
 settings-paper-awww-type-any = Valfri
 settings-paper-awww-type-random = Slumpmässig
+
+settings-paper-load-timeout-label = Tidsgräns för bakgrundsladdning
+settings-paper-load-timeout-desc = Ge stora bilder, som 16K-bakgrunder, mer tid att laddas. Detta ändrar inte övergångens hastighet.

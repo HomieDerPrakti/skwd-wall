@@ -968,3 +968,18 @@ fn shell_follow_switches_preserve_driver_and_persist_before_retheme() {
         }
     }
 }
+
+#[test]
+fn theme_variant_control_displays_the_effective_mode() {
+    use crate::contracts::settings::SettingsSource;
+    for (root, expected) in [
+        (json!({}), "dark"),
+        (json!({"matugen":{"mode":"light"}}), "light"),
+        (json!({"theme":{"mode":""},"matugen":{"mode":"light"}}), "light"),
+        (json!({"theme":{"mode":"dark"},"matugen":{"mode":"light"}}), "dark"),
+        (json!({"theme":{"mode":"auto"},"matugen":{"mode":"light"}}), "auto"),
+    ] {
+        let config = Config::from_data(root);
+        assert_eq!(SettingsSource::text(&config, skwd_config::keys::theme::MODE), expected);
+    }
+}

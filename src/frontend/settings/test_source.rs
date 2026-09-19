@@ -97,7 +97,7 @@ impl SettingsSource for FakeSettingsSource {
     }
 
     fn text(&self, path: &str) -> String {
-        self.text.get(path).cloned().unwrap_or_else(|| {
+        let value = self.text.get(path).cloned().unwrap_or_else(|| {
             schema::text_default(path)
                 .map(str::to_string)
                 .or_else(|| schema::number_default(path).map(|value| value.to_string()))
@@ -105,7 +105,12 @@ impl SettingsSource for FakeSettingsSource {
                     keys::we_render::ENGINE => String::from("native"),
                     _ => String::new(),
                 })
-        })
+        });
+        if path == keys::theme::MODE && value.is_empty() {
+            self.text(keys::matugen::MODE)
+        } else {
+            value
+        }
     }
 
     fn number(&self, path: &str) -> f64 {

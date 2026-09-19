@@ -16,7 +16,7 @@ mod schedule;
 mod settings;
 pub(in crate::app) mod settings_policy;
 mod tags;
-mod theme;
+pub(crate) mod theme;
 mod ui_command;
 
 pub use dispatcher::update;

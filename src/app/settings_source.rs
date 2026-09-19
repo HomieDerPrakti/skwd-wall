@@ -15,7 +15,12 @@ impl SettingsSource for Config {
         if path == skwd_config::keys::paper::ENGINE {
             return skwd_config::paper_engine(self.root());
         }
-        self.str_path(path)
+        let value = self.str_path(path);
+        if path == skwd_config::keys::theme::MODE && value.is_empty() {
+            self.str_path(skwd_config::keys::matugen::MODE)
+        } else {
+            value
+        }
     }
 
     fn number(&self, path: &str) -> f64 {

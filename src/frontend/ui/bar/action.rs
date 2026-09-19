@@ -18,6 +18,7 @@ pub enum BarAction {
     TaskControl { id: String, action: crate::contracts::daemon::TaskControl },
     ThemeBackendToggle,
     ThemeOpt(&'static str, &'static str),
+    ThemePinSettings,
 }
 
 #[derive(Debug, Clone)]

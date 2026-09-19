@@ -26,6 +26,14 @@ pub(super) fn theme_items(theme: &ThemeBar, scale: f32, menu_up: bool) -> Vec<Ba
         theme.menu_open,
         BarAction::ThemeBackendToggle,
     );
+    push_option(
+        &mut items,
+        &mut x,
+        scale,
+        tr("theme-bar-pin-settings"),
+        theme.wallpaper_settings_pinned,
+        BarAction::ThemePinSettings,
+    );
     let out = &mut items;
     if !matches!(theme.backend.as_str(), "off" | "static") {
         push_label(out, &mut x, scale, tr("theme-bar-mode"));

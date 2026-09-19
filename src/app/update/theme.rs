@@ -20,6 +20,10 @@ pub(super) fn update(app: &mut App, msg: ThemeMsg) -> Task<Message> {
             save_wallpaper_profile(app, Some(enabled));
             Task::none()
         }
+        ThemeMsg::ToggleWallpaperSettings => {
+            toggle_wallpaper_settings(app);
+            Task::none()
+        }
         ThemeMsg::Variant(dark) => tdes_mutate(app, |designer| designer.set_variant(dark)),
         ThemeMsg::RoleFilter(filter) => tdes_mutate(app, |designer| designer.role_filter = filter),
         ThemeMsg::BackendMenu => {
@@ -126,6 +130,7 @@ pub(super) fn select_theme_audition(
     }
     set_theme_selection(app, backend);
     app.config.save_key(key, json!(value));
+    update_pinned_wallpaper_settings(app);
     app.daemon.client.call("wall.retheme", json!({}));
     app.theme.cache.clear();
     app.invalidate_swatch();
@@ -139,6 +144,8 @@ fn theme_save_apply(app: &mut App) -> Task<Message> {
     if !crate::app::helpers::theme_designer_save(app, true) {
         return Task::none();
     }
+    app.theme.cache.clear();
+    app.invalidate_swatch();
     if let Some(designer) = &app.panels.theme_designer {
         let palette = crate::frontend::theme::Palette::from_candidate(&designer.candidate);
         app.theme.base_palette = palette;
@@ -195,6 +202,9 @@ fn theme_delete_saved(app: &mut App, name: &str) -> Task<Message> {
 }
 
 pub(super) fn theme_option(app: &mut App, key: &'static str, value: &'static str) -> Task<Message> {
+    if let Some(wallpaper) = selected_wallpaper_key(app) {
+        restore_wallpaper_settings(app, &wallpaper);
+    }
     if app.theme.shell_preview_sent.take().is_some() {
         app.daemon.client.call("wall.shell_preview_end", json!({}));
     }
@@ -208,6 +218,7 @@ pub(super) fn theme_option(app: &mut App, key: &'static str, value: &'static str
     } else {
         app.config.save_key(key, json!(value));
     }
+    update_pinned_wallpaper_settings(app);
     if key == skwd_config::keys::theme::BACKEND {
         app.chrome.bar.menu = None;
     }
@@ -286,4 +297,109 @@ fn save_wallpaper_profile(app: &mut App, enabled: Option<bool>) {
     app.invalidate_swatch();
     app.daemon.client.call("wall.retheme", json!({}));
     app.retick();
+}
+
+fn toggle_wallpaper_settings(app: &mut App) {
+    let Some(key) = selected_wallpaper_key(app) else { return };
+    let mut profiles = app.config.array_values(skwd_config::keys::theme::WALLPAPER_PROFILES);
+    let index = profiles.iter().position(|profile| profile["key"].as_str() == Some(&key));
+    if let Some(index) = index.filter(|&index| profiles[index]["settingsPinned"] == true) {
+        if let Some(profile) = profiles[index].as_object_mut() {
+            profile.remove("settingsPinned");
+            profile.remove("settings");
+        }
+    } else {
+        let index = index.unwrap_or_else(|| {
+            profiles.push(json!({"key": key}));
+            profiles.len() - 1
+        });
+        let settings = skwd_config::theme_profile::snapshot(app.config.root());
+        profiles[index]["settingsPinned"] = json!(true);
+        profiles[index]["settings"] = serde_json::Value::Object(settings);
+    }
+    app.config.save_key(skwd_config::keys::theme::WALLPAPER_PROFILES, json!(profiles));
+    app.theme.cache.clear();
+    app.theme.preview_target = None;
+    if app.theme.shell_preview_sent.take().is_some() {
+        app.daemon.client.call("wall.shell_preview_end", json!({}));
+    }
+    app.invalidate_swatch();
+    let pinned = wallpaper_settings_pinned(app);
+    if let Some(designer) = app.panels.theme_designer.as_mut() {
+        designer.settings_pinned = pinned;
+    }
+    app.retick();
+}
+
+pub(crate) fn restore_wallpaper_settings(app: &mut App, key: &str) {
+    let Some(settings) = wallpaper_settings(app, key) else { return };
+    for path in skwd_config::theme_profile::KEYS {
+        if let Some(value) = settings.get(path) {
+            app.config.set_key(path, value.clone());
+        }
+    }
+    app.config.persist();
+}
+
+pub(crate) fn wallpaper_settings_pinned(app: &App) -> bool {
+    selected_wallpaper_key(app).is_some_and(|key| {
+        app.config.array_values(skwd_config::keys::theme::WALLPAPER_PROFILES).iter().any(
+            |profile| {
+                profile["key"].as_str() == Some(key.as_str()) && profile["settingsPinned"] == true
+            },
+        )
+    })
+}
+
+pub(crate) fn wallpaper_setting(app: &App, path: &str) -> Option<serde_json::Value> {
+    wallpaper_settings(app, &selected_wallpaper_key(app)?)
+        .and_then(|settings| settings.get(path).cloned())
+}
+
+pub(crate) fn wallpaper_settings(
+    app: &App,
+    key: &str,
+) -> Option<serde_json::Map<String, serde_json::Value>> {
+    skwd_config::theme_profile::settings(
+        &app.config.array_values(skwd_config::keys::theme::WALLPAPER_PROFILES),
+        key,
+    )
+}
+
+pub(crate) fn wallpaper_theme_backend(app: &App) -> String {
+    selected_wallpaper_key(app)
+        .map_or_else(|| app.config.theme_backend(), |key| wallpaper_theme_backend_for(app, &key))
+}
+
+pub(crate) fn wallpaper_theme_backend_for(app: &App, key: &str) -> String {
+    let Some(settings) = wallpaper_settings(app, key) else { return app.config.theme_backend() };
+    let mut root = app.config.root().clone();
+    for (path, value) in settings {
+        if let Some((group, name)) = path.split_once('.') {
+            if !root[group].is_object() {
+                root[group] = json!({});
+            }
+            root[group][name] = value;
+        }
+    }
+    skwd_config::theme_backend(&root)
+}
+
+pub(crate) fn update_pinned_wallpaper_settings(app: &mut App) {
+    let Some(key) = selected_wallpaper_key(app) else { return };
+    let mut profiles = app.config.array_values(skwd_config::keys::theme::WALLPAPER_PROFILES);
+    let Some(profile) = profiles.iter_mut().find(|profile| {
+        profile["key"].as_str() == Some(key.as_str()) && profile["settingsPinned"] == true
+    }) else {
+        return;
+    };
+    let settings = skwd_config::theme_profile::snapshot(app.config.root());
+    profile["settings"] = serde_json::Value::Object(settings);
+    app.config.save_key(skwd_config::keys::theme::WALLPAPER_PROFILES, json!(profiles));
+}
+
+fn selected_wallpaper_key(app: &App) -> Option<String> {
+    let index = app.scene.flipped().unwrap_or(app.scene.current);
+    let catalog = *app.library_session.filtered.get(index)? as usize;
+    Some(app.library_session.library.catalog().items.get(catalog)?.key.clone())
 }

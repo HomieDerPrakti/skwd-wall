@@ -68,6 +68,9 @@ pub(crate) fn theme_designer_save(app: &mut App, apply: bool) -> bool {
             json!(if candidate.dark { "dark" } else { "light" }),
         );
     }
+    if apply {
+        crate::app::update::theme::update_pinned_wallpaper_settings(app);
+    }
     app.config.persist();
     if apply {
         app.daemon.client.call("wall.retheme", json!({}));

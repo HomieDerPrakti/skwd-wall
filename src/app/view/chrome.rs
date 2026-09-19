@@ -33,6 +33,9 @@ pub(crate) fn bar_intent_message(intent: crate::frontend::ui::BarIntent) -> Mess
             BarAction::ThemeOpt(key, value) => {
                 Message::Theme(crate::frontend::theme_designer::ThemeMsg::Option(key, value))
             }
+            BarAction::ThemePinSettings => {
+                Message::Theme(crate::frontend::theme_designer::ThemeMsg::ToggleWallpaperSettings)
+            }
         },
         BarIntent::SelectFolder(folder) => Message::SetFolder(folder),
         BarIntent::ToggleFolderMenu => Message::FolderMenuToggle,
@@ -100,26 +103,41 @@ fn theme_bar_model(
     backend_count: usize,
 ) -> crate::frontend::ui::ThemeBar {
     let or_default = |key: &str, def: &str| {
-        let val = app.config.str_path(key);
+        let val = crate::app::update::theme::wallpaper_setting(app, key)
+            .and_then(|value| value.as_str().map(str::to_string))
+            .unwrap_or_else(|| app.config.str_path(key));
         if val.is_empty() { String::from(def) } else { val }
     };
+    let mode = app.config.str_path(skwd_config::keys::theme::MODE);
     crate::frontend::ui::ThemeBar {
         backend: backend_now.to_owned(),
         menu_open: backend_menu_open,
-        mode: app.config.str_path(skwd_config::keys::theme::MODE),
+        mode: or_default(skwd_config::keys::theme::MODE, &mode),
         static_theme: or_default(skwd_config::keys::theme::STATIC_THEME, "nord"),
         scheme: or_default(skwd_config::keys::matugen::SCHEME_TYPE, "scheme-fidelity"),
         style: or_default(skwd_config::keys::theme::STYLE, "natural"),
         iris_scheme: or_default(skwd_config::keys::theme::SCHEME, "tonal-spot"),
-        color_index: (app.config.num_path(skwd_config::keys::matugen::COLOR_INDEX) as u32).min(3),
+        color_index: crate::app::update::theme::wallpaper_setting(
+            app,
+            skwd_config::keys::matugen::COLOR_INDEX,
+        )
+        .and_then(|value| value.as_u64())
+        .unwrap_or_else(|| app.config.num_path(skwd_config::keys::matugen::COLOR_INDEX) as u64)
+        .min(3) as u32,
         wallust_palette: or_default(skwd_config::keys::theme::WALLUST_PALETTE, "dark"),
         wallust_colorspace: or_default(skwd_config::keys::theme::WALLUST_COLORSPACE, "lab"),
         pywal_saturate: app.config.str_path(skwd_config::keys::theme::PYWAL_SATURATE),
         noctalia_scheme: or_default(skwd_config::keys::theme::NOCTALIA_SCHEME, "m3-tonal-spot"),
-        noctalia_pure_black: app
-            .config
-            .flag_default_config(skwd_config::keys::theme::NOCTALIA_PURE_BLACK),
+        noctalia_pure_black: crate::app::update::theme::wallpaper_setting(
+            app,
+            skwd_config::keys::theme::NOCTALIA_PURE_BLACK,
+        )
+        .and_then(|value| value.as_bool())
+        .unwrap_or_else(|| {
+            app.config.flag_default_config(skwd_config::keys::theme::NOCTALIA_PURE_BLACK)
+        }),
         backend_count,
+        wallpaper_settings_pinned: crate::app::update::theme::wallpaper_settings_pinned(app),
     }
 }
 
@@ -130,7 +148,7 @@ pub(super) fn filter_bar_layer(app: &App, vw: f32, vh: f32) -> Element<'_, Messa
     let vertical = app.chrome.filter_bar_vertical && !menu_up;
     let downloads_enabled = app.config.wallhaven_enabled() || app.config.steam_enabled();
     let show = bar_show(app);
-    let backend_now = app.config.theme_backend();
+    let backend_now = crate::app::update::theme::wallpaper_theme_backend(app);
     let backend_options =
         crate::frontend::ui::backend_menu_options(app.theme.backends.as_deref(), &backend_now);
     let folder_menu_open = app.chrome.bar.menu == Some(crate::frontend::ui::MenuKind::Folders);
@@ -222,7 +240,7 @@ pub(crate) fn filter_bar_footprint(app: &App, vw: f32, vh: f32) -> (bool, f32, f
     let vertical = app.chrome.filter_bar_vertical && !menu_up;
     let scale = app.config.ui_scale();
     let show = bar_show(app);
-    let backend_now = app.config.theme_backend();
+    let backend_now = crate::app::update::theme::wallpaper_theme_backend(app);
     let backend_options =
         crate::frontend::ui::backend_menu_options(app.theme.backends.as_deref(), &backend_now);
     let theme_bar = app
