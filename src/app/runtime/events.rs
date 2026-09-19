@@ -5,7 +5,7 @@ use wall_proto::ev;
 
 use crate::contracts::browser::{ApplyTarget, DownloadStatus, DownloadUpdate};
 use crate::contracts::daemon::{TaskState, TaskStatus};
-use crate::domain::library::filter::{filter_sort, insert_index};
+use crate::domain::library::filter::insert_index;
 use crate::frontend::theme::Palette;
 use crate::infrastructure::library::{LibraryPaths, decode_cached};
 use crate::rendering::scene::atlas::AtlasMap;
@@ -129,6 +129,14 @@ impl App {
                             height: i64::from(payload.height),
                         },
                     );
+                    if self
+                        .runtime_state
+                        .demo
+                        .as_ref()
+                        .is_some_and(|session| session.allowed_keys.is_some())
+                    {
+                        self.refilter_after_removal();
+                    }
                 }
             }
             ev::FOLDER_REMOVED => self.on_folder_removed(data),
@@ -281,14 +289,7 @@ impl App {
             return;
         }
         let new_idx = (self.library_session.library.catalog().items.len() - 1) as u32;
-        let visible =
-            filter_sort(self.library_session.library.catalog(), &self.library_session.filters)
-                .contains(&new_idx)
-                && self.library_session.playlist_filter.as_ref().is_none_or(|(_, _, keys)| {
-                    keys.contains(
-                        &self.library_session.library.catalog().items[new_idx as usize].key,
-                    )
-                });
+        let visible = self.filtered_indices().contains(&new_idx);
         if visible {
             let pos = insert_index(
                 self.library_session.library.catalog(),
@@ -297,6 +298,7 @@ impl App {
                 new_idx,
             );
             self.library_session.filtered.insert(pos, new_idx);
+            self.library_session.visible_count = self.library_session.filtered.len();
             self.scene.shift_after_insert(pos);
             self.scene.touch();
         }

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use serde_json::Value;
 
@@ -10,6 +10,7 @@ pub(crate) struct DemoSession {
     pub(crate) filters: Filters,
     pub(crate) query: String,
     pub(crate) selection_key: String,
+    pub(crate) allowed_keys: Option<HashSet<String>>,
     pub(crate) filter_bar_visible: bool,
     pub(crate) palette: Palette,
     pub(crate) base_palette: Palette,

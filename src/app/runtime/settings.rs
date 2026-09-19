@@ -132,6 +132,12 @@ impl App {
             self.config.card_flip_shader(),
             self.config.card_flip_back_reveal(),
         );
+        let effect = self.config.str_path(skwd_config::keys::selector::FLIP_EFFECT);
+        if let Some(id) = EFFECT_NAMES.iter().position(|&name| name == effect)
+            && self.scene.card_flip_effect() != id as u32
+        {
+            self.scene.set_effect(id as u32);
+        }
         self.apply_motion_speeds();
         self.scene.touch();
         self.chrome.bar.cache.clear();

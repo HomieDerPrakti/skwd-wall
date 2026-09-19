@@ -2,11 +2,13 @@
 
 mod app_themes;
 mod audio;
+mod browser_demo;
 mod effects;
 mod filters;
 mod folder_keys;
 mod frame_clock;
 mod input;
+mod library_demo;
 mod library_events;
 mod overview;
 mod picker_keys;
