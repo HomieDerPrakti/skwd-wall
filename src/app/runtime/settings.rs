@@ -82,6 +82,23 @@ impl App {
                         .insert(key.clone(), crate::contracts::picker::format_config_number(value));
                 }
             }
+            settings::Control::Resolution { key, path, .. } => {
+                let value = self.config.str_path(path);
+                let base = path.rsplit_once('.').map_or("", |(base, _)| base);
+                let tall = self.config.str_path(&format!("{base}.orientation")) == "tall";
+                let value = crate::domain::library::filter::parse_resolution(&value).map_or(
+                    value,
+                    |(width, height)| {
+                        let (width, height) = if tall {
+                            (width.min(height), width.max(height))
+                        } else {
+                            (width.max(height), width.min(height))
+                        };
+                        format!("{width}x{height}")
+                    },
+                );
+                self.panels.settings.inputs.insert(key.clone(), value);
+            }
             settings::Control::TextField { key, path, .. }
             | settings::Control::KeyBinding { key, path, .. } => {
                 self.panels

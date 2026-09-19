@@ -23,6 +23,12 @@ pub enum Control {
         path: String,
         placeholder: &'static str,
     },
+    Resolution {
+        key: String,
+        path: String,
+        width_placeholder: &'static str,
+        height_placeholder: &'static str,
+    },
     KeyBinding {
         key: String,
         path: String,
@@ -46,6 +52,9 @@ pub enum Control {
     ActionBtn {
         id: ActionId,
         label: String,
+    },
+    ActionChips {
+        items: Vec<(ActionId, String)>,
     },
     Presets {
         mode: String,

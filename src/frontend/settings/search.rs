@@ -170,6 +170,10 @@ fn control_search_text(control: &Control) -> String {
         Control::TextField { key, path, placeholder } => {
             format!("{key} {path} {placeholder} {}", tr("settings-search-control-text"))
         }
+        Control::Resolution { key, path, width_placeholder, height_placeholder } => format!(
+            "{key} {path} {width_placeholder} {height_placeholder} {}",
+            tr("settings-search-control-number")
+        ),
         Control::KeyBinding { key, path, default } => {
             format!("{key} {path} {default} {}", tr("settings-search-control-text"))
         }
@@ -201,6 +205,11 @@ fn control_search_text(control: &Control) -> String {
         Control::ActionBtn { label, .. } => {
             format!("{label} {}", tr("settings-search-control-action"))
         }
+        Control::ActionChips { items } => format!(
+            "{} {}",
+            items.iter().map(|(_, label)| label.as_str()).collect::<Vec<_>>().join(" "),
+            tr("settings-search-control-action")
+        ),
         Control::Presets { mode, items } => format!(
             "{mode} {} {}",
             items.iter().map(|(name, _)| name.as_str()).collect::<Vec<_>>().join(" "),
@@ -248,7 +257,9 @@ fn control_value(control: &Control, cfg: &dyn SettingsSource) -> String {
             let value = crate::contracts::picker::format_config_number(cfg.number(path));
             if unit.is_empty() { value } else { format!("{value} {unit}") }
         }
-        Control::TextField { path, .. } | Control::KeyBinding { path, .. } => cfg.text(path),
+        Control::TextField { path, .. }
+        | Control::Resolution { path, .. }
+        | Control::KeyBinding { path, .. } => cfg.text(path),
         Control::Dropdown { options, current, .. } => options
             .iter()
             .find(|(key, _)| key == current)
@@ -262,7 +273,9 @@ fn control_value(control: &Control, cfg: &dyn SettingsSource) -> String {
             .map(|(label, path, _)| format!("{label} {} ms", cfg.number(path)))
             .collect::<Vec<_>>()
             .join(" · "),
-        Control::ActionBtn { .. } => String::from(tr("settings-control-action")),
+        Control::ActionBtn { .. } | Control::ActionChips { .. } => {
+            String::from(tr("settings-control-action"))
+        }
         Control::Presets { items, .. } => items
             .iter()
             .find(|(_, active)| *active)

@@ -12,8 +12,8 @@ pub(crate) mod test_source;
 
 pub use action::{ActionId, SettingsFocus, SettingsKey, SettingsMsg};
 pub use folio::{
-    ChromeCtx, FocusCtx, KeybindCaptureView, SourceCtx, WorkbenchInput, picker_layout_workbench,
-    settings_workbench,
+    ChromeCtx, FocusCtx, KeybindCaptureView, ProcessPickerView, SourceCtx, WorkbenchInput,
+    picker_layout_workbench, settings_workbench,
 };
 pub use input_ids::{PRESET_NAME_KEY, settings_search_input_id, workbench_input_id};
 pub use layout::picker_layout_studio_width;

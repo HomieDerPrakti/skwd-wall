@@ -4,6 +4,6 @@ pub(super) mod control;
 mod folio;
 
 pub use folio::{
-    ChromeCtx, FocusCtx, KeybindCaptureView, SourceCtx, WorkbenchInput, picker_layout_workbench,
-    settings_workbench,
+    ChromeCtx, FocusCtx, KeybindCaptureView, ProcessPickerView, SourceCtx, WorkbenchInput,
+    picker_layout_workbench, settings_workbench,
 };

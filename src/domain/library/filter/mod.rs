@@ -2,4 +2,6 @@
 mod filter;
 mod tests;
 
-pub use filter::{Filters, ResolutionPreset, filter_sort, insert_index, parse_resolution};
+pub use filter::{
+    Filters, ResolutionPreset, filter_sort, insert_index, parse_resolution, resolution_bounds_valid,
+};

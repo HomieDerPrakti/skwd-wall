@@ -211,6 +211,36 @@ impl Builder<'_> {
         self.row(title, desc, Control::ActionBtn { id, label: label.to_string() });
     }
 
+    pub(super) fn action_chips(&mut self, title: &str, desc: &str, items: &[(ActionId, &str)]) {
+        self.row(
+            title,
+            desc,
+            Control::ActionChips {
+                items: items.iter().map(|(id, label)| (*id, (*label).to_string())).collect(),
+            },
+        );
+    }
+
+    pub(super) fn resolution(
+        &mut self,
+        title: &str,
+        desc: &str,
+        path: &str,
+        width_placeholder: &'static str,
+        height_placeholder: &'static str,
+    ) {
+        self.row(
+            title,
+            desc,
+            Control::Resolution {
+                key: path.to_string(),
+                path: path.to_string(),
+                width_placeholder,
+                height_placeholder,
+            },
+        );
+    }
+
     pub(super) fn details(
         &mut self,
         title: &str,

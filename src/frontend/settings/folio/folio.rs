@@ -161,6 +161,14 @@ pub struct KeybindCaptureView {
     pub conflict: Option<String>,
 }
 
+pub struct ProcessPickerView {
+    pub targets: Vec<String>,
+    pub running: Vec<String>,
+    pub query: String,
+    pub manual: String,
+    pub scroll: f32,
+}
+
 pub struct WorkbenchInput<'a> {
     pub source: SourceCtx<'a>,
     pub focus: FocusCtx<'a>,
@@ -174,6 +182,7 @@ pub struct WorkbenchInput<'a> {
     pub search_query: &'a str,
     pub search_results: &'a [SettingsSearchResult],
     pub keybind_capture: Option<KeybindCaptureView>,
+    pub process_picker: Option<ProcessPickerView>,
 }
 
 pub fn settings_workbench<'a>(input: WorkbenchInput<'a>) -> Element<'a, Message> {
@@ -190,6 +199,7 @@ pub fn settings_workbench<'a>(input: WorkbenchInput<'a>) -> Element<'a, Message>
         search_query,
         search_results,
         keybind_capture,
+        process_picker,
     } = input;
     let ChromeCtx { viewport, scale, entrance, palette } = chrome;
     let motion = source.motion();
@@ -291,7 +301,263 @@ pub fn settings_workbench<'a>(input: WorkbenchInput<'a>) -> Element<'a, Message>
     if let Some(capture) = keybind_capture {
         layers = layers.push(keybind_capture_layer(capture, scale, palette, reveal));
     }
+    if let Some(picker) = process_picker {
+        layers = layers.push(process_picker_layer(picker, scale, palette, reveal));
+    }
     layers.into()
+}
+
+fn process_picker_layer(
+    picker: ProcessPickerView,
+    scale: f32,
+    palette: &Palette,
+    reveal: f32,
+) -> Element<'_, Message> {
+    let ProcessPickerView { targets, running, query, manual, scroll } = picker;
+    let rail_count = running.len().max(2);
+    let rail_active = (scroll.clamp(0.0, 1.0) * (rail_count - 1) as f32).round() as usize;
+    let target_rows: Element<'_, Message> = if targets.is_empty() {
+        container(label(
+            tr("settings-playback-targets-empty"),
+            TYPE_SMALL,
+            scale,
+            with_alpha(palette.surface_text, 0.58),
+        ))
+        .width(Length::Fill)
+        .padding([12.0 * scale, 14.0 * scale])
+        .style(move |_| {
+            crate::frontend::ui::box_style(
+                with_alpha(palette.surface_container, 0.46),
+                with_alpha(palette.outline, 0.3),
+            )
+        })
+        .into()
+    } else {
+        targets
+            .into_iter()
+            .fold(column![].spacing(6.0 * scale), |rows, target| {
+                let remove = crate::frontend::ui::folio_destructive_action(
+                    tr("settings-playback-target-remove"),
+                    false,
+                    Some(Message::Settings(SettingsMsg::ProcessPickerRemove(target.clone()))),
+                    Length::Fixed(80.0 * scale),
+                    scale * 0.76,
+                    palette,
+                );
+                rows.push(
+                    container(
+                        row![
+                            label(
+                                target,
+                                14.0,
+                                scale,
+                                with_alpha(palette.surface_text, GLYPH_FADE)
+                            ),
+                            container(text("")).width(Length::Fill),
+                            remove,
+                        ]
+                        .align_y(Alignment::Center),
+                    )
+                    .width(Length::Fill)
+                    .padding([8.0 * scale, 10.0 * scale])
+                    .style(move |_| {
+                        crate::frontend::ui::box_style(
+                            with_alpha(palette.surface_container, 0.7),
+                            with_alpha(palette.primary, 0.46),
+                        )
+                    }),
+                )
+            })
+            .into()
+    };
+    let running_rows: Element<'_, Message> = if running.is_empty() {
+        container(label(
+            tr("settings-playback-running-empty"),
+            TYPE_SMALL,
+            scale,
+            with_alpha(palette.surface_text, 0.58),
+        ))
+        .width(Length::Fill)
+        .padding([12.0 * scale, 14.0 * scale])
+        .style(move |_| {
+            crate::frontend::ui::box_style(
+                with_alpha(palette.surface_container, 0.46),
+                with_alpha(palette.outline, 0.3),
+            )
+        })
+        .into()
+    } else {
+        running
+            .into_iter()
+            .fold(column![].spacing(6.0 * scale), |rows, process| {
+                let add = crate::frontend::ui::folio_action(
+                    tr("settings-playback-target-add"),
+                    true,
+                    Some(Message::Settings(SettingsMsg::ProcessPickerAdd(process.clone()))),
+                    Length::Fixed(68.0 * scale),
+                    scale * 0.76,
+                    palette,
+                );
+                rows.push(
+                    container(
+                        row![
+                            label(
+                                process,
+                                14.0,
+                                scale,
+                                with_alpha(palette.surface_text, GLYPH_FADE)
+                            ),
+                            container(text("")).width(Length::Fill),
+                            add,
+                        ]
+                        .align_y(Alignment::Center),
+                    )
+                    .width(Length::Fill)
+                    .padding([8.0 * scale, 10.0 * scale])
+                    .style(move |_| {
+                        crate::frontend::ui::box_style(
+                            with_alpha(palette.surface_container, 0.7),
+                            with_alpha(palette.outline, 0.38),
+                        )
+                    }),
+                )
+            })
+            .into()
+    };
+    let close = crate::frontend::ui::folio_action(
+        tr("settings-playback-target-close"),
+        true,
+        Some(Message::Settings(SettingsMsg::ProcessPickerClose)),
+        Length::Fixed(76.0 * scale),
+        scale * 0.82,
+        palette,
+    );
+    let body = column![
+        row![
+            label(
+                tr("settings-playback-target-dialog-title"),
+                20.0,
+                scale,
+                with_alpha(palette.surface_text, GLYPH_FADE),
+            ),
+            container(text("")).width(Length::Fill),
+            label(
+                tr("settings-playback-process-enabled"),
+                TYPE_SMALL,
+                scale,
+                with_alpha(palette.primary, GLYPH_FADE),
+            ),
+        ]
+        .align_y(Alignment::Center),
+        label(
+            tr("settings-playback-target-dialog-desc"),
+            TYPE_SMALL,
+            scale,
+            with_alpha(palette.surface_text, 0.65),
+        )
+        .line_height(iced::widget::text::LineHeight::Relative(1.35)),
+        crate::frontend::ui::folio_horizontal_rule(with_alpha(palette.outline, 0.46)),
+        label(
+            tr("settings-playback-targets"),
+            12.0,
+            scale,
+            with_alpha(palette.primary, GLYPH_FADE)
+        ),
+        target_rows,
+        label(
+            tr("settings-playback-running"),
+            12.0,
+            scale,
+            with_alpha(palette.primary, GLYPH_FADE)
+        ),
+        row![
+            label("⌕", 15.0, scale, with_alpha(palette.primary, GLYPH_FADE)),
+            text_input(tr("browser-search-placeholder"), &query)
+                .font(crate::frontend::ui::UI_FONT)
+                .on_input(|query| Message::Settings(SettingsMsg::ProcessPickerSearch(query)))
+                .size(12.0 * crate::frontend::ui::legible_type_scale(scale))
+                .padding([8.0 * scale, 9.0 * scale])
+                .width(Length::Fill)
+                .style(move |_theme, _status| {
+                    crate::frontend::ui::workbench_input_style(
+                        palette.surface_text,
+                        palette.primary,
+                    )
+                }),
+        ]
+        .spacing(8.0 * scale)
+        .align_y(Alignment::Center),
+        row![
+            text_input(tr("settings-playback-target-manual-placeholder"), &manual)
+                .font(crate::frontend::ui::UI_FONT)
+                .on_input(|process| Message::Settings(SettingsMsg::ProcessPickerManualInput(
+                    process
+                )))
+                .on_submit(Message::Settings(SettingsMsg::ProcessPickerManualAdd))
+                .size(12.0 * crate::frontend::ui::legible_type_scale(scale))
+                .padding([8.0 * scale, 9.0 * scale])
+                .width(Length::Fill)
+                .style(move |_theme, _status| {
+                    crate::frontend::ui::workbench_input_style(
+                        palette.surface_text,
+                        palette.primary,
+                    )
+                }),
+            crate::frontend::ui::folio_action(
+                tr("settings-playback-target-add"),
+                true,
+                Some(Message::Settings(SettingsMsg::ProcessPickerManualAdd)),
+                Length::Fixed(68.0 * scale),
+                scale * 0.76,
+                palette,
+            ),
+        ]
+        .spacing(8.0 * scale)
+        .align_y(Alignment::Center),
+        row![
+            scrollable(running_rows)
+                .height(Length::Fixed(142.0 * scale))
+                .width(Length::Fill)
+                .direction(iced::widget::scrollable::Direction::Vertical(
+                    iced::widget::scrollable::Scrollbar::new().width(0.0).scroller_width(0.0),
+                ))
+                .on_scroll(|viewport| {
+                    Message::Settings(SettingsMsg::ProcessPickerScroll(
+                        viewport.relative_offset().y,
+                    ))
+                }),
+            iced::widget::canvas(IndexRail {
+                active: rail_active,
+                count: rail_count,
+                notches: false,
+                palette: *palette,
+                fade: GLYPH_FADE,
+            })
+            .width(Length::Fixed(16.0 * scale))
+            .height(Length::Fixed(142.0 * scale)),
+        ]
+        .spacing(8.0 * scale),
+        crate::frontend::ui::folio_horizontal_rule(with_alpha(palette.outline, 0.46)),
+        row![container(text("")).width(Length::Fill), close].align_y(Alignment::Center),
+    ]
+    .spacing(12.0 * scale);
+    let panel = mouse_area(
+        container(body)
+            .width(Length::Fixed(500.0 * scale.max(0.9)))
+            .padding([20.0 * scale, 22.0 * scale])
+            .style(move |_| crate::frontend::ui::folio_sheet_panel_style(palette, reveal)),
+    )
+    .on_press(Message::Noop);
+    mouse_area(
+        container(panel)
+            .width(Length::Fill)
+            .height(Length::Fill)
+            .center_x(Length::Fill)
+            .center_y(Length::Fill)
+            .style(move |_| crate::frontend::ui::folio_scrim_style(0.6 * reveal)),
+    )
+    .on_press(Message::Settings(SettingsMsg::ProcessPickerClose))
+    .into()
 }
 
 fn keybind_capture_layer(
@@ -603,9 +869,9 @@ fn picker_layout_field<'a>(
         );
     }
     let locked = focus.active_input.is_some_and(|key| match &setting.control {
-        Control::Number { key: control_key, .. } | Control::TextField { key: control_key, .. } => {
-            control_key == key
-        }
+        Control::Number { key: control_key, .. }
+        | Control::TextField { key: control_key, .. }
+        | Control::Resolution { key: control_key, .. } => control_key == key,
         _ => false,
     });
     let title = if setting.title.is_empty() {
@@ -725,6 +991,7 @@ fn navigation<'a>(
         iced::widget::canvas(IndexRail {
             active: active_tab,
             count: tabs.len(),
+            notches: true,
             palette: *palette,
             fade,
         })
@@ -1687,9 +1954,9 @@ fn field<'a>(
         );
     }
     let locked = focus.active_input.is_some_and(|key| match &control {
-        Control::Number { key: control_key, .. } | Control::TextField { key: control_key, .. } => {
-            control_key == key
-        }
+        Control::Number { key: control_key, .. }
+        | Control::TextField { key: control_key, .. }
+        | Control::Resolution { key: control_key, .. } => control_key == key,
         Control::MotionWeights { weights } => {
             weights.iter().any(|(_, control_key, _)| control_key == key)
         }
@@ -1760,6 +2027,33 @@ fn detail_rows<'a>(
 ) -> Element<'a, Message> {
     let mut content = column![].spacing(15.0 * scale);
     for row in rows {
+        if let Control::Details { id, summary, rows } = row.control {
+            let expanded = focus.expanded_details.contains(&id);
+            let body = detail_rows(
+                rows,
+                parent_index,
+                values,
+                has_selected_preset,
+                (available_width - 24.0 * scale).max(160.0 * scale),
+                scale * 0.94,
+                palette,
+                fade,
+                focus,
+                motion,
+            );
+            content = content.push(crate::frontend::ui::folio_details(
+                row.title,
+                summary,
+                row.desc,
+                expanded,
+                false,
+                Message::Settings(SettingsMsg::ToggleDetails(id, parent_index)),
+                body,
+                scale * 0.94,
+                palette,
+            ));
+            continue;
+        }
         if row.control.is_inline_editor() {
             content = content.push(compact_inline_field(
                 row,
@@ -1850,6 +2144,7 @@ fn tracker_position(active: usize, count: usize) -> f32 {
 struct IndexRail {
     active: usize,
     count: usize,
+    notches: bool,
     palette: Palette,
     fade: f32,
 }
@@ -1875,14 +2170,16 @@ impl canvas::Program<Message> for IndexRail {
                 .with_color(with_alpha(self.palette.outline, 0.48 * self.fade))
                 .with_width(1.0),
         );
-        for index in 0..self.count {
-            let y = top + (bottom - top) * tracker_position(index, self.count);
-            frame.stroke(
-                &Path::line(Point::new(x - 2.5, y), Point::new(x + 2.5, y)),
-                Stroke::default()
-                    .with_color(with_alpha(self.palette.outline, 0.58 * self.fade))
-                    .with_width(1.0),
-            );
+        if self.notches {
+            for index in 0..self.count {
+                let y = top + (bottom - top) * tracker_position(index, self.count);
+                frame.stroke(
+                    &Path::line(Point::new(x - 2.5, y), Point::new(x + 2.5, y)),
+                    Stroke::default()
+                        .with_color(with_alpha(self.palette.outline, 0.58 * self.fade))
+                        .with_width(1.0),
+                );
+            }
         }
         let y = top + (bottom - top) * tracker_position(self.active, self.count);
         let radius = 5.0;

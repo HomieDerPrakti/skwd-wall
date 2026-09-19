@@ -62,6 +62,17 @@ settings-theme-profile-desc = Edita los colores actuales y guarda un perfil para
 settings-paper-overview-only-desc = Requiere Fondo y place-within-backdrop. Pausa mientras la vista general está cerrada.
 
 settings-playback-choose-process = Elegir un proceso en ejecución
+settings-playback-target-dialog-title = Objetivos de pausa automática
+settings-playback-target-dialog-desc = Añade un proceso en ejecución para pausar los fondos animados mientras esté abierto. Elimina los objetivos que ya no deban pausarlos.
+settings-playback-targets = Objetivos
+settings-playback-targets-empty = No hay objetivos de proceso configurados.
+settings-playback-running = Procesos en ejecución
+settings-playback-running-empty = No se devolvieron procesos en ejecución.
+settings-playback-target-add = Añadir
+settings-playback-target-remove = Eliminar
+settings-playback-target-close = Cerrar
+settings-playback-target-action-desc = Consulta los objetivos que pausan fondos y añade un proceso en ejecución.
+settings-playback-target-manual-placeholder = Nombre del proceso, por ejemplo mpv
 
 settings-playback-maximized = Pausar con ventanas maximizadas
 
@@ -77,7 +88,6 @@ settings-playback-paused-maximized = En pausa: ventana maximizada
 
 settings-playback-paused-fullscreen = En pausa: ventana a pantalla completa
 
-settings-playback-processes-desc = Separa los nombres de ejecutables con comas. No se distinguen mayúsculas y minúsculas ni el sufijo .exe.
 
 settings-paper-layer-label = Capa del fondo
 

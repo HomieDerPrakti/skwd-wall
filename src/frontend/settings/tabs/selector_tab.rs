@@ -915,6 +915,27 @@ pub(super) fn tab_filter(builder: &mut Builder<'_>, folders: &[String]) {
         tr("settings-filter-resolution-presets-card"),
         tr("settings-filter-resolution-presets-card-desc"),
     );
+    builder.action_chips(
+        tr("settings-filter-resolution-add-label"),
+        tr("settings-filter-resolution-add-desc"),
+        &[
+            (
+                ActionId::CreateResolutionPresetBand("fhd"),
+                tr("settings-filter-resolution-band-fhd"),
+            ),
+            (
+                ActionId::CreateResolutionPresetBand("qhd"),
+                tr("settings-filter-resolution-band-qhd"),
+            ),
+            (ActionId::CreateResolutionPresetBand("4k"), tr("settings-filter-resolution-band-4k")),
+            (ActionId::CreateResolutionPresetBand("5k"), tr("settings-filter-resolution-band-5k")),
+            (ActionId::CreateResolutionPresetBand("8k"), tr("settings-filter-resolution-band-8k")),
+            (
+                ActionId::CreateResolutionPresetBand("custom"),
+                tr("settings-filter-resolution-band-custom"),
+            ),
+        ],
+    );
     let resolution_presets = builder.cfg.array_len(keys::filter_bar::RESOLUTION_PRESETS);
     for idx in 0..resolution_presets {
         let base = format!("{}.{idx}", keys::filter_bar::RESOLUTION_PRESETS);
@@ -936,9 +957,27 @@ pub(super) fn tab_filter(builder: &mut Builder<'_>, folders: &[String]) {
         } else {
             tr("settings-filter-preset-orientation-wide")
         };
-        let dimensions =
-            if to.trim().is_empty() { format!("{from}+") } else { format!("{from} - {to}") };
+        let display_bound = |value: &str| {
+            crate::domain::library::filter::parse_resolution(value).map_or_else(
+                || value.to_string(),
+                |(width, height)| {
+                    let (width, height) = if orientation == "tall" {
+                        (width.min(height), width.max(height))
+                    } else {
+                        (width.max(height), width.min(height))
+                    };
+                    format!("{width} × {height}")
+                },
+            )
+        };
+        let dimensions = if to.trim().is_empty() {
+            format!("{}+", display_bound(&from))
+        } else {
+            format!("{} - {}", display_bound(&from), display_bound(&to))
+        };
         let range = format!("{orientation_label} · {dimensions}");
+        let custom_id = format!("{base}.custom");
+        let custom_summary = dimensions;
         builder.details(&title, tr("settings-filter-preset-item-desc"), base, range, |builder| {
             builder.text_field(
                 tr("settings-filter-preset-label-label"),
@@ -946,7 +985,7 @@ pub(super) fn tab_filter(builder: &mut Builder<'_>, folders: &[String]) {
                 &label_path,
                 tr("settings-filter-preset-name-placeholder"),
             );
-            builder.dropdown(
+            builder.chips(
                 tr("settings-filter-preset-orientation-label"),
                 tr("settings-filter-preset-orientation-desc"),
                 &orientation_path,
@@ -955,17 +994,27 @@ pub(super) fn tab_filter(builder: &mut Builder<'_>, folders: &[String]) {
                     ("tall", tr("settings-filter-preset-orientation-tall")),
                 ],
             );
-            builder.text_field(
-                tr("settings-filter-preset-from-label"),
-                tr("settings-filter-preset-from-desc"),
-                &from_path,
-                tr("settings-filter-preset-resolution-placeholder"),
-            );
-            builder.text_field(
-                tr("settings-filter-preset-to-label"),
-                tr("settings-filter-preset-to-desc"),
-                &to_path,
-                tr("settings-filter-preset-resolution-placeholder"),
+            builder.details(
+                tr("settings-filter-resolution-band-custom"),
+                tr("settings-filter-resolution-custom-desc"),
+                custom_id,
+                custom_summary,
+                |builder| {
+                    builder.resolution(
+                        tr("settings-filter-preset-from-label"),
+                        tr("settings-filter-preset-from-desc"),
+                        &from_path,
+                        tr("settings-filter-preset-resolution-width-placeholder"),
+                        tr("settings-filter-preset-resolution-height-placeholder"),
+                    );
+                    builder.resolution(
+                        tr("settings-filter-preset-to-label"),
+                        tr("settings-filter-preset-to-desc"),
+                        &to_path,
+                        tr("settings-filter-preset-resolution-width-placeholder"),
+                        tr("settings-filter-preset-resolution-height-placeholder"),
+                    );
+                },
             );
             builder.action(
                 "",
@@ -975,12 +1024,6 @@ pub(super) fn tab_filter(builder: &mut Builder<'_>, folders: &[String]) {
             );
         });
     }
-    builder.action(
-        tr("settings-filter-add-preset-label"),
-        tr("settings-filter-add-preset-desc"),
-        ActionId::AddResolutionPreset,
-        tr("settings-filter-add-action"),
-    );
     builder.card(
         tr("settings-filter-default-folder-card"),
         tr("settings-filter-default-folder-card-desc"),

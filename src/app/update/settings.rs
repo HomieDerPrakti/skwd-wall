@@ -11,6 +11,40 @@ use crate::frontend::settings::{
 pub(super) fn update(app: &mut App, msg: SettingsMsg) -> Task<Message> {
     match msg {
         SettingsMsg::Input(key, raw) => settings_input(app, &key, &raw),
+        SettingsMsg::ResolutionInput(key, width, raw) => {
+            if !raw.bytes().all(|byte| byte.is_ascii_digit()) || raw.len() > 9 {
+                return Task::none();
+            }
+            if app.panels.settings.input_edit.as_ref().is_some_and(|edit| edit.key != key) {
+                commit_settings_input_edit(app);
+            }
+            begin_settings_input_edit(app, &key);
+            app.panels.settings.resolution_height = !width;
+            let current = app
+                .panels
+                .settings
+                .inputs
+                .get(&key)
+                .cloned()
+                .unwrap_or_else(|| app.config.str_path(&key));
+            let (current_width, current_height) =
+                current.split_once(['x', 'X', '×']).unwrap_or(("", ""));
+            let value = if width {
+                format!("{raw}x{current_height}")
+            } else {
+                format!("{current_width}x{raw}")
+            };
+            settings_input(app, &key, if value == "x" { "" } else { &value })
+        }
+        SettingsMsg::ResolutionLimit(key, enabled) => {
+            let Some(base) = key.strip_suffix(".to") else { return Task::none() };
+            commit_settings_input_edit(app);
+            let value =
+                if enabled { app.config.str_path(&format!("{base}.from")) } else { String::new() };
+            let task = settings_input(app, &key, &value);
+            super::settings_policy::flush_staged(app);
+            task
+        }
         SettingsMsg::Toggle(path, value) => settings_toggle(app, &path, value),
         SettingsMsg::Commit => settings_commit(app),
         SettingsMsg::Pick(path, value) => settings_pick(app, &path, &value),
@@ -101,7 +135,74 @@ pub(super) fn update(app: &mut App, msg: SettingsMsg) -> Task<Message> {
             );
             Task::none()
         }
+        SettingsMsg::ProcessPickerClose => {
+            app.panels.settings.process_picker_open = false;
+            app.panels.settings.process_picker_query.clear();
+            app.panels.settings.process_picker_manual.clear();
+            app.panels.settings.process_picker_scroll = 0.0;
+            app.retick();
+            Task::none()
+        }
+        SettingsMsg::ProcessPickerSearch(query) => {
+            app.panels.settings.process_picker_query = query;
+            app.retick();
+            Task::none()
+        }
+        SettingsMsg::ProcessPickerManualInput(process) => {
+            app.panels.settings.process_picker_manual = process;
+            app.retick();
+            Task::none()
+        }
+        SettingsMsg::ProcessPickerManualAdd => {
+            let process = app.panels.settings.process_picker_manual.trim().to_string();
+            if !process.is_empty() {
+                let task = process_picker_add(app, &process);
+                app.panels.settings.process_picker_manual.clear();
+                return task;
+            }
+            Task::none()
+        }
+        SettingsMsg::ProcessPickerScroll(offset) => {
+            app.panels.settings.process_picker_scroll = offset;
+            app.retick();
+            Task::none()
+        }
+        SettingsMsg::ProcessPickerAdd(process) => process_picker_add(app, &process),
+        SettingsMsg::ProcessPickerRemove(process) => process_picker_remove(app, &process),
     }
+}
+
+fn process_picker_add(app: &mut App, process: &str) -> Task<Message> {
+    let mut processes = configured_processes(app);
+    if !processes.iter().any(|name| name == process) {
+        processes.push(process.to_string());
+        save_processes(app, &processes);
+    }
+    Task::none()
+}
+
+fn process_picker_remove(app: &mut App, process: &str) -> Task<Message> {
+    let mut processes = configured_processes(app);
+    processes.retain(|name| name != process);
+    save_processes(app, &processes);
+    Task::none()
+}
+
+fn configured_processes(app: &App) -> Vec<String> {
+    app.config
+        .str_path(skwd_config::keys::playback::PROCESSES)
+        .split(',')
+        .map(str::trim)
+        .filter(|name| !name.is_empty())
+        .map(str::to_string)
+        .collect()
+}
+
+fn save_processes(app: &mut App, processes: &[String]) {
+    app.config.save_key(skwd_config::keys::playback::PROCESSES, json!(processes.join(", ")));
+    app.init_settings_inputs();
+    app.invalidate_settings();
+    app.retick();
 }
 
 fn open_keybind_capture(app: &mut App, path: &str) -> Task<Message> {
@@ -228,6 +329,20 @@ fn settings_key(app: &mut App, key: SettingsKey) -> Task<Message> {
             }
         }
         SettingsKey::FocusNext { backwards } => {
+            if let Some(edit) = &app.panels.settings.input_edit
+                && edit.key.starts_with(skwd_config::keys::filter_bar::RESOLUTION_PRESETS)
+                && (edit.key.ends_with(".from") || edit.key.ends_with(".to"))
+                && app.panels.settings.resolution_height == backwards
+            {
+                app.panels.settings.resolution_height = !backwards;
+                return iced::widget::operation::focus(
+                    crate::frontend::settings::workbench_input_id(&format!(
+                        "{}.{}",
+                        edit.key,
+                        if backwards { "width" } else { "height" }
+                    )),
+                );
+            }
             if let Some(task) = tab_within_motion_weights(app, backwards) {
                 return task;
             }
@@ -426,6 +541,7 @@ fn settings_control_positions(
 fn choice_count(control: &Control) -> usize {
     match control {
         Control::Dropdown { options, .. } | Control::Chips { options, .. } => options.len(),
+        Control::ActionChips { items } => items.len(),
         Control::Presets { items, .. } => 1 + items.len() * 2,
         _ => 0,
     }
@@ -438,6 +554,7 @@ fn choice_enabled(control: &Control, index: usize) -> bool {
             options.get(index).is_some_and(|(key, _)| !disabled.contains(key))
         }
         Control::Presets { items, .. } => index < 1 + items.len() * 2,
+        Control::ActionChips { items } => index < items.len(),
         _ => false,
     }
 }
@@ -740,6 +857,18 @@ fn activate_settings_control(app: &mut App) -> Task<Message> {
             begin_settings_input_edit(app, &key);
             iced::widget::operation::focus(crate::frontend::settings::workbench_input_id(&key))
         }
+        Control::Resolution { key, .. } => {
+            if key.ends_with(".to")
+                && app.panels.settings.inputs.get(&key).is_none_or(String::is_empty)
+            {
+                return update(app, SettingsMsg::ResolutionLimit(key, true));
+            }
+            app.panels.settings.resolution_height = false;
+            begin_settings_input_edit(app, &key);
+            iced::widget::operation::focus(crate::frontend::settings::workbench_input_id(&format!(
+                "{key}.width"
+            )))
+        }
         Control::MotionWeights { weights } => {
             let Some((_, key, _)) = weights.first() else {
                 return Task::none();
@@ -775,6 +904,15 @@ fn activate_settings_control(app: &mut App) -> Task<Message> {
             if disabled.contains(value) { Task::none() } else { settings_pick(app, &path, value) }
         }
         Control::ActionBtn { id, .. } | Control::ToggleAction { id, .. } => settings_run(app, id),
+        Control::ActionChips { items } => {
+            let Some(choice) = app.panels.settings.focused_choice else {
+                app.panels.settings.focused_choice = Some(0);
+                app.retick();
+                return Task::none();
+            };
+            app.panels.settings.focused_choice = None;
+            items.get(choice).map_or_else(Task::none, |(id, _)| settings_run(app, *id))
+        }
         Control::Presets { mode, items } => {
             let Some(choice) = app.panels.settings.focused_choice else {
                 app.panels.settings.focused_choice = Some(
@@ -868,6 +1006,7 @@ pub(super) fn settings_input(app: &mut App, key: &str, raw: &str) -> Task<Messag
     settings_input_store(app, key, raw);
     if key.starts_with(skwd_config::keys::filter_bar::RESOLUTION_PRESETS) {
         refresh_resolution_presets(app);
+        app.invalidate_settings();
     }
     if super::settings_policy::is_keybind(key) {
         app.reload_bindings();
@@ -877,6 +1016,35 @@ pub(super) fn settings_input(app: &mut App, key: &str, raw: &str) -> Task<Messag
 }
 
 pub(super) fn settings_input_store(app: &mut App, key: &str, raw: &str) {
+    if key.starts_with(skwd_config::keys::filter_bar::RESOLUTION_PRESETS) {
+        if let Some(base) = key.strip_suffix(".from").or_else(|| key.strip_suffix(".to")) {
+            let from_key = format!("{base}.from");
+            let to_key = format!("{base}.to");
+            let from = app
+                .panels
+                .settings
+                .inputs
+                .get(&from_key)
+                .cloned()
+                .unwrap_or_else(|| app.config.str_path(&from_key));
+            let to = app
+                .panels
+                .settings
+                .inputs
+                .get(&to_key)
+                .cloned()
+                .unwrap_or_else(|| app.config.str_path(&to_key));
+            if crate::domain::library::filter::resolution_bounds_valid(&from, &to) {
+                super::settings_policy::stage_value(app, &from_key, &json!(from));
+                super::settings_policy::stage_value(app, &to_key, &json!(to));
+            }
+            return;
+        }
+        if key.ends_with(".label") {
+            super::settings_policy::stage_value(app, key, &json!(raw));
+            return;
+        }
+    }
     let is_text = !raw.trim().is_empty() && raw.trim().parse::<f64>().is_err();
     let resolution_dimension = key.starts_with(skwd_config::keys::filter_bar::RESOLUTION_PRESETS)
         && (key.ends_with(".width") || key.ends_with(".height"));
@@ -951,21 +1119,8 @@ pub(super) fn set_settings_tab(app: &mut App, tab: String) -> Task<Message> {
 
 pub(super) fn settings_pick(app: &mut App, path: &str, value: &str) -> Task<Message> {
     if path == "playback.addProcess" {
-        let mut processes = app
-            .config
-            .str_path(skwd_config::keys::playback::PROCESSES)
-            .split(',')
-            .map(str::trim)
-            .filter(|name| !name.is_empty())
-            .map(str::to_string)
-            .collect::<Vec<_>>();
-        if !processes.iter().any(|name| name == value) {
-            processes.push(value.to_string());
-        }
-        app.config.save_key(skwd_config::keys::playback::PROCESSES, json!(processes.join(", ")));
+        let _ = process_picker_add(app, value);
         app.daemon.playback.available_processes.clear();
-        app.init_settings_inputs();
-        app.retick();
         return Task::none();
     }
 
@@ -1021,6 +1176,24 @@ pub(super) fn settings_pick(app: &mut App, path: &str, value: &str) -> Task<Mess
 }
 
 pub(super) fn settings_pick_side_effects(app: &mut App, path: &str, value: &str) {
+    if path.starts_with(skwd_config::keys::filter_bar::RESOLUTION_PRESETS)
+        && let Some(base) = path.strip_suffix(".orientation")
+    {
+        for bound in ["from", "to"] {
+            let key = format!("{base}.{bound}");
+            if let Some((width, height)) =
+                crate::domain::library::filter::parse_resolution(&app.config.str_path(&key))
+            {
+                let (width, height) = if value == "tall" {
+                    (width.min(height), width.max(height))
+                } else {
+                    (width.max(height), width.min(height))
+                };
+                app.config.save_key(&key, json!(format!("{width}x{height}")));
+            }
+        }
+        refresh_resolution_presets(app);
+    }
     if path == skwd_config::keys::filter_bar::DEFAULT_FOLDER {
         let folder = app.config.default_folder();
         app.change_filters(|flt| flt.folder = folder);
@@ -1066,7 +1239,7 @@ const ARRAY_ACTIONS: &[ArrayAction] = &[
         add: ActionId::AddResolutionPreset,
         remove: ActionId::RemoveResolutionPreset,
         key: skwd_config::keys::filter_bar::RESOLUTION_PRESETS,
-        template: || json!({"label": "NEW", "orientation": "wide", "from": "", "to": ""}),
+        template: || json!({"label": crate::i18n::tr("settings-filter-resolution-band-custom"), "orientation": "wide", "from": "1920x1080", "to": ""}),
         after: Some(refresh_resolution_presets),
     },
     ArrayAction {
@@ -1225,6 +1398,7 @@ pub(super) fn settings_run(app: &mut App, id: ActionId) -> Task<Message> {
         | ActionId::AddResolutionPreset
         | ActionId::RemoveResolutionPreset(_)
         | ActionId::AddSemanticModel => run_array_action(app, id),
+        ActionId::CreateResolutionPresetBand(band) => add_resolution_preset_band(app, band),
         ActionId::RemoveSemanticModel(_) => {
             run_array_action(app, id);
             reconcile_semantic_model(app);
@@ -1233,7 +1407,10 @@ pub(super) fn settings_run(app: &mut App, id: ActionId) -> Task<Message> {
             crate::app::helpers::sched_open(app);
         }
         ActionId::ChooseRunningProcess => {
+            app.panels.settings.process_picker_open = true;
+            app.panels.settings.process_picker_query.clear();
             app.call_tracked("playback.processes", json!({}), Pending::PlaybackProcesses);
+            app.retick();
         }
         ActionId::OpenThemeDesigner => {
             crate::app::helpers::theme_designer_open(app);
@@ -1377,6 +1554,30 @@ fn reset_motion_weight(app: &mut App, path: &str) {
     app.init_settings_inputs();
     app.invalidate_settings();
     app.retick();
+}
+
+fn add_resolution_preset_band(app: &mut App, band: &str) {
+    let (label, from, to) = match band {
+        "fhd" => ("settings-filter-resolution-band-fhd", "1920x1080", "2559x1439"),
+        "qhd" => ("settings-filter-resolution-band-qhd", "2560x1440", "3839x2159"),
+        "4k" => ("settings-filter-resolution-band-4k", "3840x2160", "5119x2879"),
+        "5k" => ("settings-filter-resolution-band-5k", "5120x2880", "7679x4319"),
+        "8k" => ("settings-filter-resolution-band-8k", "7680x4320", ""),
+        "custom" => ("settings-filter-resolution-band-custom", "1920x1080", ""),
+        _ => return,
+    };
+    let root = skwd_config::keys::filter_bar::RESOLUTION_PRESETS;
+    let base = format!("{root}.{}", app.config.array_len(root));
+    let preset =
+        json!({"label": crate::i18n::tr(label), "orientation": "wide", "from": from, "to": to});
+    app.config.array_push(skwd_config::keys::filter_bar::RESOLUTION_PRESETS, preset);
+    if band == "custom" {
+        app.panels.settings.expanded_details.insert(format!("{base}.custom"));
+    }
+    app.panels.settings.expanded_details.insert(base);
+    app.init_settings_inputs();
+    app.invalidate_settings();
+    refresh_resolution_presets(app);
 }
 
 fn refresh_resolution_presets(app: &mut App) {

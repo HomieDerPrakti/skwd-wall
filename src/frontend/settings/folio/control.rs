@@ -472,6 +472,122 @@ pub(super) fn widget<'a>(
             }
             input.into()
         }
+        Control::Resolution { key, width_placeholder, height_placeholder, .. } => {
+            let value = values.get(&key).map_or("", String::as_str);
+            let maximum = key.ends_with(".to");
+            if maximum && value.is_empty() {
+                return row![
+                    label(
+                        tr("settings-filter-resolution-unlimited"),
+                        13.0,
+                        scale,
+                        with_alpha(palette.surface_text, fade)
+                    ),
+                    option_button(
+                        tr("settings-filter-resolution-set-limit").into(),
+                        false,
+                        false,
+                        Message::Settings(SettingsMsg::ResolutionLimit(key, true)),
+                        keyboard_focused,
+                        scale,
+                        palette,
+                        fade,
+                        motion,
+                    ),
+                ]
+                .spacing(12.0 * scale)
+                .align_y(Alignment::Center)
+                .into();
+            }
+            let (width, height) = value.split_once(['x', 'X', '×']).unwrap_or(("", ""));
+            let width_key = key.clone();
+            let height_key = key.clone();
+            let width_input = text_input(width_placeholder, width)
+                .id(super::super::workbench_input_id(&format!("{key}.width")))
+                .font(crate::frontend::ui::UI_FONT)
+                .on_input(move |raw| {
+                    Message::Settings(SettingsMsg::ResolutionInput(width_key.clone(), true, raw))
+                })
+                .on_submit(Message::Settings(SettingsMsg::Commit))
+                .size(13.0 * legible_type_scale(scale))
+                .padding([8.0 * scale, 10.0 * scale])
+                .width(Length::Fill)
+                .style(move |_theme, _status| {
+                    crate::frontend::ui::workbench_input_style(
+                        with_alpha(palette.surface_text, fade),
+                        with_alpha(palette.primary, fade),
+                    )
+                });
+            let height_input = text_input(height_placeholder, height)
+                .id(super::super::workbench_input_id(&format!("{key}.height")))
+                .font(crate::frontend::ui::UI_FONT)
+                .on_input(move |raw| {
+                    Message::Settings(SettingsMsg::ResolutionInput(height_key.clone(), false, raw))
+                })
+                .on_submit(Message::Settings(SettingsMsg::Commit))
+                .size(13.0 * legible_type_scale(scale))
+                .padding([8.0 * scale, 10.0 * scale])
+                .width(Length::Fill)
+                .style(move |_theme, _status| {
+                    crate::frontend::ui::workbench_input_style(
+                        with_alpha(palette.surface_text, fade),
+                        with_alpha(palette.primary, fade),
+                    )
+                });
+            let dimensions = row![
+                column![
+                    label(
+                        width_placeholder,
+                        11.0,
+                        scale,
+                        with_alpha(palette.surface_text, 0.68 * fade)
+                    ),
+                    width_input
+                ]
+                .spacing(4.0 * scale)
+                .width(Length::Fill),
+                label("×", 14.0, scale, with_alpha(palette.surface_text, 0.56 * fade)),
+                column![
+                    label(
+                        height_placeholder,
+                        11.0,
+                        scale,
+                        with_alpha(palette.surface_text, 0.68 * fade)
+                    ),
+                    height_input
+                ]
+                .spacing(4.0 * scale)
+                .width(Length::Fill),
+            ]
+            .spacing(8.0 * scale)
+            .align_y(Alignment::End);
+            let mut editor = column![dimensions].spacing(8.0 * scale);
+            if maximum {
+                editor = editor.push(option_button(
+                    tr("settings-filter-resolution-clear-limit").into(),
+                    false,
+                    false,
+                    Message::Settings(SettingsMsg::ResolutionLimit(key.clone(), false)),
+                    false,
+                    scale,
+                    palette,
+                    fade,
+                    motion,
+                ));
+            }
+            let base = key.rsplit_once('.').map_or("", |(base, _)| base);
+            let from = values.get(&format!("{base}.from")).map_or("", String::as_str);
+            let to = values.get(&format!("{base}.to")).map_or("", String::as_str);
+            if !crate::domain::library::filter::resolution_bounds_valid(from, to) {
+                editor = editor.push(label(
+                    tr("settings-filter-resolution-invalid"),
+                    11.0,
+                    scale,
+                    with_alpha(palette.primary, fade),
+                ));
+            }
+            editor.into()
+        }
         Control::Dropdown { path, options, current, palettes } => choice_buttons(
             &path,
             options,
@@ -568,6 +684,32 @@ pub(super) fn widget<'a>(
                 motion,
             )
         }
+        Control::ActionChips { items } => wrapped_options(
+            items
+                .into_iter()
+                .enumerate()
+                .map(|(index, (id, label))| {
+                    let width = button_width(&label, scale);
+                    (
+                        width,
+                        fixed_button(
+                            label,
+                            false,
+                            false,
+                            Some(Message::Settings(SettingsMsg::Run(id))),
+                            keyboard_focused && focused_choice == Some(index),
+                            scale,
+                            palette,
+                            fade,
+                            width,
+                            motion,
+                        ),
+                    )
+                })
+                .collect(),
+            available_width,
+            scale,
+        ),
         Control::Presets { mode, items } => {
             let mut options = vec![(
                 button_width(tr("settings-selector-preset-save-current"), scale),

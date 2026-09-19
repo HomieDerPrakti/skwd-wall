@@ -79,15 +79,9 @@ pub(super) fn tab_paper(builder: &mut Builder<'_>) {
         tr("settings-playback-process-desc"),
         keys::playback::PROCESS_ENABLED,
     );
-    builder.text_field(
-        tr("settings-playback-processes"),
-        tr("settings-playback-processes-desc"),
-        keys::playback::PROCESSES,
-        "Overwatch.exe, mpv",
-    );
     builder.action(
-        tr("settings-playback-choose-process"),
-        "",
+        tr("settings-playback-processes"),
+        tr("settings-playback-target-action-desc"),
         ActionId::ChooseRunningProcess,
         tr("settings-playback-choose-process"),
     );

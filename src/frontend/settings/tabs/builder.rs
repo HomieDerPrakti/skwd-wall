@@ -605,22 +605,6 @@ fn compose_playback(
             desc: status.outputs.join(", "),
             control: Control::Static,
         });
-        if !status.available_processes.is_empty() {
-            pause.push(Row {
-                title: tr("settings-playback-choose-process").to_string(),
-                desc: String::new(),
-                control: Control::Dropdown {
-                    path: "playback.addProcess".to_string(),
-                    current: String::new(),
-                    palettes: Vec::new(),
-                    options: status
-                        .available_processes
-                        .iter()
-                        .map(|name| (name.clone(), name.clone()))
-                        .collect(),
-                },
-            });
-        }
     }
     section(
         &mut out,

@@ -134,6 +134,10 @@ pub fn parse_resolution(value: &str) -> Option<(i64, i64)> {
     (width > 0 && height > 0).then_some((width, height))
 }
 
+pub fn resolution_bounds_valid(from: &str, to: &str) -> bool {
+    parse_resolution_range(&format!("{from}..{to}")).is_some()
+}
+
 fn parse_resolution_range(
     value: &str,
 ) -> Option<(ResolutionOrientation, (i64, i64), Option<(i64, i64)>)> {

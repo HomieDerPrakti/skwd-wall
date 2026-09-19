@@ -121,6 +121,188 @@ fn resolution_presets_use_ranges() {
 }
 
 #[test]
+fn resolution_preset_bands_create_complete_ranges() {
+    use crate::frontend::settings::{ActionId, SettingsMsg};
+
+    let mut app = test_app();
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Run(ActionId::CreateResolutionPresetBand("4k"))),
+    );
+    let preset = &app.config.resolution_presets()[0];
+    assert_eq!(preset.label, "4K");
+    assert_eq!(preset.orientation, "wide");
+    assert_eq!((preset.from_width, preset.from_height), (3840, 2160));
+    assert_eq!((preset.to_width, preset.to_height), (Some(5119), Some(2879)));
+
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Run(ActionId::CreateResolutionPresetBand("8k"))),
+    );
+    let preset = &app.config.resolution_presets()[1];
+    assert_eq!(preset.label, "8K+");
+    assert_eq!((preset.to_width, preset.to_height), (None, None));
+}
+
+#[test]
+fn resolution_preset_dimensions_store_a_width_and_height_pair() {
+    use crate::frontend::settings::SettingsMsg;
+
+    let mut app = test_app();
+    app.panels.settings.tab = String::from("filter");
+    let base = format!("{}.0", skwd_config::keys::filter_bar::RESOLUTION_PRESETS);
+    app.config.array_push(
+        skwd_config::keys::filter_bar::RESOLUTION_PRESETS,
+        json!({"label": "Custom", "orientation": "wide", "from": "1920x1080", "to": ""}),
+    );
+    app.init_settings_inputs();
+    assert_eq!(app.panels.settings.inputs[&format!("{base}.from")], "1920x1080");
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ResolutionInput(
+            format!("{base}.from"),
+            true,
+            String::from("2560"),
+        )),
+    );
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ResolutionInput(
+            format!("{base}.from"),
+            false,
+            String::from("1440"),
+        )),
+    );
+    assert_eq!(app.config.str_path(&format!("{base}.from")), "2560x1440");
+}
+
+#[test]
+fn resolution_presets_reject_invalid_drafts_and_keep_the_saved_range() {
+    use crate::frontend::settings::{ActionId, SettingsMsg};
+    let mut app = test_app();
+    app.panels.settings.tab = String::from("filter");
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Run(ActionId::CreateResolutionPresetBand("4k"))),
+    );
+    let base = "filterBar.resolutionPresets.0";
+    let from = format!("{base}.from");
+    let to = format!("{base}.to");
+    for invalid in ["bad", "-1", "12.5", "9999999999"] {
+        let _ = update(
+            &mut app,
+            Message::Settings(SettingsMsg::ResolutionInput(from.clone(), true, invalid.into())),
+        );
+        assert_eq!(app.panels.settings.inputs[&from], "3840x2160");
+    }
+    for invalid in ["", "0", "9000"] {
+        let _ = update(
+            &mut app,
+            Message::Settings(SettingsMsg::ResolutionInput(from.clone(), true, invalid.into())),
+        );
+        assert_eq!(app.config.str_path(&from), "3840x2160");
+    }
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ResolutionInput(from.clone(), true, "4000".into())),
+    );
+    assert_eq!(app.config.str_path(&from), "4000x2160");
+    let _ = update(&mut app, Message::Settings(SettingsMsg::ResolutionLimit(to.clone(), false)));
+    assert_eq!(app.config.str_path(&to), "");
+    let _ = update(&mut app, Message::Settings(SettingsMsg::ResolutionLimit(to.clone(), true)));
+    assert_eq!(app.config.str_path(&to), "4000x2160");
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Input(format!("{base}.label"), "2160".into())),
+    );
+    let _ = update(&mut app, Message::Settings(SettingsMsg::Commit));
+    let persisted: Value =
+        serde_json::from_slice(&std::fs::read(&app.config.config_path).unwrap()).unwrap();
+    assert_eq!(persisted["filterBar"]["resolutionPresets"][0]["label"], "2160");
+    assert_eq!(persisted["filterBar"]["resolutionPresets"][0]["from"], "4000x2160");
+}
+
+#[test]
+fn resolution_templates_filter_their_bounds_and_support_portrait() {
+    use crate::frontend::settings::{ActionId, SettingsMsg};
+    for (band, width, height, next) in [
+        ("fhd", 1920, 1080, Some((2560, 1440))),
+        ("qhd", 2560, 1440, Some((3840, 2160))),
+        ("4k", 3840, 2160, Some((5120, 2880))),
+        ("5k", 5120, 2880, Some((7680, 4320))),
+        ("8k", 7680, 4320, None),
+    ] {
+        let mut app = test_app();
+        app.panels.settings.tab = "filter".into();
+        let _ = update(
+            &mut app,
+            Message::Settings(SettingsMsg::Run(ActionId::CreateResolutionPresetBand(band))),
+        );
+        let mut exact = wall("exact.png", "static", 1, 0);
+        exact["width"] = json!(width);
+        exact["height"] = json!(height);
+        let mut above = wall("above.png", "static", 1, 0);
+        let upper = next.unwrap_or((width * 2, height * 2));
+        above["width"] = json!(upper.0);
+        above["height"] = json!(upper.1);
+        seed(&mut app, &[exact, above]);
+        let key = app.config.resolution_presets()[0].key();
+        let _ = update(&mut app, Message::SetResolution(key));
+        assert_eq!(app.library_session.filtered.len(), if next.is_some() { 1 } else { 2 });
+        let _ = update(
+            &mut app,
+            Message::Settings(SettingsMsg::Pick(
+                "filterBar.resolutionPresets.0.orientation".into(),
+                "tall".into(),
+            )),
+        );
+        assert_eq!(
+            app.panels.settings.inputs["filterBar.resolutionPresets.0.from"],
+            format!("{height}x{width}")
+        );
+        assert!(app.library_session.filters.resolution.is_empty());
+        let key = app.config.resolution_presets()[0].key();
+        let _ = update(&mut app, Message::SetResolution(key));
+        assert!(app.library_session.filtered.is_empty());
+        let mut portrait = wall("portrait.png", "static", 1, 0);
+        portrait["width"] = json!(height);
+        portrait["height"] = json!(width);
+        seed(&mut app, &[portrait]);
+        assert_eq!(filtered_names(&app), ["portrait.png"]);
+    }
+}
+
+#[test]
+fn custom_resolution_opens_a_valid_editable_range_and_restores_cancelled_input() {
+    use crate::frontend::settings::{ActionId, SettingsKey, SettingsMsg};
+    let mut app = test_app();
+    app.panels.settings.tab = "filter".into();
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Run(ActionId::CreateResolutionPresetBand("custom"))),
+    );
+    assert!(app.panels.settings.expanded_details.contains("filterBar.resolutionPresets.0.custom"));
+    assert_eq!(app.config.resolution_presets().len(), 1);
+    let from = "filterBar.resolutionPresets.0.from";
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ResolutionInput(from.into(), true, "2560".into())),
+    );
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Key(SettingsKey::FocusNext { backwards: false })),
+    );
+    assert!(app.panels.settings.resolution_height);
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ResolutionInput(from.into(), false, "1440".into())),
+    );
+    let _ = update(&mut app, Message::Settings(SettingsMsg::Key(SettingsKey::Cancel)));
+    assert_eq!(app.config.str_path(from), "1920x1080");
+    assert_eq!(app.panels.settings.inputs[from], "1920x1080");
+}
+
+#[test]
 fn shape_change_clears_incompatible_resolution() {
     let mut app = test_app();
     app.config.save_key(

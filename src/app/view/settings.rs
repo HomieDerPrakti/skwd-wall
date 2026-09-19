@@ -53,7 +53,51 @@ pub(super) fn settings_layer(app: &App) -> Element<'_, Message> {
         search_query: &app.panels.settings.search_query,
         search_results: &app.panels.settings.search_results,
         keybind_capture: keybind_capture_view(app),
+        process_picker: process_picker_view(app),
     })
+}
+
+fn process_picker_view(app: &App) -> Option<settings::ProcessPickerView> {
+    app.panels.settings.process_picker_open.then(|| {
+        let targets = app
+            .config
+            .str_path(skwd_config::keys::playback::PROCESSES)
+            .split(',')
+            .map(str::trim)
+            .filter(|name| !name.is_empty())
+            .map(str::to_string)
+            .collect::<Vec<_>>();
+        let query = app.panels.settings.process_picker_query.to_ascii_lowercase();
+        let mut running = app
+            .daemon
+            .playback
+            .available_processes
+            .iter()
+            .map(|process| process_name(process))
+            .filter(|process| !targets.iter().any(|target| target.eq_ignore_ascii_case(process)))
+            .filter(|process| query.is_empty() || process.to_ascii_lowercase().contains(&query))
+            .collect::<Vec<_>>();
+        running.sort_unstable();
+        running.dedup();
+        settings::ProcessPickerView {
+            targets,
+            running,
+            query: app.panels.settings.process_picker_query.clone(),
+            manual: app.panels.settings.process_picker_manual.clone(),
+            scroll: app.panels.settings.process_picker_scroll,
+        }
+    })
+}
+
+fn process_name(process: &str) -> String {
+    process
+        .split_whitespace()
+        .next()
+        .unwrap_or(process)
+        .rsplit('/')
+        .next()
+        .unwrap_or(process)
+        .to_string()
 }
 
 fn keybind_capture_view(app: &App) -> Option<settings::KeybindCaptureView> {

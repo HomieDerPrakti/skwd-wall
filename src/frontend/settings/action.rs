@@ -19,6 +19,7 @@ pub enum ActionId {
     AddSemanticModel,
     RemoveSemanticModel(u16),
     AddResolutionPreset,
+    CreateResolutionPresetBand(&'static str),
     RemoveResolutionPreset(u16),
     OpenScheduleEditor,
     OpenThemeDesigner,
@@ -59,6 +60,8 @@ pub enum SettingsKey {
 #[derive(Debug, Clone)]
 pub enum SettingsMsg {
     Input(String, String),
+    ResolutionInput(String, bool, String),
+    ResolutionLimit(String, bool),
     Toggle(String, bool),
     Commit,
     Pick(String, String),
@@ -80,4 +83,11 @@ pub enum SettingsMsg {
     KeybindCaptureDefault,
     KeybindCaptureUnbind,
     KeybindCaptureClick(crate::domain::input::MouseButton),
+    ProcessPickerClose,
+    ProcessPickerSearch(String),
+    ProcessPickerManualInput(String),
+    ProcessPickerManualAdd,
+    ProcessPickerScroll(f32),
+    ProcessPickerAdd(String),
+    ProcessPickerRemove(String),
 }

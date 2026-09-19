@@ -13,6 +13,7 @@ fn control_ids(control: &Control) -> Vec<String> {
         | Control::Chips { path, .. } => vec![format!("path:{path}")],
         Control::Number { path, .. }
         | Control::TextField { path, .. }
+        | Control::Resolution { path, .. }
         | Control::KeyBinding { path, .. } => {
             vec![format!("path:{path}")]
         }
@@ -21,6 +22,9 @@ fn control_ids(control: &Control) -> Vec<String> {
         }
         Control::ActionBtn { id, .. } | Control::ToggleAction { id, .. } => {
             vec![format!("action:{id:?}")]
+        }
+        Control::ActionChips { items } => {
+            items.iter().map(|(id, _)| format!("action:{id:?}")).collect()
         }
         Control::Presets { mode, .. } => vec![format!("presets:{mode}")],
         Control::Details { rows, .. } | Control::StackBar { rows, .. } => {
@@ -144,7 +148,9 @@ fn controls_match_schema() {
                 let (path, expected, numeric_text_field) = match row.control {
                     Control::Toggle { path, .. } => (path, schema::ValueKind::Boolean, false),
                     Control::Number { path, .. } => (path, schema::ValueKind::Number, false),
-                    Control::TextField { path, .. } => (path, schema::ValueKind::Text, true),
+                    Control::TextField { path, .. } | Control::Resolution { path, .. } => {
+                        (path, schema::ValueKind::Text, true)
+                    }
                     Control::KeyBinding { path, .. } => (path, schema::ValueKind::Text, false),
                     Control::Dropdown { path, .. } | Control::Chips { path, .. } => {
                         let expected = schema::value_kind(&path).unwrap_or(schema::ValueKind::Text);
@@ -166,6 +172,7 @@ fn controls_match_schema() {
                     }
                     Control::ToggleAction { .. }
                     | Control::ActionBtn { .. }
+                    | Control::ActionChips { .. }
                     | Control::Presets { .. }
                     | Control::Details { .. }
                     | Control::StackBar { .. }
@@ -284,6 +291,9 @@ fn controls_emit_valid_values() {
                                 };
                             vec![(path, value)]
                         }
+                        Control::Resolution { path, .. } => {
+                            vec![(path, serde_json::json!("1920x1080"))]
+                        }
                         Control::KeyBinding { path, .. } => {
                             vec![(path, serde_json::json!("p"))]
                         }
@@ -298,6 +308,7 @@ fn controls_emit_valid_values() {
                             .collect(),
                         Control::ToggleAction { .. }
                         | Control::ActionBtn { .. }
+                        | Control::ActionChips { .. }
                         | Control::Presets { .. }
                         | Control::Details { .. }
                         | Control::StackBar { .. }

@@ -133,6 +133,52 @@ fn schedule_toggle_persists() {
 }
 
 #[test]
+fn process_picker_keeps_targets_visible_and_edits_them() {
+    use crate::frontend::settings::{ActionId, SettingsMsg};
+
+    let mut app = test_app();
+    app.config.set_key(skwd_config::keys::playback::PROCESSES, json!("mpv, gamescope"));
+    app.daemon.playback.available_processes = vec![String::from("steam"), String::from("mpv")];
+
+    let _ = update(&mut app, Message::Settings(SettingsMsg::Run(ActionId::ChooseRunningProcess)));
+    assert!(app.panels.settings.process_picker_open);
+
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ProcessPickerSearch(String::from("steam"))),
+    );
+    assert_eq!(app.panels.settings.process_picker_query, "steam");
+
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ProcessPickerManualInput(String::from("custom-game"))),
+    );
+    let _ = update(&mut app, Message::Settings(SettingsMsg::ProcessPickerManualAdd));
+    assert!(app.config.str_path(skwd_config::keys::playback::PROCESSES).contains("custom-game"));
+    assert!(app.panels.settings.process_picker_manual.is_empty());
+
+    let _ =
+        update(&mut app, Message::Settings(SettingsMsg::ProcessPickerAdd(String::from("steam"))));
+    assert_eq!(
+        app.config.str_path(skwd_config::keys::playback::PROCESSES),
+        "mpv, gamescope, custom-game, steam"
+    );
+
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::ProcessPickerRemove(String::from("gamescope"))),
+    );
+    assert_eq!(
+        app.config.str_path(skwd_config::keys::playback::PROCESSES),
+        "mpv, custom-game, steam"
+    );
+
+    let _ = update(&mut app, Message::Settings(SettingsMsg::ProcessPickerClose));
+    assert!(!app.panels.settings.process_picker_open);
+    assert!(app.panels.settings.process_picker_query.is_empty());
+}
+
+#[test]
 fn schedule_rule_toggle_keeps_rule() {
     let mut app = test_app();
     crate::app::helpers::sched_open(&mut app);

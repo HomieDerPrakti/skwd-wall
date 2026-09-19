@@ -733,36 +733,40 @@ fn resolution_preset_items() {
         .expect("resolution preset section")
         .1;
     assert_eq!(rows.len(), 3);
-    let Control::Details { id, summary, rows: fields } = &rows[0].control else {
+    let Control::ActionChips { items } = &rows[0].control else {
+        panic!("resolution presets must offer size bands");
+    };
+    assert_eq!(items.len(), 6);
+    assert!(matches!(items[0].0, ActionId::CreateResolutionPresetBand("fhd")));
+    let Control::Details { id, summary, rows: fields } = &rows[1].control else {
         panic!("resolution preset must use a details item");
     };
-    assert_eq!(rows[0].title, "FHD");
+    assert_eq!(rows[1].title, "FHD");
     assert_eq!(id, "filterBar.resolutionPresets.0");
-    assert_eq!(summary, "WIDE · 1920x1080 - 2559x1439");
-    assert_eq!(fields.len(), 5);
+    assert_eq!(summary, "Wide · 1920 × 1080 - 2559 × 1439");
+    assert_eq!(fields.len(), 4);
     assert!(matches!(
         &fields[0].control,
         Control::TextField { path, .. } if path == "filterBar.resolutionPresets.0.label"
     ));
     assert!(matches!(
         &fields[1].control,
-        Control::Dropdown { path, .. } if path == "filterBar.resolutionPresets.0.orientation"
+        Control::Chips { path, .. } if path == "filterBar.resolutionPresets.0.orientation"
+    ));
+    let Control::Details { rows: bounds, .. } = &fields[2].control else {
+        panic!("exact dimensions belong in the custom range foldout");
+    };
+    assert!(matches!(
+        &bounds[0].control,
+        Control::Resolution { path, .. } if path == "filterBar.resolutionPresets.0.from"
     ));
     assert!(matches!(
-        &fields[2].control,
-        Control::TextField { path, .. } if path == "filterBar.resolutionPresets.0.from"
+        &bounds[1].control,
+        Control::Resolution { path, .. } if path == "filterBar.resolutionPresets.0.to"
     ));
     assert!(matches!(
         &fields[3].control,
-        Control::TextField { path, .. } if path == "filterBar.resolutionPresets.0.to"
-    ));
-    assert!(matches!(
-        &fields[4].control,
         Control::ActionBtn { id: ActionId::RemoveResolutionPreset(0), .. }
-    ));
-    assert!(matches!(
-        &rows[2].control,
-        Control::ActionBtn { id: ActionId::AddResolutionPreset, .. }
     ));
 }
 
@@ -1260,6 +1264,9 @@ fn automatic_pause_controls_have_one_playback_owner() {
                 | Control::Number { path: actual, .. }
                 | Control::TextField { path: actual, .. }
                 | Control::Dropdown { path: actual, .. } => actual == path,
+                Control::ActionBtn { id: ActionId::ChooseRunningProcess, .. } => {
+                    path == keys::playback::PROCESSES
+                }
                 _ => false,
             }),
             "missing {path}"
