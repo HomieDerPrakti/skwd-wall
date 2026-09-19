@@ -9,6 +9,14 @@ use crate::rendering::scene::atlas::AtlasMap;
 use super::super::*;
 
 impl App {
+    pub(in crate::app) fn demo_allows_key(&self, key: &str) -> bool {
+        self.runtime_state
+            .demo
+            .as_ref()
+            .and_then(|session| session.allowed_keys.as_ref())
+            .is_none_or(|keys| keys.contains(key))
+    }
+
     pub(in crate::app) fn demo_showcase_index(&self, count: usize) -> usize {
         if self.runtime_state.demo.is_none() || count == 0 {
             return 0;
@@ -47,9 +55,12 @@ impl App {
         crate::shell::trim_heap();
     }
 
-    fn filtered_indices(&self) -> Vec<u32> {
+    pub(in crate::app) fn filtered_indices(&self) -> Vec<u32> {
         let catalog = self.library_session.library.catalog();
         let mut filtered = filter_sort(catalog, &self.library_session.filters);
+        if self.runtime_state.demo.as_ref().is_some_and(|session| session.allowed_keys.is_some()) {
+            filtered.retain(|&index| self.demo_allows_key(&catalog.items[index as usize].key));
+        }
         if let Some((_, _, keys)) = &self.library_session.playlist_filter {
             filtered.retain(|&index| keys.contains(&catalog.items[index as usize].key));
         }

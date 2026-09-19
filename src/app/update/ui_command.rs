@@ -79,8 +79,8 @@ pub(crate) fn ui_state_json(app: &App) -> String {
             "members_for": playlists.members_for,
         })
     });
-    json!({
-        "demo_protocol": 16,
+    let mut state = json!({
+        "demo_protocol": 18,
         "views": crate::app::view::view_count(),
         "language": {
             "setting": app.config.str_path(skwd_config::keys::general::LANGUAGE),
@@ -166,6 +166,29 @@ pub(crate) fn ui_state_json(app: &App) -> String {
                 || app.source_browser.last_source.key(),
                 |browser| browser.source.key(),
             ),
+            "query": app.source_browser.browser.as_ref().map(|browser| &browser.request.query),
+            "loading": app.source_browser.browser.as_ref().is_some_and(|browser| browser.session.loading),
+            "error": app.source_browser.browser.as_ref().and_then(|browser| browser.session.error.as_ref()),
+            "preview": app.source_browser.browser.as_ref().and_then(|browser| {
+                browser.session.preview.and_then(|index| browser.session.items.get(index)).map(|item| {
+                    json!({
+                        "id": item.id,
+                        "ready": item.preview_path.is_some(),
+                        "path": item.preview_path,
+                    })
+                })
+            }),
+            "items": app.source_browser.browser.as_ref().map_or_else(Vec::new, |browser| {
+                browser.session.items.iter().map(|item| json!({
+                    "id": item.id,
+                    "thumb_ready": item.thumb_ready,
+                    "downloaded": item.downloaded,
+                    "downloading": item.downloading,
+                    "queued": item.queued,
+                    "progress": item.progress,
+                    "path": item.downloaded_path,
+                })).collect::<Vec<_>>()
+            }),
         },
         "tag_organizer": {
             "cloud_open": app.tags.cloud_open,
@@ -207,8 +230,17 @@ pub(crate) fn ui_state_json(app: &App) -> String {
             "search_query": app.panels.settings.search_query,
             "search_results": app.panels.settings.search_results.len(),
         },
-    })
-    .to_string()
+    });
+    let scope =
+        app.runtime_state.demo.as_ref().and_then(|session| session.allowed_keys.as_ref()).map(
+            |keys| {
+                let mut keys: Vec<&str> = keys.iter().map(String::as_str).collect();
+                keys.sort_unstable();
+                json!({ "count": keys.len(), "keys": keys })
+            },
+        );
+    state["demo"] = json!({ "library_scope": scope });
+    state.to_string()
 }
 
 pub(super) fn run_ui_command(app: &mut App, cmd: &str) -> Task<Message> {
@@ -231,6 +263,8 @@ pub(super) fn run_ui_command(app: &mut App, cmd: &str) -> Task<Message> {
         "audio-demo" if app.runtime_state.demo.is_some() => ui_demo_audio(app, &arg),
         "effect-demo" if app.runtime_state.demo.is_some() => ui_demo_effect(app, &arg),
         "picker-demo" if app.runtime_state.demo.is_some() => ui_demo_picker(app, &arg),
+        "browser-demo" if app.runtime_state.demo.is_some() => ui_demo_browser(app, &arg),
+        "library-demo" if app.runtime_state.demo.is_some() => ui_demo_library(app, &arg),
         "tune" => {
             let mut it = arg.splitn(2, char::is_whitespace);
             let path = it.next().unwrap_or("");
@@ -605,6 +639,58 @@ fn ui_demo_tag_match(app: &mut App, arg: &str) -> Task<Message> {
     super::update_inner(app, Message::Tag(crate::frontend::tagcloud::TagMsg::MatchMode(match_any)))
 }
 
+fn ui_demo_browser(app: &mut App, arg: &str) -> Task<Message> {
+    use crate::frontend::browser::{BrowserMsg, Source};
+
+    let verb = arg.split_whitespace().next().unwrap_or("");
+    let value = arg[verb.len()..].trim();
+    if verb == "source" {
+        let Some(source) = Source::from_key(value) else {
+            log::warn!("ui command: unknown download source '{value}'");
+            return Task::none();
+        };
+        return if app.source_browser.browser.is_some() {
+            super::browser::update(app, BrowserMsg::SwitchSource(source))
+        } else {
+            super::browser::open_browser(app, source.key())
+        };
+    }
+    if app.source_browser.browser.is_none() {
+        return Task::none();
+    }
+    match verb {
+        "search" => {
+            let input = super::browser::update(app, BrowserMsg::SearchInput(value.to_string()));
+            let submit = super::browser::update(app, BrowserMsg::SearchSubmit);
+            Task::batch([input, submit])
+        }
+        "preview" | "download" => {
+            let index =
+                app.source_browser.browser.as_ref().and_then(|browser| {
+                    browser.session.items.iter().position(|item| item.id == value)
+                });
+            let Some(index) = index else {
+                log::warn!("ui command: download item '{value}' is unavailable");
+                return Task::none();
+            };
+            let message = if verb == "preview" {
+                BrowserMsg::OpenPreview(index)
+            } else {
+                BrowserMsg::Download(value.to_string())
+            };
+            super::browser::update(app, message)
+        }
+        "preview-close" if value.is_empty() => {
+            super::browser::update(app, BrowserMsg::ClosePreview)
+        }
+        "close" if value.is_empty() => super::browser::close_browser(app),
+        _ => {
+            log::warn!("ui command: unknown browser demo action '{arg}'");
+            Task::none()
+        }
+    }
+}
+
 fn ui_open(app: &mut App, arg: &str) -> Task<Message> {
     match arg.split_whitespace().next().unwrap_or(arg) {
         "settings" => super::update_inner(app, Message::ToggleSettings),
@@ -782,6 +868,36 @@ fn ui_set(app: &mut App, path: &str, val: &str) -> Task<Message> {
     super::settings_policy::save_value(app, path, &parsed);
     app.apply_layout();
     app.invalidate_settings();
+    Task::none()
+}
+
+fn ui_demo_library(app: &mut App, raw: &str) -> Task<Message> {
+    let mut parts = raw.splitn(2, char::is_whitespace);
+    let action = parts.next().unwrap_or("");
+    let value = parts.next().unwrap_or("").trim();
+    let Some(session) = app.runtime_state.demo.as_mut() else {
+        return Task::none();
+    };
+    match action {
+        "keys" => {
+            let Ok(keys) = serde_json::from_str::<Vec<String>>(value) else {
+                log::warn!("ui command: library-demo keys needs a JSON array of wallpaper keys");
+                return Task::none();
+            };
+            if keys.iter().any(|key| key.trim().is_empty()) {
+                return Task::none();
+            }
+            session.allowed_keys = Some(keys.into_iter().collect());
+        }
+        "add" if !value.is_empty() => {
+            session.allowed_keys.get_or_insert_with(Default::default).insert(value.to_owned());
+        }
+        _ => return Task::none(),
+    }
+    app.close_flip_after_removal();
+    app.refilter_semantic_from_start();
+    app.chrome.bar.cache.clear();
+    app.retick();
     Task::none()
 }
 
@@ -1418,8 +1534,13 @@ fn demo_source_index(app: &mut App) -> Option<usize> {
     let override_key =
         app.runtime_state.demo.as_mut().and_then(|session| session.apply_source.take());
     if let Some(key) = override_key {
-        let index =
-            app.library_session.library.catalog().items.iter().position(|item| item.key == key);
+        let index = app
+            .library_session
+            .library
+            .catalog()
+            .items
+            .iter()
+            .position(|item| item.key == key && app.demo_allows_key(&item.key));
         if index.is_none() {
             app.show_toast(
                 crate::i18n::tr_args!("status-demo-playback-missing", key => key.as_str()),
@@ -1600,6 +1721,9 @@ fn visible_card(app: &App, store_index: usize) -> Option<usize> {
 }
 
 fn demo_visible_card(app: &mut App, store_index: usize) -> Option<usize> {
+    if !app.demo_allows_key(&app.library_session.library.catalog().items[store_index].key) {
+        return None;
+    }
     if let Some(card) = visible_card(app, store_index) {
         return Some(card);
     }
@@ -1676,6 +1800,7 @@ fn demo_begin(app: &mut App) -> Task<Message> {
             filters: app.library_session.filters.clone(),
             query: app.tags.tag_search.clone(),
             selection_key: selected_key(app),
+            allowed_keys: None,
             filter_bar_visible: app.chrome.filter_bar_visible,
             palette: app.theme.palette,
             base_palette: app.theme.base_palette,

@@ -335,6 +335,51 @@ fn demo_batch_commits_atomically() {
 }
 
 #[test]
+fn demo_flip_effect_reaches_scene_and_restores() {
+    let mut app = test_app();
+    let command = |app: &mut App, value: &str| {
+        let _ = update(
+            app,
+            Message::Daemon(crate::infrastructure::runtime::Wake::Command(value.to_string())),
+        );
+    };
+    app.apply_layout();
+    let original = app.scene.card_flip_effect();
+    command(&mut app, "demo begin");
+    command(&mut app, "tune components.wallpaperSelector.flipEffect Tonal Layers");
+    assert_eq!(app.scene.card_flip_effect(), 11);
+    command(&mut app, "tune components.wallpaperSelector.flipEffect Depth Parallax");
+    assert_eq!(app.scene.card_flip_effect(), 4);
+    command(&mut app, "tune components.wallpaperSelector.flipEffect unsupported");
+    assert_eq!(app.scene.card_flip_effect(), 4);
+    command(&mut app, "demo end");
+    assert_eq!(app.scene.card_flip_effect(), original);
+}
+
+#[test]
+fn demo_batch_flip_effect_activates_only_on_commit() {
+    let mut app = test_app();
+    let command = |app: &mut App, value: &str| {
+        let _ = update(
+            app,
+            Message::Daemon(crate::infrastructure::runtime::Wake::Command(value.to_string())),
+        );
+    };
+    command(&mut app, "demo begin");
+    let original = app.scene.card_flip_effect();
+    command(
+        &mut app,
+        &format!(
+            "batch-stage flip {}",
+            json!("tune components.wallpaperSelector.flipEffect Pixel Sort")
+        ),
+    );
+    assert_eq!(app.scene.card_flip_effect(), original);
+    command(&mut app, "batch-commit flip");
+    assert_eq!(app.scene.card_flip_effect(), 8);
+}
+
+#[test]
 fn ui_commands_drive_settings_search() {
     let mut app = test_app();
     let command = |app: &mut App, value: &str| {
@@ -376,7 +421,7 @@ fn ui_state_query() {
     assert_eq!(snap["count"], 2);
     assert_eq!(snap["current"], 0);
     assert_eq!(snap["selection"], "a.png");
-    assert_eq!(snap["demo_protocol"], 16);
+    assert_eq!(snap["demo_protocol"], 18);
     assert!(snap["views"].is_u64());
     assert_eq!(snap["language"]["active"], crate::i18n::active_tag());
     assert_eq!(snap["language"]["rtl"], crate::i18n::is_rtl());

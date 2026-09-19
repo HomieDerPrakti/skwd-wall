@@ -168,5 +168,6 @@ fn ui_state_reports_the_sort_chip_and_download_source() {
     assert_eq!(state(&app)["filter"]["sort"], json!(app.library_session.filters.sort));
     assert_eq!(state(&app)["downloads"]["open"], json!(false));
     character(&mut app, "d", Modifiers::CTRL);
-    assert_eq!(state(&app)["downloads"], json!({"open": true, "source": "wallhaven"}));
+    assert_eq!(state(&app)["downloads"]["open"], json!(true));
+    assert_eq!(state(&app)["downloads"]["source"], json!("wallhaven"));
 }

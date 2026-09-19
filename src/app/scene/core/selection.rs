@@ -231,6 +231,10 @@ impl SceneCore {
         self.motion.needs_frame = true;
     }
 
+    pub fn card_flip_effect(&self) -> u32 {
+        self.card.flip_effect
+    }
+
     pub fn set_effect(&mut self, id: u32) {
         self.card.flip_effect = id;
         if self.card.flipped.is_some() {
