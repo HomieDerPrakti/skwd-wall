@@ -106,7 +106,7 @@ fn theme_bar_model(
     crate::frontend::ui::ThemeBar {
         backend: backend_now.to_owned(),
         menu_open: backend_menu_open,
-        mode: or_default(skwd_config::keys::matugen::MODE, "auto"),
+        mode: app.config.str_path(skwd_config::keys::theme::MODE),
         static_theme: or_default(skwd_config::keys::theme::STATIC_THEME, "nord"),
         scheme: or_default(skwd_config::keys::matugen::SCHEME_TYPE, "scheme-fidelity"),
         style: or_default(skwd_config::keys::theme::STYLE, "natural"),

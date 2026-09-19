@@ -1,6 +1,6 @@
 pub const BACKEND: &str = skwd_config::keys::theme::BACKEND;
 pub const COLOR_INDEX: &str = skwd_config::keys::matugen::COLOR_INDEX;
-pub const MODE: &str = skwd_config::keys::matugen::MODE;
+pub const MODE: &str = skwd_config::keys::theme::MODE;
 pub const NOCTALIA_PURE_BLACK: &str = skwd_config::keys::theme::NOCTALIA_PURE_BLACK;
 pub const NOCTALIA_SCHEME: &str = skwd_config::keys::theme::NOCTALIA_SCHEME;
 pub const PYWAL_SATURATE: &str = skwd_config::keys::theme::PYWAL_SATURATE;

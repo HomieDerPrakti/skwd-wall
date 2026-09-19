@@ -445,7 +445,7 @@ fn theme_mode_buttons() {
     let modes: Vec<_> = model
         .items
         .iter()
-        .filter(|item| matches!(item.action, Some(BarAction::ThemeOpt("matugen.mode", _))))
+        .filter(|item| matches!(item.action, Some(BarAction::ThemeOpt("theme.mode", _))))
         .collect();
     assert_eq!(modes.len(), 3);
     assert_eq!(modes.iter().filter(|item| item.active).count(), 1);

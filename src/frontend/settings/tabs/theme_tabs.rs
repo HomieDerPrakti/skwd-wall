@@ -175,7 +175,7 @@ pub(super) fn tab_theme(builder: &mut Builder<'_>, backends: &[String]) {
         builder.dropdown(
             tr("settings-theme-variant-label"),
             tr("settings-theme-variant-desc"),
-            keys::matugen::MODE,
+            keys::theme::MODE,
             &[
                 ("dark", tr("settings-theme-variant-dark")),
                 ("light", tr("settings-theme-variant-light")),
@@ -249,7 +249,7 @@ pub(super) fn tab_theme(builder: &mut Builder<'_>, backends: &[String]) {
             builder.dropdown(
                 tr("settings-theme-variant-label"),
                 tr("settings-theme-variant-desc"),
-                keys::matugen::MODE,
+                keys::theme::MODE,
                 &[
                     ("dark", tr("settings-theme-variant-dark")),
                     ("light", tr("settings-theme-variant-light")),
@@ -305,7 +305,7 @@ pub(super) fn tab_theme(builder: &mut Builder<'_>, backends: &[String]) {
             builder.dropdown(
                 tr("settings-theme-imported-variant-label"),
                 tr("settings-theme-imported-variant-desc-noctalia"),
-                keys::matugen::MODE,
+                keys::theme::MODE,
                 &[
                     ("dark", tr("settings-theme-variant-dark")),
                     ("light", tr("settings-theme-variant-light")),
@@ -321,7 +321,7 @@ pub(super) fn tab_theme(builder: &mut Builder<'_>, backends: &[String]) {
             builder.dropdown(
                 tr("settings-theme-imported-variant-label"),
                 tr("settings-theme-imported-variant-desc-dms"),
-                keys::matugen::MODE,
+                keys::theme::MODE,
                 &[
                     ("dark", tr("settings-theme-variant-dark")),
                     ("light", tr("settings-theme-variant-light")),

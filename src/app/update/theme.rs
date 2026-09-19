@@ -195,6 +195,9 @@ fn theme_delete_saved(app: &mut App, name: &str) -> Task<Message> {
 }
 
 pub(super) fn theme_option(app: &mut App, key: &'static str, value: &'static str) -> Task<Message> {
+    if app.theme.shell_preview_sent.take().is_some() {
+        app.daemon.client.call("wall.shell_preview_end", json!({}));
+    }
     if value == "toggle" {
         let current = app.config.flag_default_config(key);
         app.config.save_key(key, json!(!current));
@@ -211,7 +214,6 @@ pub(super) fn theme_option(app: &mut App, key: &'static str, value: &'static str
     app.daemon.client.call("wall.retheme", json!({}));
     app.theme.cache.clear();
     app.invalidate_swatch();
-    app.theme.shell_preview_sent = None;
     app.chrome.bar.cache.clear();
     app.retick();
     Task::none()

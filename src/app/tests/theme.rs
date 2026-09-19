@@ -129,6 +129,31 @@ fn theme_sub_bar_flow() {
 }
 
 #[test]
+fn theme_option_ends_shell_preview_before_retheme() {
+    let mut app = test_app();
+    app.theme.shell_preview_sent = Some(0);
+    let _ = update(
+        &mut app,
+        Message::Theme(crate::frontend::theme_designer::ThemeMsg::Option(
+            crate::contracts::picker::theme_setting::MODE,
+            "light",
+        )),
+    );
+
+    let calls = drain_calls(&app);
+    let preview_end = calls
+        .iter()
+        .position(|(method, _)| method == "wall.shell_preview_end")
+        .expect("shell preview ends when an option is committed");
+    let retheme = calls
+        .iter()
+        .position(|(method, _)| method == "wall.retheme")
+        .expect("option commit rethemes");
+    assert!(preview_end < retheme);
+    assert_eq!(app.config.str_path(skwd_config::keys::theme::MODE), "light");
+}
+
+#[test]
 fn backend_menu_writes_key() {
     assert_eq!(crate::contracts::picker::theme_setting::BACKEND, skwd_config::keys::theme::BACKEND);
     let mut app = test_app();

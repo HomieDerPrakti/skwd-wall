@@ -6,6 +6,56 @@ use super::{bar_intent_message, filter_bar_footprint};
 use crate::app::tests::test_app;
 
 #[test]
+fn theme_mode_controls_share_the_effective_persisted_value() {
+    use crate::contracts::settings::SettingsSource;
+    use crate::infrastructure::config::Config;
+
+    for (root, expected) in [
+        (json!({}), "dark"),
+        (json!({"matugen": {"mode": "light"}}), "light"),
+        (json!({"matugen": {"mode": "dark"}}), "dark"),
+        (json!({"theme": {"mode": "light"}, "matugen": {"mode": "dark"}}), "light"),
+        (json!({"theme": {"mode": "dark"}, "matugen": {"mode": "light"}}), "dark"),
+        (json!({"theme": {"mode": "auto"}, "matugen": {"mode": "light"}}), "auto"),
+        (json!({"theme": {"mode": ""}, "matugen": {"mode": "light"}}), "light"),
+    ] {
+        let mut app = test_app();
+        app.config = Config::from_data(root);
+        assert_eq!(SettingsSource::text(&app.config, skwd_config::keys::theme::MODE), expected);
+        assert_eq!(super::theme_bar_model(&app, "skwd-iris", false, 1).mode, expected);
+    }
+}
+
+#[test]
+fn committed_theme_modes_reopen_in_the_bar_and_settings() {
+    use crate::app::{App, Message, update};
+    use crate::contracts::settings::SettingsSource;
+    use crate::frontend::theme_designer::ThemeMsg;
+    use crate::infrastructure::config::Config;
+
+    let mut app = test_app();
+    app.config.set_key(skwd_config::keys::matugen::MODE, json!("light"));
+    for mode in ["dark", "light", "auto"] {
+        let _ = update(
+            &mut app,
+            Message::Theme(ThemeMsg::Option(crate::contracts::picker::theme_setting::MODE, mode)),
+        );
+        let saved: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(&app.config.config_path).unwrap()).unwrap();
+        assert_eq!(saved["theme"]["mode"], mode);
+        assert_eq!(saved["matugen"]["mode"], "light");
+        let mut reopened = Config::from_data(json!({}));
+        reopened.config_path.clone_from(&app.config.config_path);
+        assert!(reopened.reload());
+        app = App::with_config_using(reopened, |_| {
+            crate::infrastructure::ipc::DaemonClient::recording()
+        });
+        assert_eq!(super::theme_bar_model(&app, "skwd-iris", false, 1).mode, mode);
+        assert_eq!(SettingsSource::text(&app.config, skwd_config::keys::theme::MODE), mode);
+    }
+}
+
+#[test]
 fn filter_bar_intents_translate_at_composition() {
     use crate::app::Message;
     use crate::frontend::ui::{BarAction, BarIntent};

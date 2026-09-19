@@ -7,6 +7,11 @@ use super::{
 use crate::i18n::Catalog;
 
 #[test]
+fn theme_mode_uses_the_canonical_apply_setting() {
+    assert_eq!(crate::contracts::picker::theme_setting::MODE, skwd_config::keys::theme::MODE);
+}
+
+#[test]
 fn theme_labels_all_locales() {
     let tables: [&[(&str, &str)]; 10] = [
         &THEME_BACKENDS,

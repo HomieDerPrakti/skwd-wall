@@ -327,6 +327,9 @@ impl Config {
     }
 
     pub fn str_path(&self, path: &str) -> String {
+        if path == skwd_config::keys::theme::MODE {
+            return skwd_config::theme_mode(self.root());
+        }
         if path == skwd_config::keys::we_render::ENGINE {
             return String::from("native");
         }
