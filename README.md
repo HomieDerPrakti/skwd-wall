@@ -8,6 +8,8 @@
 >
 > Current known issues / WIP:
 >
+> If you are enabling an external Matugen configuration, you also need to enable Matugen as the colour source (Theme > Matugen command & Theme > Colour source)
+>
 > WIP: Wallpaper Engine inconsistencies / bugs in comparison to (the real) Wallpaper Engine. This part of the application is still Work in Progress and does not have perfect coverage yet. Please report any issues you may find with Wallpaper Engine scenes ❤️
 >
 > WIP: Debian version
