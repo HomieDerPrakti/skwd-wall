@@ -698,6 +698,16 @@ impl ThemeDesigner {
                 ]
                 .align_y(Alignment::Center),
             );
+            if self.settings_pinned {
+                content = content.push(folio_button(
+                    tr("theme-bar-pin-settings"),
+                    true,
+                    false,
+                    None,
+                    scale,
+                    pal,
+                ));
+            }
         } else {
             content = content
                 .push(label(

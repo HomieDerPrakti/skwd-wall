@@ -56,3 +56,6 @@ settings-paper-awww-type-top = Haut
 settings-paper-awww-type-bottom = Bas
 settings-paper-awww-type-any = Quelconque
 settings-paper-awww-type-random = Aléatoire
+
+settings-paper-load-timeout-label = Délai de chargement du fond d’écran
+settings-paper-load-timeout-desc = Accordez plus de temps au chargement des grandes images, comme les fonds en 16K. Cela ne modifie pas la vitesse de transition.

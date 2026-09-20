@@ -56,3 +56,6 @@ settings-paper-awww-type-top = Topo
 settings-paper-awww-type-bottom = Base
 settings-paper-awww-type-any = Qualquer
 settings-paper-awww-type-random = Aleatória
+
+settings-paper-load-timeout-label = Tempo limite de carregamento do papel de parede
+settings-paper-load-timeout-desc = Dê mais tempo para carregar imagens grandes, como papéis de parede em 16K. Isso não altera a velocidade da transição.

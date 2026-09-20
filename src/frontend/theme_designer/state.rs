@@ -3,6 +3,7 @@ use crate::domain::theme::{Candidate, THEME_ROLE_COUNT, hex_to_hsv, hsv_to_hex};
 pub struct ThemeDesigner {
     pub wallpaper: Option<crate::contracts::daemon::CurrentTheme>,
     pub profile_enabled: bool,
+    pub settings_pinned: bool,
     pub role_filter: String,
     pub error: Option<String>,
     pub candidate: Candidate,
@@ -32,6 +33,7 @@ impl ThemeDesigner {
         Self {
             wallpaper: None,
             profile_enabled: false,
+            settings_pinned: false,
             role_filter: String::new(),
             error: None,
             initial: candidate.clone(),

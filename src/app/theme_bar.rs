@@ -51,7 +51,6 @@ impl App {
 
     pub(super) fn update_theme_preview(&mut self, now: Instant, dt: f32) -> bool {
         let off = self.theme.suspended
-            || !tint_follows_wallpaper(&self.config.theme_backend())
             || !self.config.flag_default_true(skwd_config::keys::selector::LIVE_PREVIEW)
             || self.source_browser.browser.is_some()
             || self.panels.playlists.is_some()
@@ -63,6 +62,14 @@ impl App {
         let Some(idx) = target else {
             return self.reset_theme_preview(dt);
         };
+        let Some(item) = self.library_session.library.catalog().items.get(idx) else {
+            return self.reset_theme_preview(dt);
+        };
+        let backend = crate::app::update::theme::wallpaper_theme_backend_for(self, &item.key);
+        let pinned = crate::app::update::theme::wallpaper_settings(self, &item.key).is_some();
+        if backend == "off" || (backend == "static" && !pinned) {
+            return self.reset_theme_preview(dt);
+        }
         if self.theme.preview_target != Some(idx) {
             if !dwell_gate(&mut self.theme.hover_since, idx, now, THEME_DEBOUNCE_MS) {
                 return true;
@@ -98,20 +105,38 @@ impl App {
     }
 
     pub(super) fn shell_hover_enabled(&self) -> bool {
-        match self.config.theme_backend().as_str() {
+        self.shell_hover_enabled_for(&self.config.theme_backend(), false)
+    }
+
+    fn shell_hover_enabled_for(&self, backend: &str, pinned: bool) -> bool {
+        match backend {
             "noctalia" => self.config.flag_default_true(skwd_config::keys::noctalia::HOVER_PREVIEW),
             "dms" => self.config.flag_default_true(skwd_config::keys::dms::HOVER_PREVIEW),
+            "static" => pinned,
             backend => tint_follows_wallpaper(backend),
         }
     }
 
     pub(super) fn step_shell_preview(&mut self, idx: usize) {
-        if !self.shell_hover_enabled() || self.theme.shell_preview_sent == Some(idx) {
+        if self.theme.shell_preview_sent == Some(idx) {
             return;
         }
         let Some(item) = self.library_session.library.catalog().items.get(idx) else {
             return;
         };
+        let backend = crate::app::update::theme::wallpaper_theme_backend_for(self, &item.key);
+        let pinned = crate::app::update::theme::wallpaper_settings(self, &item.key).is_some();
+        let enabled = if pinned {
+            self.shell_hover_enabled_for(&backend, true)
+        } else {
+            self.shell_hover_enabled()
+        };
+        if !enabled {
+            if self.theme.shell_preview_sent.take().is_some() {
+                self.daemon.client.call("wall.shell_preview_end", json!({}));
+            }
+            return;
+        }
         let image = &item.thumb;
         if image.is_empty() {
             return;
@@ -147,10 +172,11 @@ impl App {
         if item.thumb.is_empty() {
             return;
         }
-        let backend = self.config.theme_backend();
+        let backend = crate::app::update::theme::wallpaper_theme_backend_for(self, &item.key);
+        let settings = crate::app::update::theme::wallpaper_settings(self, &item.key);
         let id = self.call_tracked(
             "theme.preview",
-            json!({ "image": item.thumb.clone() }),
+            json!({ "image": item.thumb.clone(), "settings": settings }),
             Pending::ThemePreview { card: idx, backend },
         );
         if id > 0 {

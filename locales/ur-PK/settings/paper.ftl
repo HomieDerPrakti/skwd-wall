@@ -56,3 +56,6 @@ settings-paper-awww-type-top = اوپر
 settings-paper-awww-type-bottom = نیچے
 settings-paper-awww-type-any = کوئی بھی
 settings-paper-awww-type-random = بے ترتیب
+
+settings-paper-load-timeout-label = وال پیپر لوڈ ہونے کی مہلت
+settings-paper-load-timeout-desc = 16K وال پیپر جیسی بڑی تصاویر کو لوڈ ہونے کے لیے زیادہ وقت دیں۔ اس سے منتقلی کی رفتار نہیں بدلتی۔

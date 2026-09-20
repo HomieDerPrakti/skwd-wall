@@ -8,6 +8,22 @@ fn cfg() -> FakeSettingsSource {
 }
 
 #[test]
+fn playback_exposes_wallpaper_load_timeout_in_seconds() {
+    let cards = build_tab("playback", &cfg(), &[], &[], "", &[]);
+    let controls: Vec<_> = cards
+        .iter()
+        .flat_map(|(_, rows)| rows)
+        .filter_map(|row| match &row.control {
+            Control::Number { path, unit, .. } if path == keys::paper::LOAD_TIMEOUT_SECONDS => {
+                Some((row.title.as_str(), *unit))
+            }
+            _ => None,
+        })
+        .collect();
+    assert_eq!(controls, [("Wallpaper load timeout", "s")]);
+}
+
+#[test]
 fn noctalia_mode_overrides_in_integrations() {
     for mode in ["follow", "keep", "dark", "light", "auto"] {
         let cfg = cfg().with_text(keys::noctalia::THEME_MODE, mode);

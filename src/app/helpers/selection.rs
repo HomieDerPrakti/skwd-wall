@@ -42,9 +42,10 @@ pub(crate) fn apply_task(app: &mut App, filtered_index: usize) -> Task<Message> 
         return Task::none();
     };
     app.scene.set_current(filtered_index, app.library_session.filtered.len());
-    let item = &app.library_session.library.catalog().items[catalog_index as usize];
+    let item = app.library_session.library.catalog().items[catalog_index as usize].clone();
+    crate::app::update::theme::restore_wallpaper_settings(app, &item.key);
     let neighbors = collect_neighbors(app, &item.path);
-    let mut params = apply_params(item, neighbors);
+    let mut params = apply_params(&item, neighbors);
     info!("apply {} ({})", item.name, item.kind.as_str());
     let applied_key = item.key.clone();
     if !app.scope_picker_apply(&mut params) {

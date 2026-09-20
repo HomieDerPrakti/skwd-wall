@@ -56,3 +56,6 @@ settings-paper-awww-type-top = 上
 settings-paper-awww-type-bottom = 下
 settings-paper-awww-type-any = 任意
 settings-paper-awww-type-random = 随机
+
+settings-paper-load-timeout-label = 壁纸加载超时
+settings-paper-load-timeout-desc = 为 16K 壁纸等大图留出更多加载时间。此设置不会改变过渡速度。

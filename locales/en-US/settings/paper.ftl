@@ -56,3 +56,6 @@ settings-paper-awww-type-top = Top
 settings-paper-awww-type-bottom = Bottom
 settings-paper-awww-type-any = Any
 settings-paper-awww-type-random = Random
+
+settings-paper-load-timeout-label = Wallpaper load timeout
+settings-paper-load-timeout-desc = Allow more time for large images, such as 16K wallpapers, to load. This does not change transition speed.

@@ -169,6 +169,14 @@ impl App {
                                     profile["key"].as_str() == Some(&current.key)
                                         && profile["enabled"].as_bool() == Some(true)
                                 });
+                            designer.settings_pinned = self
+                                .config
+                                .array_values(skwd_config::keys::theme::WALLPAPER_PROFILES)
+                                .iter()
+                                .any(|profile| {
+                                    profile["key"].as_str() == Some(&current.key)
+                                        && profile["settingsPinned"] == true
+                                });
                             designer.wallpaper = Some(current);
                             designer.error = None;
                         }

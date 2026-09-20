@@ -56,3 +56,6 @@ settings-paper-awww-type-top = 上
 settings-paper-awww-type-bottom = 下
 settings-paper-awww-type-any = 任意
 settings-paper-awww-type-random = ランダム
+
+settings-paper-load-timeout-label = 壁紙の読み込みタイムアウト
+settings-paper-load-timeout-desc = 16K 壁紙などの大きな画像の読み込みに、より長い時間を許可します。切り替えの速度は変わりません。

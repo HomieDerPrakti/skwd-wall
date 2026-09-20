@@ -742,3 +742,117 @@ fn wallpaper_profile_keeps_captured_source_and_both_variants() {
     assert_eq!(app.panels.theme_designer.as_ref().unwrap().candidate.colors[0], "#123456");
     assert!(drain_calls(&app).iter().all(|(method, _)| method != "wall.apply"));
 }
+
+#[test]
+fn pinned_wallpaper_settings_restore_before_apply() {
+    use crate::frontend::theme_designer::ThemeMsg;
+
+    let mut app = test_app();
+    seed(&mut app, &[wall("pinned.png", "static", 1, 0)]);
+    app.scene.set_current(0, app.library_session.filtered.len());
+    app.config.save_key(skwd_config::keys::theme::MODE, json!("light"));
+    app.config.save_key(skwd_config::keys::theme::STYLE, json!("pastel"));
+
+    let _ = update(&mut app, Message::Theme(ThemeMsg::ToggleWallpaperSettings));
+    assert!(crate::app::update::theme::wallpaper_settings_pinned(&app));
+
+    let _ =
+        update(&mut app, Message::Theme(ThemeMsg::Option(skwd_config::keys::theme::MODE, "dark")));
+    assert_eq!(
+        crate::app::update::theme::wallpaper_setting(&app, skwd_config::keys::theme::MODE),
+        Some(json!("dark"))
+    );
+
+    app.config.save_key(skwd_config::keys::theme::MODE, json!("light"));
+    app.config.save_key(skwd_config::keys::theme::STYLE, json!("natural"));
+    let key = app.library_session.library.catalog().items[0].key.clone();
+    crate::app::update::theme::restore_wallpaper_settings(&mut app, &key);
+
+    assert_eq!(app.config.str_path(skwd_config::keys::theme::MODE), "dark");
+    assert_eq!(app.config.str_path(skwd_config::keys::theme::STYLE), "pastel");
+}
+
+#[test]
+fn saving_a_theme_only_changes_the_pin_when_applied() {
+    use crate::frontend::theme_designer::{ThemeDesigner, ThemeMsg};
+    use skwd_config::keys::theme;
+
+    let mut app = test_app();
+    seed(&mut app, &[wall("pinned.png", "static", 1, 0)]);
+    let _ = update(&mut app, Message::Theme(ThemeMsg::ToggleWallpaperSettings));
+    let before = app.config.array_values(theme::WALLPAPER_PROFILES);
+    let candidate = crate::domain::theme::Candidate::from_preset("dracula").unwrap();
+    app.panels.theme_designer = Some(ThemeDesigner::new(candidate, String::from("Pinned edit")));
+
+    let _ = update(&mut app, Message::Theme(ThemeMsg::SaveTheme));
+    assert_eq!(app.config.array_values(theme::WALLPAPER_PROFILES), before);
+    let _ = update(&mut app, Message::Theme(ThemeMsg::SaveApply));
+    let pinned = app.config.array_values(theme::WALLPAPER_PROFILES);
+    assert_eq!(pinned[0]["settings"][theme::POLICY], "fixed");
+    assert_eq!(pinned[0]["settings"][theme::STATIC_THEME], "Pinned edit");
+    assert_eq!(
+        pinned[0]["settings"].as_object().unwrap().len(),
+        skwd_config::theme_profile::KEYS.len()
+    );
+    app.config.save_key(theme::STATIC_THEME, json!("nord"));
+    let key = app.library_session.library.catalog().items[0].key.clone();
+    crate::app::update::theme::restore_wallpaper_settings(&mut app, &key);
+    assert_eq!(app.config.str_path(theme::STATIC_THEME), "Pinned edit");
+}
+
+#[test]
+fn pinned_hover_uses_its_backend_when_global_theme_is_off() {
+    use skwd_config::keys::theme;
+
+    let mut app = test_app();
+    seed(&mut app, &[json!({"name": "pinned.png", "type": "static", "thumb": "/pinned.png"})]);
+    let key = app.library_session.library.catalog().items[0].key.clone();
+    app.config.set_key(theme::POLICY, json!("off"));
+    app.config.set_key(
+        theme::WALLPAPER_PROFILES,
+        json!([{
+            "key": key, "settingsPinned": true,
+            "settings": {"theme.policy": "fixed", "theme.staticTheme": "dracula"}
+        }]),
+    );
+    let before = app.config.root().clone();
+    let now = Instant::now();
+    app.update_theme_preview(now, 0.016);
+    app.update_theme_preview(now + Duration::from_millis(60), 0.016);
+    assert_eq!(app.theme.preview_target, Some(0));
+    let calls = drain_calls(&app);
+    assert!(calls.iter().any(|(method, params)| method == "theme.preview"
+        && params["settings"][theme::STATIC_THEME] == "dracula"));
+    assert!(calls.iter().any(|(method, _)| method == "wall.shell_preview"));
+    app.daemon
+        .pending
+        .insert(9, Pending::ThemePreview { card: 0, backend: String::from("static") });
+    respond(&mut app, 9, preview_reply());
+    assert!(app.theme.cache.contains_key(&0));
+    assert_eq!(app.config.root(), &before);
+}
+
+#[test]
+fn unpin_preserves_saved_colours_and_ends_hover() {
+    use crate::frontend::theme_designer::ThemeMsg;
+    use skwd_config::keys::theme;
+
+    let mut app = test_app();
+    seed(&mut app, &[wall("pinned.png", "static", 1, 0)]);
+    let key = app.library_session.library.catalog().items[0].key.clone();
+    app.config.set_key(
+        theme::WALLPAPER_PROFILES,
+        json!([{
+            "key": key, "enabled": true, "dark": {"primary": "#123456"},
+            "settingsPinned": true, "settings": {"theme.mode": "light"}
+        }]),
+    );
+    app.theme.shell_preview_sent = Some(0);
+    let _ = update(&mut app, Message::Theme(ThemeMsg::ToggleWallpaperSettings));
+    let profiles = app.config.array_values(theme::WALLPAPER_PROFILES);
+    assert!(profiles[0].get("settingsPinned").is_none());
+    assert!(profiles[0].get("settings").is_none());
+    assert_eq!(profiles[0]["dark"]["primary"], "#123456");
+    assert_eq!(profiles[0]["enabled"], true);
+    assert!(drain_calls(&app).iter().any(|(method, _)| method == "wall.shell_preview_end"));
+}

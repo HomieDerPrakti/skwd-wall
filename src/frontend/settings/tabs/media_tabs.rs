@@ -13,6 +13,12 @@ pub(super) fn tab_paper(builder: &mut Builder<'_>) {
         keys::paper::ENGINE,
         &ENGINES,
     );
+    builder.num(
+        tr("settings-paper-load-timeout-label"),
+        tr("settings-paper-load-timeout-desc"),
+        keys::paper::LOAD_TIMEOUT_SECONDS,
+        "s",
+    );
     let fill_modes = FILL_MODES.map(|key| {
         let label = match key {
             "fit" => "settings-paper-fill-fit",

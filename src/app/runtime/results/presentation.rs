@@ -51,7 +51,11 @@ impl App {
         if self.theme.job_pending == Some(card) {
             self.theme.job_pending = None;
         }
-        if cols.is_empty() || self.config.theme_backend() != backend {
+        let current_backend =
+            self.library_session.library.catalog().items.get(card).map(|item| {
+                crate::app::update::theme::wallpaper_theme_backend_for(self, &item.key)
+            });
+        if cols.is_empty() || current_backend.as_deref() != Some(backend) {
             return;
         }
         if self.theme.swatch_cache.len() > PALETTE_CACHE_CAP {

@@ -56,3 +56,6 @@ settings-paper-awww-type-top = أعلى
 settings-paper-awww-type-bottom = أسفل
 settings-paper-awww-type-any = أي
 settings-paper-awww-type-random = عشوائي
+
+settings-paper-load-timeout-label = مهلة تحميل الخلفية
+settings-paper-load-timeout-desc = امنح الصور الكبيرة، مثل خلفيات 16K، وقتًا أطول للتحميل. لا يغيّر هذا سرعة الانتقال.

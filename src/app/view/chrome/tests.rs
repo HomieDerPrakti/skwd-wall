@@ -27,6 +27,40 @@ fn theme_mode_controls_share_the_effective_persisted_value() {
 }
 
 #[test]
+fn pinned_mode_precedes_the_effective_global_mode() {
+    use crate::infrastructure::ipc::IpcMsg;
+
+    for (pinned, value, expected) in [
+        (true, json!("dark"), "dark"),
+        (true, json!("auto"), "auto"),
+        (true, json!(""), "light"),
+        (true, json!(false), "light"),
+        (false, json!("dark"), "light"),
+    ] {
+        let mut app = test_app();
+        app.config.set_key(skwd_config::keys::matugen::MODE, json!("light"));
+        let _ = app.daemon.client.call("subscribe", json!({"events": ["skwd."]}));
+        let list_id = app.daemon.client.call("wall.list", json!({}));
+        app.handle_ipc(IpcMsg::Connected { list_id });
+        app.handle_ipc(IpcMsg::Response {
+            id: list_id,
+            result: Some(json!({"wallpapers": [{
+                "name": "pinned.png", "type": "static", "thumb": "/thumbs/pinned.png",
+                "hue": 1, "mtime": 0
+            }]})),
+            error: None,
+        });
+        app.scene.set_current(0, app.library_session.filtered.len());
+        let key = app.library_session.library.catalog().items[0].key.clone();
+        app.config.set_key(
+            skwd_config::keys::theme::WALLPAPER_PROFILES,
+            json!([{"key": key, "settingsPinned": pinned, "settings": {"theme.mode": value}}]),
+        );
+        assert_eq!(super::theme_bar_model(&app, "skwd-iris", false, 1).mode, expected);
+    }
+}
+
+#[test]
 fn committed_theme_modes_reopen_in_the_bar_and_settings() {
     use crate::app::{App, Message, update};
     use crate::contracts::settings::SettingsSource;

@@ -56,3 +56,5 @@ settings-paper-awww-type-top = উপরে
 settings-paper-awww-type-bottom = নিচে
 settings-paper-awww-type-any = যেকোনো
 settings-paper-awww-type-random = এলোমেলো
+settings-paper-load-timeout-label = ওয়ালপেপার লোডের সময়সীমা
+settings-paper-load-timeout-desc = 16K ওয়ালপেপারের মতো বড় ছবি লোড হতে আরও সময় দিন। এতে ট্রানজিশনের গতি বদলাবে না।

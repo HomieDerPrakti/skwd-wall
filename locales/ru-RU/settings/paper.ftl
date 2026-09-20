@@ -56,3 +56,6 @@ settings-paper-awww-type-top = Сверху
 settings-paper-awww-type-bottom = Снизу
 settings-paper-awww-type-any = Любой
 settings-paper-awww-type-random = Случайный
+
+settings-paper-load-timeout-label = Время ожидания загрузки обоев
+settings-paper-load-timeout-desc = Дайте больше времени на загрузку больших изображений, например обоев 16K. Скорость перехода не изменится.
