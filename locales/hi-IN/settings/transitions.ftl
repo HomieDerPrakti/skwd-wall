@@ -20,8 +20,6 @@ settings-transitions-quality-desc = स्वचालित अलग GPU प�
 settings-transitions-quality-auto = स्वचालित
 settings-transitions-quality-full = पूर्ण
 settings-transitions-quality-low = कम
-settings-transitions-fps-cap-label = FPS सीमा
-settings-transitions-fps-cap-desc = रेत के लिए सटीक फ़्रेम सीमा; 0 गुणवत्ता का पालन करता है। कण रीफ़्रेश दर से काफ़ी नीचे भी ठीक दिखते हैं; कम अनुपात में सस्ता है।
 settings-transitions-scope-desc = सभी इस शेडर को हर अपडेट हुए मॉनिटर पर एनिमेट करता है। प्राथमिक इसे एक बार एनिमेट करता है और बाकी मॉनिटर तुरंत बदलता है।
 settings-transitions-scope-all = सभी मॉनिटर
 settings-transitions-scope-primary = केवल प्राथमिक
@@ -41,3 +39,7 @@ settings-transitions-family-break = टूटना
 settings-transitions-family-break-desc = छवि बिखरती, पिक्सेलेट होती या फैलती है।
 settings-transitions-family-sand = रेत
 settings-transitions-family-sand-desc = हर पिक्सेल एक कण बनकर किसी आकार में उड़ जाता है।
+
+settings-transitions-rate-label = ट्रांज़िशन FPS
+settings-transitions-rate-desc = वॉलपेपर प्लेबैक बदले बिना ऐनिमेशन के फ़्रेम प्रति सेकंड सीमित करें। हर डिस्प्ले की रिफ़्रेश दर के लिए खाली छोड़ें या 0 दर्ज करें।
+settings-transitions-rate-auto = अपने आप

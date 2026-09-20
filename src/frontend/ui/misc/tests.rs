@@ -288,6 +288,26 @@ fn folio_rule_alpha() {
 }
 
 #[test]
+fn settings_editor_and_toggle_bars_allow_content_to_set_height() {
+    let palette = crate::frontend::theme::Palette::default();
+    for scale in [0.8, 1.0, 1.5, 2.0] {
+        for inline in [false, true] {
+            let content =
+                iced::widget::text("A label\nHelp text\nthat wraps\nonto more\nthan three lines")
+                    .width(120.0)
+                    .into();
+            let action = iced::widget::text("30").into();
+            let bar = if inline {
+                super::folio_inline_bar(content, false, (), action, scale, &palette, 1.0)
+            } else {
+                super::folio_action_bar(content, false, (), action, scale, &palette, 1.0)
+            };
+            assert_eq!(bar.as_widget().size_hint().height, iced::Length::Shrink);
+        }
+    }
+}
+
+#[test]
 fn rtl_canvas_text_anchors_its_measured_width() {
     use iced::advanced::text::Alignment as TextAlignment;
     use iced::{Alignment, Color, Point};

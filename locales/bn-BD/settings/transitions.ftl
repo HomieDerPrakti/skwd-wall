@@ -20,8 +20,6 @@ settings-transitions-quality-desc = স্বয়ংক্রিয় ডি�
 settings-transitions-quality-auto = স্বয়ংক্রিয়
 settings-transitions-quality-full = পূর্ণ
 settings-transitions-quality-low = কম
-settings-transitions-fps-cap-label = FPS সীমা
-settings-transitions-fps-cap-desc = বালুর জন্য নির্দিষ্ট ফ্রেম সীমা; 0 মান অনুসরণ করে। রিফ্রেশের অনেক নিচেও বালুকণা ভালো দেখায়; কম হলে আনুপাতিকভাবে সাশ্রয়ী।
 settings-transitions-scope-desc = সব প্রতিটি আপডেট হওয়া মনিটরে এই শেডার অ্যানিমেট করে। প্রধান একবার অ্যানিমেট করে এবং অন্য মনিটরগুলো সঙ্গে সঙ্গে বদলায়।
 settings-transitions-scope-all = সব মনিটর
 settings-transitions-scope-primary = শুধু প্রধান
@@ -41,3 +39,7 @@ settings-transitions-family-break = ভেঙে যাওয়া
 settings-transitions-family-break-desc = ছবি চুরমার হয়, পিক্সেলে ভাঙে বা লেপ্টে যায়।
 settings-transitions-family-sand = বালু
 settings-transitions-family-sand-desc = প্রতিটি পিক্সেল বালুকণা হয়ে একটি আকৃতিতে উড়ে যায়।
+
+settings-transitions-rate-label = ট্রানজিশন FPS
+settings-transitions-rate-desc = ওয়ালপেপারের প্লেব্যাক না বদলে অ্যানিমেশনের প্রতি সেকেন্ডের ফ্রেম সীমিত করুন। প্রতিটি ডিসপ্লের রিফ্রেশ রেট ব্যবহার করতে খালি রাখুন বা 0 লিখুন।
+settings-transitions-rate-auto = স্বয়ংক্রিয়

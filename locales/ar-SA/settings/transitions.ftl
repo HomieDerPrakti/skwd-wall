@@ -20,8 +20,6 @@ settings-transitions-quality-desc = «تلقائي» يعمل بالدقة ال�
 settings-transitions-quality-auto = تلقائي
 settings-transitions-quality-full = كامل
 settings-transitions-quality-low = منخفض
-settings-transitions-fps-cap-label = حد FPS
-settings-transitions-fps-cap-desc = حد الإطارات الدقيق للرمل؛ 0 يتبع الجودة. تبدو الحبيبات جيدة دون معدل التحديث بكثير؛ الأقل أرخص بالتناسب.
 settings-transitions-scope-desc = «الكل» يحرّك هذا المظلل على كل شاشة محدَّثة. «الأساسية» يحرّكه مرة واحدة ويغيّر الشاشات الأخرى فورًا.
 settings-transitions-scope-all = كل الشاشات
 settings-transitions-scope-primary = الأساسية فقط
@@ -41,3 +39,7 @@ settings-transitions-family-break = تفكك
 settings-transitions-family-break-desc = الصورة تتحطم أو تتبكسل أو تتلطخ.
 settings-transitions-family-sand = رمل
 settings-transitions-family-sand-desc = كل بكسل يصبح حبة وتطير إلى شكل.
+
+settings-transitions-rate-label = معدل إطارات الانتقال
+settings-transitions-rate-desc = حدّد عدد إطارات الحركة في الثانية دون تغيير تشغيل الخلفية. اترك الحقل فارغًا أو أدخل 0 لاستخدام معدل تحديث كل شاشة.
+settings-transitions-rate-auto = تلقائي

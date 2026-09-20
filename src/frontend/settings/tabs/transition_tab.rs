@@ -82,6 +82,13 @@ pub(super) fn tab_transitions(builder: &mut Builder<'_>) {
         "ms",
     );
 
+    builder.num(
+        tr("settings-transitions-rate-label"),
+        tr("settings-transitions-rate-desc"),
+        keys::transition::FPS,
+        "fps",
+    );
+
     let family_opts: Vec<(String, String)> = SHADER_FAMILIES
         .iter()
         .map(|(key, _, _)| ((*key).to_string(), tr(family_label_key(key)).to_string()))
@@ -168,12 +175,6 @@ pub(super) fn tab_transitions(builder: &mut Builder<'_>) {
             ("low", tr("settings-transitions-quality-low")),
         ],
         quality,
-    );
-    builder.num(
-        tr("settings-transitions-fps-cap-label"),
-        tr("settings-transitions-fps-cap-desc"),
-        keys::transition::SAND_FPS,
-        "fps",
     );
     builder.toggle(
         tr("settings-transitions-sharp-label"),

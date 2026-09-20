@@ -204,23 +204,25 @@ fn folio_trailing_bar<'a, Message: Clone + 'a>(
     let copy = iced::widget::mouse_area(
         container(content)
             .width(Length::Fill)
-            .height(Length::Fill)
             .align_y(iced::alignment::Vertical::Center)
             .padding(logical_padding(4.0 * scale, 8.0 * scale, 4.0 * scale, 10.0 * scale))
             .clip(true),
     )
     .on_press(on_focus);
     let action = container(action).padding(logical_padding(0.0, 6.0 * scale, 0.0, 0.0));
-    container(row![marker, copy, action].align_y(Alignment::Center))
-        .width(Length::Fill)
-        .height(Length::Fixed(60.0 * scale))
-        .style(move |_| {
-            super::style::box_style(
-                with_alpha(palette.surface_container, 0.22 * fade),
-                with_alpha(if focused { palette.primary } else { palette.outline }, 0.3 * fade),
-            )
-        })
-        .into()
+    container(
+        row![iced::widget::Space::new().height(60.0 * scale), marker, copy, action]
+            .height(Length::Shrink)
+            .align_y(Alignment::Center),
+    )
+    .width(Length::Fill)
+    .style(move |_| {
+        super::style::box_style(
+            with_alpha(palette.surface_container, 0.22 * fade),
+            with_alpha(if focused { palette.primary } else { palette.outline }, 0.3 * fade),
+        )
+    })
+    .into()
 }
 
 pub fn folio_action_bar<'a, Message: Clone + 'a>(

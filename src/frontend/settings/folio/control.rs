@@ -386,9 +386,12 @@ pub(super) fn widget<'a>(
         ),
         Control::Number { key, unit, .. } => {
             let value = values.get(&key).map_or("", String::as_str);
+            let automatic = key == crate::contracts::settings::keys::transition::FPS;
+            let value = if automatic && value.parse::<f64>() == Ok(0.0) { "" } else { value };
+            let placeholder = if automatic { tr("settings-transitions-rate-auto") } else { "0" };
             let message_key = key.clone();
             row![
-                text_input("0", value)
+                text_input(placeholder, value)
                     .id(super::super::workbench_input_id(&key))
                     .font(crate::frontend::ui::UI_FONT)
                     .on_input(move |raw| Message::Settings(SettingsMsg::Input(

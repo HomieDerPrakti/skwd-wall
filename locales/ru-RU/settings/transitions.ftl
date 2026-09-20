@@ -20,8 +20,6 @@ settings-transitions-quality-desc = «Авто» использует полно
 settings-transitions-quality-auto = Авто
 settings-transitions-quality-full = Полное
 settings-transitions-quality-low = Низкое
-settings-transitions-fps-cap-label = Ограничение FPS
-settings-transitions-fps-cap-desc = Точное ограничение кадров для песка; 0 следует настройке качества. Песчинки хорошо видны и при частоте ниже частоты обновления; чем ниже, тем пропорционально дешевле.
 settings-transitions-scope-desc = «Все» анимирует этот шейдер на каждом обновляемом мониторе. «Основной» анимирует его один раз, а остальные мониторы меняются сразу.
 settings-transitions-scope-all = Все мониторы
 settings-transitions-scope-primary = Только основной
@@ -41,3 +39,7 @@ settings-transitions-family-break = Распад
 settings-transitions-family-break-desc = Изображение разбивается, пикселизуется или размазывается.
 settings-transitions-family-sand = Песок
 settings-transitions-family-sand-desc = Каждый пиксель становится песчинкой и летит, складываясь в фигуру.
+
+settings-transitions-rate-label = FPS перехода
+settings-transitions-rate-desc = Ограничивает частоту кадров анимации, не меняя воспроизведение обоев. Оставьте поле пустым или введите 0 для частоты обновления каждого экрана.
+settings-transitions-rate-auto = Авто

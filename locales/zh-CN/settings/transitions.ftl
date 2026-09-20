@@ -20,8 +20,6 @@ settings-transitions-quality-desc = “自动”在独立显卡上以 60 fps 全
 settings-transitions-quality-auto = 自动
 settings-transitions-quality-full = 完整
 settings-transitions-quality-low = 低
-settings-transitions-fps-cap-label = 帧率上限
-settings-transitions-fps-cap-desc = 流沙的精确帧率上限；0 表示跟随质量设置。帧率远低于刷新率时沙粒依然清晰；数值越低，开销按比例越小。
 settings-transitions-scope-desc = “全部”会在每台更新的显示器上播放此着色器动画。“仅主显示器”只播放一次，其他显示器立即切换。
 settings-transitions-scope-all = 全部显示器
 settings-transitions-scope-primary = 仅主显示器
@@ -41,3 +39,7 @@ settings-transitions-family-break = 破碎
 settings-transitions-family-break-desc = 图像碎裂、像素化或涂抹。
 settings-transitions-family-sand = 流沙
 settings-transitions-family-sand-desc = 每个像素都化为沙粒，飞舞组成新的形状。
+
+settings-transitions-rate-label = 过渡帧率
+settings-transitions-rate-desc = 限制过渡动画的帧率，不影响壁纸播放。留空或输入 0 以使用各显示器的刷新率。
+settings-transitions-rate-auto = 自动

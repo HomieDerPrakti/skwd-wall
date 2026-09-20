@@ -20,8 +20,6 @@ settings-transitions-quality-desc = Automática usa resolução total a 60 fps e
 settings-transitions-quality-auto = Automática
 settings-transitions-quality-full = Total
 settings-transitions-quality-low = Baixa
-settings-transitions-fps-cap-label = Limite de FPS
-settings-transitions-fps-cap-desc = Limite exato de quadros para a areia; 0 segue a Qualidade. Os grãos continuam legíveis bem abaixo da taxa de atualização; valores menores são proporcionalmente mais leves.
 settings-transitions-scope-desc = Todos anima este shader em cada monitor atualizado. Principal anima uma vez e troca os outros monitores imediatamente.
 settings-transitions-scope-all = Todos os monitores
 settings-transitions-scope-primary = Somente o principal
@@ -41,3 +39,7 @@ settings-transitions-family-break = Fragmentar
 settings-transitions-family-break-desc = A imagem se estilhaça, pixeliza ou borra.
 settings-transitions-family-sand = Areia
 settings-transitions-family-sand-desc = Cada pixel vira um grão e voa para formar uma figura.
+
+settings-transitions-rate-label = FPS da transição
+settings-transitions-rate-desc = Limite os quadros por segundo da animação sem alterar a reprodução do papel de parede. Deixe vazio ou digite 0 para usar a taxa de atualização de cada tela.
+settings-transitions-rate-auto = Automático

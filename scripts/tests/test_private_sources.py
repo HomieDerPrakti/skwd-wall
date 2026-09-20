@@ -66,19 +66,18 @@ class PrivateSourcePolicyTests(unittest.TestCase):
             self.assertIn(revision, (ROOT / "Cargo.toml").read_text())
             self.assertNotIn(f"repository: liixini/skwd-{name.replace('_', '-')}", workflow)
         self.assertNotIn("GIT_CONFIG_COUNT", workflow)
-        verify_revision = "6f7ec2f89007fc29fd350bb9a496b203676985c0"
+        verify_revision = "d72dbeb599fd884c13f0b55e59f3df2b42d28d80"
         self.assertIn("repository: liixini/skwd-verify", workflow)
         self.assertIn(f"ref: {verify_revision}", workflow)
-        self.assertRegex(
-            workflow,
-            r"working-directory: suite/skwd-verify\n"
-            r"\s+continue-on-error: true\n"
-            r"\s+run: >-\n"
-            r"(?:\s+.*\n)*?"
-            r"\s+--suite verify\.repository .*\n"
-            r"(?:\s+.*\n)*?"
-            r"\s+-- scripts/test-all\.sh",
-        )
+        verifier_step = workflow.split("      - name: Verify system-test repository\n", 1)[1]
+        verifier_step = verifier_step.split("\n      - name: ", 1)[0]
+        for required in (
+            "working-directory: suite/skwd-verify",
+            "continue-on-error: true",
+            "--suite verify.repository --target linux-x86_64",
+            '-- env "PATH=$SKWD_VERIFY_TEST_ENV/bin:$PATH" scripts/test-all.sh',
+        ):
+            self.assertIn(required, verifier_step)
         self.assertFalse((ROOT / ".github" / "workflows" / "ci.yml").exists())
 
     def test_every_secondary_private_checkout_uses_the_read_token_ephemerally(self):

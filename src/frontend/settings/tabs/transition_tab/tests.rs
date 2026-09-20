@@ -75,3 +75,29 @@ fn shader_scope_migration() {
     assert_eq!(shader_scope(&config, "fade"), "primary");
     assert_eq!(shader_scope(&config, "glitch"), "all");
 }
+
+#[test]
+fn every_shader_family_has_one_transition_rate_beside_duration() {
+    for shader in ["random", "crossfade", "sand-helix", "glitch"] {
+        let config = FakeSettingsSource::default().with_text(keys::transition::SHADER, shader);
+        let mut builder = super::Builder { cfg: &config, cards: Vec::new() };
+        super::tab_transitions(&mut builder);
+        let paths: Vec<&str> = builder
+            .cards
+            .iter()
+            .flat_map(|(_, rows)| rows.iter())
+            .filter_map(|row| {
+                if let super::Control::Number { path, .. } = &row.control {
+                    Some(path.as_str())
+                } else {
+                    None
+                }
+            })
+            .collect();
+        assert_eq!(paths.iter().filter(|&&path| path == keys::transition::FPS).count(), 1);
+        let duration =
+            paths.iter().position(|&path| path == keys::transition::DURATION_MS).unwrap();
+        assert_eq!(paths[duration + 1], keys::transition::FPS);
+        assert!(!paths.contains(&keys::transition::SAND_FPS));
+    }
+}

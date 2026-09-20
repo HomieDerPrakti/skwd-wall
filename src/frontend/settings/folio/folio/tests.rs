@@ -53,19 +53,14 @@ fn editor_bars_match_kind() {
 }
 
 #[test]
-fn compact_bar_three_lines() {
-    let description =
-        "Rename the selected preset. Save current creates a new preset with an automatic name.";
-    let (_, fitted) = compact_field_text("Name", description, 220.0, 1.0);
-    assert_eq!(fitted, description);
-    assert_ne!(
-        fitted,
-        crate::frontend::ui::ellipsize_text(
-            description,
-            crate::frontend::ui::TYPE_SMALL * legible_type_scale(1.0),
-            220.0 * 2.0,
-        )
-    );
+fn settings_columns_fit_the_available_width_at_large_ui_scales() {
+    for (available, scale, single) in [(618.0, 1.0, true), (459.0, 1.5, true), (1072.0, 1.0, false)]
+    {
+        let (content, column, single_column) = reading_columns(available, scale);
+        assert_eq!(single_column, single);
+        assert!((content + 76.0 * scale - available).abs() < 0.001);
+        assert!((column * 2.0 + 34.0 * scale - content).abs() < 0.001);
+    }
 }
 
 #[test]

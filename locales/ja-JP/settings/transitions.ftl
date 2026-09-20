@@ -20,8 +20,6 @@ settings-transitions-quality-desc = 「自動」は専用 GPU ではフル解像
 settings-transitions-quality-auto = 自動
 settings-transitions-quality-full = フル
 settings-transitions-quality-low = 低
-settings-transitions-fps-cap-label = FPS 上限
-settings-transitions-fps-cap-desc = 砂の正確なフレーム上限です。0 は品質設定に従います。リフレッシュレートより十分低くても粒ははっきり見え、低いほど負荷は比例して下がります。
 settings-transitions-scope-desc = 「すべて」は更新されるすべてのモニターでこのシェーダーをアニメーションします。「プライマリのみ」は 1 回だけアニメーションし、他のモニターはすぐに切り替えます。
 settings-transitions-scope-all = すべてのモニター
 settings-transitions-scope-primary = プライマリのみ
@@ -41,3 +39,7 @@ settings-transitions-family-break = 分解
 settings-transitions-family-break-desc = 画像が砕ける、ピクセル化する、またはにじみます。
 settings-transitions-family-sand = 砂
 settings-transitions-family-sand-desc = すべてのピクセルが砂粒になって飛び、形を作ります。
+
+settings-transitions-rate-label = 切り替えの FPS
+settings-transitions-rate-desc = 壁紙の再生速度を変えずに、切り替えアニメーションのフレームレートを制限します。空欄または 0 で各画面のリフレッシュレートを使います。
+settings-transitions-rate-auto = 自動

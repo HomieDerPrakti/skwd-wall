@@ -20,8 +20,6 @@ settings-transitions-quality-desc = Auto tourne en pleine résolution à 60 fps 
 settings-transitions-quality-auto = Auto
 settings-transitions-quality-full = Pleine
 settings-transitions-quality-low = Basse
-settings-transitions-fps-cap-label = Limite de FPS
-settings-transitions-fps-cap-desc = Limite d’images exacte pour le sable ; 0 suit Qualité. Les grains restent lisibles bien en dessous du rafraîchissement ; plus bas est proportionnellement moins coûteux.
 settings-transitions-scope-desc = Tous anime ce shader sur chaque écran mis à jour. Principal l’anime une fois et change les autres écrans immédiatement.
 settings-transitions-scope-all = Tous les écrans
 settings-transitions-scope-primary = Principal seulement
@@ -41,3 +39,7 @@ settings-transitions-family-break = Éclatement
 settings-transitions-family-break-desc = L’image se brise, se pixélise ou se disperse.
 settings-transitions-family-sand = Sable
 settings-transitions-family-sand-desc = Chaque pixel devient un grain et s’envole vers une forme.
+
+settings-transitions-rate-label = FPS des transitions
+settings-transitions-rate-desc = Limitez la fréquence de l’animation sans modifier la lecture du fond d’écran. Laissez vide ou saisissez 0 pour suivre la fréquence de chaque écran.
+settings-transitions-rate-auto = Auto

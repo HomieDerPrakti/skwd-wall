@@ -1250,6 +1250,12 @@ fn transition_preview_stage<'a>(
         .into()
 }
 
+fn reading_columns(available_width: f32, scale: f32) -> (f32, f32, bool) {
+    let content_width = (available_width - 76.0 * scale).max(1.0);
+    let column_width = ((content_width - 34.0 * scale) * 0.5).max(1.0);
+    (content_width, column_width, column_width < 260.0 * scale)
+}
+
 fn reading_surface<'a>(input: ReadingInput<'a>, focus: FocusCtx<'_>) -> Element<'a, Message> {
     let ReadingInput {
         tab,
@@ -1296,12 +1302,11 @@ fn reading_surface<'a>(input: ReadingInput<'a>, focus: FocusCtx<'_>) -> Element<
         folio_horizontal_rule(with_alpha(palette.outline, FOLIO_RULE_ALPHA * fade)),
     ]
     .spacing(12.0 * scale);
-    let content_width = (available_width - 76.0 * scale).max(480.0 * scale);
-    let column_width = ((content_width - 34.0 * scale) * 0.5).max(230.0 * scale);
+    let (content_width, column_width, single_column) = reading_columns(available_width, scale);
     let has_transition_preview = take_transition_preview(&mut settings);
     let controls = field_grid(
         settings,
-        tab == "sources",
+        tab == "sources" || single_column,
         values,
         has_selected_preset,
         focus,
@@ -1536,21 +1541,6 @@ fn compact_field_grid<'a>(
     .into()
 }
 
-fn compact_field_text(title: &str, desc: &str, copy_width: f32, scale: f32) -> (String, String) {
-    (
-        crate::frontend::ui::ellipsize_text(
-            title.trim(),
-            12.0 * legible_type_scale(scale),
-            copy_width,
-        ),
-        crate::frontend::ui::ellipsize_text(
-            desc.trim(),
-            TYPE_SMALL * legible_type_scale(scale),
-            copy_width * 3.0,
-        ),
-    )
-}
-
 fn compact_field_copy(
     title: &str,
     desc: &str,
@@ -1559,16 +1549,23 @@ fn compact_field_copy(
     palette: &Palette,
     fade: f32,
 ) -> Element<'static, Message> {
-    let (title, description) = compact_field_text(title, desc, copy_width, scale);
-    if description.is_empty() {
-        label(title, 12.0, scale, with_alpha(palette.surface_text, fade)).into()
+    let title = label(title.trim().to_owned(), 12.0, scale, with_alpha(palette.surface_text, fade))
+        .width(Length::Fixed(copy_width))
+        .wrapping(iced::widget::text::Wrapping::WordOrGlyph);
+    if desc.trim().is_empty() {
+        title.into()
     } else {
         column![
-            label(title, 12.0, scale, with_alpha(palette.surface_text, fade)),
-            label(description, TYPE_SMALL, scale, with_alpha(palette.surface_text, 0.52 * fade))
-                .width(Length::Fixed(copy_width))
-                .line_height(iced::widget::text::LineHeight::Relative(1.12))
-                .wrapping(iced::widget::text::Wrapping::Word),
+            title,
+            label(
+                desc.trim().to_owned(),
+                TYPE_SMALL,
+                scale,
+                with_alpha(palette.surface_text, 0.52 * fade)
+            )
+            .width(Length::Fixed(copy_width))
+            .line_height(iced::widget::text::LineHeight::Relative(1.12))
+            .wrapping(iced::widget::text::Wrapping::WordOrGlyph),
         ]
         .spacing(2.0 * scale)
         .into()

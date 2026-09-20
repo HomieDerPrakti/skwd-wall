@@ -1093,3 +1093,19 @@ fn theme_variant_control_displays_the_effective_mode() {
         assert_eq!(SettingsSource::text(&config, skwd_config::keys::theme::MODE), expected);
     }
 }
+
+#[test]
+fn transition_rate_input_and_auto_leave_playback_and_preview_unchanged() {
+    use crate::frontend::settings::SettingsMsg;
+    let mut app = test_app();
+    let key = skwd_config::keys::transition::FPS;
+    let playback = app.config.num_path(skwd_config::keys::we_render::FPS);
+    let preview = app.config.num_path(skwd_config::keys::transition::PREVIEW_FPS);
+    for (raw, expected) in [("120", 120.0), ("30", 30.0), ("", 0.0), ("0", 0.0)] {
+        let _ = update(&mut app, Message::Settings(SettingsMsg::Input(key.into(), raw.into())));
+        let _ = update(&mut app, Message::Settings(SettingsMsg::Commit));
+        assert_eq!(app.config.num_path(key), expected);
+        assert_eq!(app.config.num_path(skwd_config::keys::we_render::FPS), playback);
+        assert_eq!(app.config.num_path(skwd_config::keys::transition::PREVIEW_FPS), preview);
+    }
+}

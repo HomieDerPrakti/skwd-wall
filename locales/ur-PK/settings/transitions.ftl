@@ -20,8 +20,6 @@ settings-transitions-quality-desc = خودکار الگ GPU پر 60 fps پر پ�
 settings-transitions-quality-auto = خودکار
 settings-transitions-quality-full = مکمل
 settings-transitions-quality-low = کم
-settings-transitions-fps-cap-label = FPS حد
-settings-transitions-fps-cap-desc = ریت کے لیے عین فریم حد؛ 0 معیار کی پیروی کرتا ہے۔ ذرّات ریفریش سے کافی نیچے بھی ٹھیک دکھتے ہیں؛ کم اسی تناسب سے سستا ہے۔
 settings-transitions-scope-desc = سب ہر اپ ڈیٹ ہونے والے مانیٹر پر یہ شیڈر متحرک کرتا ہے۔ بنیادی اسے ایک بار متحرک کرتا ہے اور باقی مانیٹر فوراً بدل دیتا ہے۔
 settings-transitions-scope-all = تمام مانیٹر
 settings-transitions-scope-primary = صرف بنیادی
@@ -41,3 +39,7 @@ settings-transitions-family-break = ٹوٹنا
 settings-transitions-family-break-desc = تصویر بکھرتی، پکسلاتی یا پھیلتی ہے۔
 settings-transitions-family-sand = ریت
 settings-transitions-family-sand-desc = ہر پکسل ایک ذرّہ بن کر کسی شکل میں اڑ جاتا ہے۔
+
+settings-transitions-rate-label = ٹرانزیشن FPS
+settings-transitions-rate-desc = وال پیپر پلے بیک بدلے بغیر اینیمیشن کے فریم فی سیکنڈ محدود کریں۔ ہر ڈسپلے کی ریفریش شرح کے لیے خالی چھوڑیں یا 0 درج کریں۔
+settings-transitions-rate-auto = خودکار

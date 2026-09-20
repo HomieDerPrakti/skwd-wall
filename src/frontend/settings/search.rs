@@ -254,6 +254,10 @@ fn control_value(control: &Control, cfg: &dyn SettingsSource) -> String {
             tr("settings-app-themes-off")
         }),
         Control::Number { path, unit, .. } => {
+            if path == crate::contracts::settings::keys::transition::FPS && cfg.number(path) == 0.0
+            {
+                return tr("settings-transitions-rate-auto").to_string();
+            }
             let value = crate::contracts::picker::format_config_number(cfg.number(path));
             if unit.is_empty() { value } else { format!("{value} {unit}") }
         }

@@ -20,8 +20,6 @@ settings-transitions-quality-desc = Auto kör full upplösning med 60 fps på di
 settings-transitions-quality-auto = Auto
 settings-transitions-quality-full = Full
 settings-transitions-quality-low = Låg
-settings-transitions-fps-cap-label = Fps-tak
-settings-transitions-fps-cap-desc = Exakt bildrutetak för sanden; 0 följer Kvalitet. Kornen läses bra långt under skärmens frekvens; lägre är proportionellt billigare.
 settings-transitions-scope-desc = Alla animerar denna shader på varje uppdaterad skärm. Primär animerar den en gång och byter de andra direkt.
 settings-transitions-scope-all = Alla skärmar
 settings-transitions-scope-primary = Endast primär
@@ -41,3 +39,7 @@ settings-transitions-family-break = Bryt upp
 settings-transitions-family-break-desc = Bilden splittras, pixelas eller smetas ut.
 settings-transitions-family-sand = Sand
 settings-transitions-family-sand-desc = Varje pixel blir ett sandkorn och flyger in i en form.
+
+settings-transitions-rate-label = Övergångens FPS
+settings-transitions-rate-desc = Begränsa bildfrekvensen under övergången utan att ändra bakgrundens uppspelning. Lämna tomt eller ange 0 för varje skärms uppdateringsfrekvens.
+settings-transitions-rate-auto = Auto

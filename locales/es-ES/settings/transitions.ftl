@@ -20,8 +20,6 @@ settings-transitions-quality-desc = Auto ejecuta resolución completa a 60 fps e
 settings-transitions-quality-auto = Automático
 settings-transitions-quality-full = Completo
 settings-transitions-quality-low = Bajo
-settings-transitions-fps-cap-label = Límite de FPS
-settings-transitions-fps-cap-desc = Límite exacto de fotogramas para la arena; 0 sigue a Calidad. Los granos se leen bien por debajo del refresco; menor es proporcionalmente más barato.
 settings-transitions-scope-desc = Todos anima este shader en cada monitor actualizado. Primario lo anima una vez y cambia los otros monitores inmediatamente.
 settings-transitions-scope-all = Todos los monitores
 settings-transitions-scope-primary = Solo primario
@@ -41,3 +39,7 @@ settings-transitions-family-break = Fragmentación
 settings-transitions-family-break-desc = La imagen se rompe, pixela o emborrona.
 settings-transitions-family-sand = Arena
 settings-transitions-family-sand-desc = Cada píxel se convierte en un grano y vuela formando una figura.
+
+settings-transitions-rate-label = FPS de transición
+settings-transitions-rate-desc = Limita los fotogramas por segundo de la animación sin cambiar la reproducción del fondo. Deja el campo vacío o escribe 0 para usar la frecuencia de cada pantalla.
+settings-transitions-rate-auto = Automático

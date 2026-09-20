@@ -20,8 +20,6 @@ settings-transitions-quality-desc = Auto runs full resolution at 60 fps on discr
 settings-transitions-quality-auto = Auto
 settings-transitions-quality-full = Full
 settings-transitions-quality-low = Low
-settings-transitions-fps-cap-label = FPS cap
-settings-transitions-fps-cap-desc = Exact frame cap for the sand; 0 follows Quality. Grains read fine well below refresh; lower is proportionally cheaper.
 settings-transitions-scope-desc = All animates this shader on every updated monitor. Primary animates it once and changes the other monitors immediately.
 settings-transitions-scope-all = All monitors
 settings-transitions-scope-primary = Primary only
@@ -41,3 +39,7 @@ settings-transitions-family-break = Break up
 settings-transitions-family-break-desc = The image shatters, pixelates or smears.
 settings-transitions-family-sand = Sand
 settings-transitions-family-sand-desc = Every pixel becomes a grain and flies into a shape.
+
+settings-transitions-rate-label = Transition FPS
+settings-transitions-rate-desc = Limit animation frames per second without changing wallpaper playback. Leave empty or enter 0 for each display's refresh rate.
+settings-transitions-rate-auto = Auto

@@ -1045,6 +1045,10 @@ pub(super) fn settings_input_store(app: &mut App, key: &str, raw: &str) {
             return;
         }
     }
+    if key == skwd_config::keys::transition::FPS && raw.trim().is_empty() {
+        super::settings_policy::stage_value(app, key, &json!(0));
+        return;
+    }
     let is_text = !raw.trim().is_empty() && raw.trim().parse::<f64>().is_err();
     let resolution_dimension = key.starts_with(skwd_config::keys::filter_bar::RESOLUTION_PRESETS)
         && (key.ends_with(".width") || key.ends_with(".height"));
