@@ -1,5 +1,5 @@
 settings-matugen-external-card = Внешний Matugen
-settings-matugen-external-card-desc = Запускать внешнюю конфигурацию Matugen каждый раз, когда skwd-wall меняет палитру рабочего стола.
+settings-matugen-external-card-desc = Запускать внешнюю конфигурацию, когда Matugen создаёт цвета обоев.
 settings-matugen-config-label = Путь к конфигурации
 settings-matugen-config-desc = Путь к внешнему файлу конфигурации matugen.
 settings-matugen-command-label = Команда
@@ -62,3 +62,6 @@ settings-app-themes-undo = Отменить настройку
 settings-app-themes-applied = Цвета применены
 settings-app-themes-refresh-colours = Обновить цвета
 settings-app-themes-retry-reload = Откройте приложение и выберите «Обновить цвета», чтобы попробовать снова.
+
+settings-matugen-enabled-notice = Цвета обоев переключены на Matugen.
+settings-matugen-disabled-notice = Цвета обоев переключены на встроенный Iris.

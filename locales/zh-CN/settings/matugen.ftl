@@ -1,5 +1,5 @@
 settings-matugen-external-card = 外部 Matugen
-settings-matugen-external-card-desc = 每当 skwd-wall 更改桌面调色板时，运行外部 Matugen 配置。
+settings-matugen-external-card-desc = 当 Matugen 生成壁纸配色时运行外部配置。
 settings-matugen-config-label = 配置路径
 settings-matugen-config-desc = 外部 matugen 配置文件的路径。
 settings-matugen-command-label = 命令
@@ -62,3 +62,6 @@ settings-app-themes-undo = 撤销设置
 settings-app-themes-applied = 颜色已应用
 settings-app-themes-refresh-colours = 刷新颜色
 settings-app-themes-retry-reload = 打开应用，然后选择“刷新颜色”重试。
+
+settings-matugen-enabled-notice = 壁纸配色已切换到 Matugen。
+settings-matugen-disabled-notice = 壁纸配色已切换到内置 Iris。

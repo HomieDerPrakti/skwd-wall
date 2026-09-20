@@ -8,6 +8,49 @@ fn cfg() -> FakeSettingsSource {
 }
 
 #[test]
+fn matugen_toggle_reflects_the_active_generator_and_keeps_configuration_editable() {
+    for (cfg, enabled) in [
+        (cfg(), false),
+        (cfg().with_flag(keys::features::MATUGEN, true), false),
+        (cfg().with_text(keys::theme::BACKEND, "matugen"), true),
+        (
+            cfg()
+                .with_text(keys::theme::BACKEND, "matugen")
+                .with_flag(keys::features::MATUGEN, false),
+            false,
+        ),
+        (
+            cfg()
+                .with_text(keys::theme::BACKEND, "matugen")
+                .with_text(keys::theme::POLICY, "fixed"),
+            false,
+        ),
+        (
+            cfg()
+                .with_text(keys::theme::BACKEND, "matugen")
+                .with_text(keys::theme::AUTHORITY, "dms"),
+            false,
+        ),
+    ] {
+        let mut builder = Builder { cfg: &cfg, cards: Vec::new() };
+        theme_tabs::tab_matugen(&mut builder);
+        let rows: Vec<_> = builder.cards.iter().flat_map(|(_, rows)| rows).collect();
+        assert!(rows.iter().any(|row| matches!(&row.control,
+            Control::Toggle { path, value } if path == keys::features::MATUGEN && *value == enabled
+        )));
+        let paths: Vec<_> = rows
+            .iter()
+            .filter_map(|row| match &row.control {
+                Control::TextField { path, .. } => Some(path.as_str()),
+                _ => None,
+            })
+            .collect();
+        assert!(paths.contains(&keys::matugen::DEFAULT_CONFIG));
+        assert!(paths.contains(&keys::system::EXTERNAL_MATUGEN_COMMAND));
+    }
+}
+
+#[test]
 fn playback_exposes_wallpaper_load_timeout_in_seconds() {
     let cards = build_tab("playback", &cfg(), &[], &[], "", &[]);
     let controls: Vec<_> = cards

@@ -1,5 +1,5 @@
 settings-matugen-external-card = Matugen externo
-settings-matugen-external-card-desc = Ejecuta una configuración externa de Matugen cada vez que skwd-wall cambia la paleta del escritorio.
+settings-matugen-external-card-desc = Ejecuta tu configuración externa cuando Matugen genera los colores del fondo.
 settings-matugen-config-label = Ruta de configuración
 settings-matugen-config-desc = Ruta a un archivo de configuración externo de matugen.
 settings-matugen-command-label = Comando
@@ -64,3 +64,6 @@ settings-app-themes-undo = Deshacer configuración
 settings-app-themes-applied = Colores aplicados
 settings-app-themes-refresh-colours = Actualizar colores
 settings-app-themes-retry-reload = Abre la aplicación y elige Actualizar colores para volver a intentarlo.
+
+settings-matugen-enabled-notice = Los colores del fondo ahora usan Matugen.
+settings-matugen-disabled-notice = Los colores del fondo ahora usan Iris integrado.

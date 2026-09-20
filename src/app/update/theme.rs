@@ -235,9 +235,35 @@ pub(super) fn save_theme_selection(app: &mut App, value: &str) {
     app.config.persist();
 }
 
+pub(super) fn set_matugen_enabled(app: &mut App, enabled: bool) -> Task<Message> {
+    let current = app.config.theme_backend();
+    app.config.set_key(skwd_config::keys::features::MATUGEN, json!(enabled));
+    if !enabled && current != "matugen" {
+        app.config.persist();
+        app.invalidate_settings();
+        return Task::none();
+    }
+    if app.theme.shell_preview_sent.take().is_some() {
+        app.daemon.client.call("wall.shell_preview_end", json!({}));
+    }
+    let engine = if enabled { "matugen" } else { "skwd-iris" };
+    let task = super::settings::settings_pick(app, skwd_config::keys::theme::BACKEND, engine);
+    if current != engine {
+        app.show_toast(crate::i18n::tr(if enabled {
+            "settings-matugen-enabled-notice"
+        } else {
+            "settings-matugen-disabled-notice"
+        }));
+    }
+    task
+}
+
 fn set_theme_selection(app: &mut App, value: &str) {
     use skwd_config::keys::theme;
 
+    if value == "matugen" {
+        app.config.set_key(skwd_config::keys::features::MATUGEN, json!(true));
+    }
     match value {
         "static" => app.config.set_key(theme::POLICY, json!("fixed")),
         "off" => app.config.set_key(theme::POLICY, json!("off")),

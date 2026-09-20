@@ -1072,6 +1072,9 @@ pub(super) fn settings_input_store(app: &mut App, key: &str, raw: &str) {
 }
 
 pub(super) fn settings_toggle(app: &mut App, path: &str, value: bool) -> Task<Message> {
+    if path == skwd_config::keys::features::MATUGEN {
+        return super::theme::set_matugen_enabled(app, value);
+    }
     super::settings_policy::save_value(app, path, &json!(value));
     app.apply_layout();
     app.init_settings_inputs();
@@ -1128,6 +1131,9 @@ pub(super) fn settings_pick(app: &mut App, path: &str, value: &str) -> Task<Mess
         let current = app.config.str_path(skwd_config::keys::transition::SHADER);
         let shader = crate::frontend::settings::family_default(&current, value);
         return settings_pick(app, skwd_config::keys::transition::SHADER, &shader);
+    }
+    if path == skwd_config::keys::theme::ENGINE && value == "matugen" {
+        app.config.set_key(skwd_config::keys::features::MATUGEN, json!(true));
     }
     if path == skwd_config::keys::theme::BACKEND {
         super::theme::save_theme_selection(app, value);

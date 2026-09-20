@@ -1,6 +1,116 @@
 use super::*;
 
 #[test]
+fn matugen_enable_saves_the_generator_before_retheme_and_announces_the_switch() {
+    use crate::frontend::settings::SettingsMsg;
+    use skwd_config::keys;
+
+    for initial in [
+        json!({}),
+        json!({"features": {"matugen": true}, "theme": {"engine": "wallust"}}),
+        json!({"theme": {"policy": "fixed", "staticTheme": "nord"}}),
+        json!({"theme": {"policy": "off"}}),
+        json!({"theme": {"authority": "dms", "targets": ["noctalia"]}}),
+    ] {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("config.json");
+        let mut config = Config::from_data(initial);
+        config.config_path.clone_from(&path);
+        config.set_key(keys::matugen::DEFAULT_CONFIG, json!("/existing/config.toml"));
+        config.persist();
+        let before = config.root().clone();
+        let observed = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let seen = std::sync::Arc::clone(&observed);
+        let mut app = App::with_config_using(config, move |_| {
+            crate::infrastructure::ipc::DaemonClient::recording_with_observer(move |method, _| {
+                if method == "wall.retheme" {
+                    let saved: Value =
+                        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+                    seen.lock().unwrap().push(saved);
+                }
+            })
+        });
+        assert_eq!(app.config.root(), &before);
+        drain_calls(&app);
+        app.theme.shell_preview_sent = Some(0);
+        let _ = update(
+            &mut app,
+            Message::Settings(SettingsMsg::Toggle(keys::features::MATUGEN.into(), true)),
+        );
+        let calls = drain_calls(&app);
+        let methods: Vec<_> = calls.iter().map(|(method, _)| method.as_str()).collect();
+        assert!(
+            methods.iter().position(|method| *method == "wall.shell_preview_end").unwrap()
+                < methods.iter().position(|method| *method == "wall.retheme").unwrap()
+        );
+        let saved = observed.lock().unwrap();
+        assert_eq!(saved.len(), 1);
+        assert_eq!(saved[0]["features"]["matugen"], true);
+        assert_eq!(saved[0]["theme"]["policy"], "wallpaper");
+        assert_eq!(saved[0]["theme"]["authority"], "skwd");
+        assert_eq!(saved[0]["theme"]["engine"], "matugen");
+        assert_eq!(saved[0]["defaultMatugenConfig"], "/existing/config.toml");
+        assert_eq!(saved[0]["theme"]["targets"], before["theme"]["targets"]);
+        assert!(app.runtime_state.toast.as_ref().is_some_and(|(text, _)| text == crate::i18n::tr("settings-matugen-enabled-notice")));
+    }
+}
+
+#[test]
+fn disabling_matugen_uses_iris_and_preserves_the_external_command() {
+    use crate::frontend::settings::SettingsMsg;
+    use skwd_config::keys;
+
+    let mut app = App::with_config(Config::from_data(json!({
+        "theme": {"policy": "wallpaper", "authority": "skwd", "engine": "matugen"},
+        "defaultMatugenConfig": "/existing/config.toml", "externalMatugenCommand": "custom %path%"
+    })));
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Toggle(keys::features::MATUGEN.into(), false)),
+    );
+    assert_eq!(app.config.theme_backend(), "skwd-iris");
+    assert!(!app.config.flag_default_true(keys::features::MATUGEN));
+    assert_eq!(app.config.str_path(keys::matugen::DEFAULT_CONFIG), "/existing/config.toml");
+    assert_eq!(app.config.str_path(keys::system::EXTERNAL_MATUGEN_COMMAND), "custom %path%");
+    assert!(
+        app.runtime_state
+            .toast
+            .as_ref()
+            .is_some_and(|(text, _)| text == crate::i18n::tr("settings-matugen-disabled-notice"))
+    );
+}
+
+#[test]
+fn disabling_inactive_matugen_preserves_the_current_driver() {
+    use crate::frontend::settings::SettingsMsg;
+    use skwd_config::keys;
+
+    let mut app = App::with_config(Config::from_data(json!({"theme": {"authority": "dms"}})));
+    drain_calls(&app);
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Toggle(keys::features::MATUGEN.into(), false)),
+    );
+    assert_eq!(app.config.theme_backend(), "dms");
+    assert!(drain_calls(&app).is_empty());
+    assert!(app.runtime_state.toast.is_none());
+}
+
+#[test]
+fn choosing_matugen_as_colour_source_reenables_its_command() {
+    use crate::frontend::settings::SettingsMsg;
+    use skwd_config::keys;
+
+    for path in [keys::theme::ENGINE, keys::theme::BACKEND] {
+        let mut app = App::with_config(Config::from_data(json!({"features": {"matugen": false}})));
+        let _ =
+            update(&mut app, Message::Settings(SettingsMsg::Pick(path.into(), "matugen".into())));
+        assert_eq!(app.config.theme_backend(), "matugen");
+        assert!(app.config.flag_default_true(keys::features::MATUGEN));
+    }
+}
+
+#[test]
 fn noctalia_mode_persists_before_retheme() {
     let directory = tempfile::tempdir().unwrap();
     let config_path = directory.path().join("config.json");

@@ -419,14 +419,15 @@ pub(super) fn tab_integrations(builder: &mut Builder<'_>) {
 pub(super) fn tab_matugen(builder: &mut Builder<'_>) {
     let cfg = builder.cfg;
     builder.card(tr("settings-matugen-external-card"), tr("settings-matugen-external-card-desc"));
-    builder.toggle(
+    builder.row(
         tr("settings-general-feature-matugen-label"),
         tr("settings-general-feature-matugen-desc"),
-        keys::features::MATUGEN,
+        Control::Toggle {
+            path: keys::features::MATUGEN.to_string(),
+            value: cfg.theme_backend() == "matugen"
+                && cfg.flag_default_true(keys::features::MATUGEN),
+        },
     );
-    if !cfg.flag_default_true(keys::features::MATUGEN) {
-        return;
-    }
     builder.text_field(
         tr("settings-matugen-config-label"),
         tr("settings-matugen-config-desc"),

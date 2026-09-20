@@ -1,5 +1,5 @@
 settings-matugen-external-card = Matugen خارجي
-settings-matugen-external-card-desc = تشغيل إعداد Matugen خارجي كلما غيّر skwd-wall لوحة ألوان سطح المكتب.
+settings-matugen-external-card-desc = شغّل إعدادك الخارجي عندما يولّد Matugen ألوان الخلفية.
 settings-matugen-config-label = مسار الإعداد
 settings-matugen-config-desc = مسار ملف إعداد matugen خارجي.
 settings-matugen-command-label = الأمر
@@ -64,3 +64,6 @@ settings-app-themes-undo = التراجع عن الإعداد
 settings-app-themes-applied = طُبّقت الألوان
 settings-app-themes-refresh-colours = تحديث الألوان
 settings-app-themes-retry-reload = افتح التطبيق، ثم اختر «تحديث الألوان» للمحاولة مجددًا.
+
+settings-matugen-enabled-notice = تم تبديل ألوان الخلفية إلى Matugen.
+settings-matugen-disabled-notice = تم تبديل ألوان الخلفية إلى Iris المدمج.

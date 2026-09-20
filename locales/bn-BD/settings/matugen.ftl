@@ -1,5 +1,5 @@
 settings-matugen-external-card = বাহ্যিক Matugen
-settings-matugen-external-card-desc = skwd-wall ডেস্কটপ প্যালেট বদলালেই একটি বাহ্যিক Matugen কনফিগারেশন চালান।
+settings-matugen-external-card-desc = Matugen ওয়ালপেপারের রঙ তৈরি করলে আপনার বাহ্যিক কনফিগারেশন চালান।
 settings-matugen-config-label = কনফিগ পাথ
 settings-matugen-config-desc = বাহ্যিক matugen কনফিগ ফাইলের পাথ।
 settings-matugen-command-label = কমান্ড
@@ -64,3 +64,6 @@ settings-app-themes-undo = সেটআপ বাতিল করুন
 settings-app-themes-applied = রং প্রয়োগ হয়েছে
 settings-app-themes-refresh-colours = রং রিফ্রেশ করুন
 settings-app-themes-retry-reload = অ্যাপটি খুলুন, তারপর আবার চেষ্টা করতে রং রিফ্রেশ করুন বেছে নিন।
+
+settings-matugen-enabled-notice = ওয়ালপেপারের রঙের জন্য Matugen বেছে নেওয়া হয়েছে।
+settings-matugen-disabled-notice = ওয়ালপেপারের রঙের জন্য বিল্ট-ইন Iris বেছে নেওয়া হয়েছে।

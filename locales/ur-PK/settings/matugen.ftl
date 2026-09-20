@@ -1,5 +1,5 @@
 settings-matugen-external-card = بیرونی Matugen
-settings-matugen-external-card-desc = جب بھی skwd-wall ڈیسک ٹاپ پیلیٹ بدلے تو ایک بیرونی Matugen کنفیگریشن چلائیں۔
+settings-matugen-external-card-desc = جب Matugen وال پیپر کے رنگ بنائے تو اپنی بیرونی کنفیگریشن چلائیں۔
 settings-matugen-config-label = کنفیگ پاتھ
 settings-matugen-config-desc = بیرونی matugen کنفیگ فائل کا پاتھ۔
 settings-matugen-command-label = کمانڈ
@@ -64,3 +64,6 @@ settings-app-themes-undo = ترتیب واپس لیں
 settings-app-themes-applied = رنگ لاگو ہو گئے
 settings-app-themes-refresh-colours = رنگ ریفریش کریں
 settings-app-themes-retry-reload = ایپ کھولیں، پھر دوبارہ کوشش کے لیے رنگ ریفریش کریں منتخب کریں۔
+
+settings-matugen-enabled-notice = وال پیپر کے رنگوں کے لیے Matugen منتخب کیا گیا۔
+settings-matugen-disabled-notice = وال پیپر کے رنگوں کے لیے بلٹ ان Iris منتخب کیا گیا۔

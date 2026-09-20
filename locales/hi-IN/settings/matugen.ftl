@@ -1,5 +1,5 @@
 settings-matugen-external-card = बाहरी Matugen
-settings-matugen-external-card-desc = जब भी skwd-wall डेस्कटॉप पैलेट बदले, एक बाहरी Matugen कॉन्फ़िगरेशन चलाएँ।
+settings-matugen-external-card-desc = जब Matugen वॉलपेपर के रंग बनाए, तब अपना बाहरी कॉन्फ़िगरेशन चलाएँ।
 settings-matugen-config-label = कॉन्फ़िग पथ
 settings-matugen-config-desc = बाहरी matugen कॉन्फ़िग फ़ाइल का पथ।
 settings-matugen-command-label = कमांड
@@ -64,3 +64,6 @@ settings-app-themes-undo = सेटअप पूर्ववत करें
 settings-app-themes-applied = रंग लागू किए गए
 settings-app-themes-refresh-colours = रंग रीफ़्रेश करें
 settings-app-themes-retry-reload = ऐप खोलें, फिर दोबारा कोशिश के लिए रंग रीफ़्रेश करें चुनें।
+
+settings-matugen-enabled-notice = वॉलपेपर के रंगों के लिए Matugen चुना गया।
+settings-matugen-disabled-notice = वॉलपेपर के रंगों के लिए अंतर्निहित Iris चुना गया।

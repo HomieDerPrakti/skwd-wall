@@ -1,5 +1,5 @@
 settings-matugen-external-card = External Matugen
-settings-matugen-external-card-desc = Run an external Matugen configuration whenever skwd-wall changes the desktop palette.
+settings-matugen-external-card-desc = Run your external configuration when Matugen generates wallpaper colours.
 settings-matugen-config-label = Config path
 settings-matugen-config-desc = Path to an external matugen config file.
 settings-matugen-command-label = Command
@@ -64,3 +64,6 @@ settings-app-themes-undo = Undo setup
 settings-app-themes-applied = Colours applied
 settings-app-themes-refresh-colours = Refresh colours
 settings-app-themes-retry-reload = Open the app, then choose Refresh colours to try again.
+
+settings-matugen-enabled-notice = Switched wallpaper colours to Matugen.
+settings-matugen-disabled-notice = Switched wallpaper colours to built-in Iris.
