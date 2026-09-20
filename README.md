@@ -257,7 +257,7 @@ In **Settings > Playback > Video**, set **Wallpaper layer** to **Background**, t
 
 ```kdl
 layer-rule {
-    match namespace="^skwd-wall-vk$"
+    match namespace="^skwd-paper-backdrop$"
     place-within-backdrop true
 }
 ```
