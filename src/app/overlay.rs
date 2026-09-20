@@ -148,8 +148,15 @@ impl App {
                 self.retick();
             }
             Overlay::Playlists => {
-                self.panels.playlists = None;
-                if self.library_session.playlist_filter.take().is_some() {
+                if let Some(pl) = self.panels.playlists.as_mut()
+                    && pl.filter_help
+                {
+                    pl.filter_help = false;
+                    self.retick();
+                    return;
+                }
+                let picker = self.panels.playlists.take().is_some_and(|pl| pl.picker);
+                if !picker && self.library_session.playlist_filter.take().is_some() {
                     self.change_filters(|_| {});
                 }
             }

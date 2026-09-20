@@ -8,6 +8,61 @@ use crate::frontend::playlists::PlMsg;
 
 pub(super) fn update(app: &mut App, msg: PlMsg) -> Task<Message> {
     match msg {
+        PlMsg::OpenPicker => {
+            if app.menu_capturing() {
+                return Task::none();
+            }
+            app.panels.playlists = Some(crate::frontend::playlists::Playlists {
+                picker: true,
+                selected: app.library_session.playlist_filter.as_ref().map(|(id, _, _)| *id),
+                ..Default::default()
+            });
+            app.refresh_playlists();
+            app.retick();
+            Task::none()
+        }
+        PlMsg::EditPlaylists => {
+            if let Some(pl) = app.panels.playlists.as_mut() {
+                pl.picker = false;
+                pl.browse_pending = false;
+                pl.selected = pl.selected.or_else(|| pl.lists.first().map(|row| row.id));
+                pl.sync_buffers();
+            }
+            if let Some(id) = app.panels.playlists.as_ref().and_then(|pl| pl.selected) {
+                app.refresh_playlist_members(id);
+            }
+            app.call_tracked("wall.outputs", json!({}), Pending::PlOutputs);
+            Task::none()
+        }
+        PlMsg::Browse(Some(id)) => {
+            if let Some(pl) = app.panels.playlists.as_mut()
+                && pl.lists.iter().any(|row| row.id == id)
+            {
+                pl.selected = Some(id);
+                pl.browse_pending = true;
+                app.refresh_playlist_members(id);
+            }
+            Task::none()
+        }
+        PlMsg::Browse(None) => {
+            app.panels.playlists = None;
+            app.library_session.playlist_filter = None;
+            app.change_filters(|_| {});
+            app.retick();
+            Task::none()
+        }
+        PlMsg::Search(value) => {
+            if let Some(pl) = app.panels.playlists.as_mut() {
+                pl.search = value;
+            }
+            Task::none()
+        }
+        PlMsg::FilterHelp(open) => {
+            if let Some(pl) = app.panels.playlists.as_mut() {
+                pl.filter_help = open;
+            }
+            Task::none()
+        }
         PlMsg::Select(id) => pl_select(app, id),
         PlMsg::NewInput(text) => pl_new_input(app, text),
         PlMsg::NewSubmit => pl_new_submit(app),
@@ -262,8 +317,8 @@ pub(super) fn open_playlists(app: &mut App) -> Task<Message> {
 }
 
 pub(super) fn close_playlists(app: &mut App) -> Task<Message> {
-    app.panels.playlists = None;
-    if app.library_session.playlist_filter.take().is_some() {
+    let picker = app.panels.playlists.take().is_some_and(|pl| pl.picker);
+    if !picker && app.library_session.playlist_filter.take().is_some() {
         app.change_filters(|_| {});
     }
     app.retick();

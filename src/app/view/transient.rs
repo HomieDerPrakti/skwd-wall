@@ -12,6 +12,23 @@ pub(crate) fn help_intent_message(intent: crate::frontend::ui::HelpIntent) -> Me
 }
 
 pub(super) fn library_hint(app: &App) -> Option<Element<'_, Message>> {
+    if let Some((id, name, _)) = &app.library_session.playlist_filter {
+        let title =
+            crate::i18n::tr_args!("playlists-picker-entry", name => name, id => id.to_string());
+        let width =
+            crate::frontend::ui::folio_action_width_in(&title, app.config.ui_scale(), 100.0, 400.0);
+        let chip = crate::frontend::ui::folio_action(
+            title,
+            true,
+            Some(Message::Pl(crate::frontend::playlists::PlMsg::OpenPicker)),
+            Length::Fixed(width),
+            app.config.ui_scale(),
+            &app.theme.palette,
+        );
+        return Some(
+            container(chip).width(Length::Fill).align_x(Alignment::Center).padding(16).into(),
+        );
+    }
     let hint = empty_library_hint(
         app.library_session.library.catalog().items.len(),
         &app.library_session.wallpaper_dir,

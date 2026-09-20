@@ -1,6 +1,8 @@
 mod card_picker;
 mod filter;
+mod help;
 mod model;
+mod picker;
 mod tests;
 mod view;
 mod widgets;

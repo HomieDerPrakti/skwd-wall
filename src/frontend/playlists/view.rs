@@ -15,7 +15,7 @@ fn playlist_index<'a>(
     palette: &'a Palette,
 ) -> Element<'a, Message> {
     let mut items = column![].spacing(4.0 * scale);
-    for (position, playlist) in playlists.lists.iter().enumerate() {
+    for playlist in &playlists.lists {
         let id = playlist.id;
         let selected = playlists.selected == Some(id);
         let outputs = playlists.active_outputs(id);
@@ -37,7 +37,7 @@ fn playlist_index<'a>(
         };
         let content = row![
             label(
-                format!("{:02}", position + 1),
+                tr_args!("playlists-id", id => id.to_string()),
                 9.0,
                 scale,
                 if selected || playing {
@@ -502,6 +502,12 @@ fn reading_surface<'a>(
     let header = column![
         row![
             label(tr("playlists-edition-eyebrow"), 9.0, scale, with_alpha(palette.primary, 0.84)),
+            label(
+                tr_args!("playlists-id", id => id.to_string()),
+                9.0,
+                scale,
+                with_alpha(palette.primary, 0.84)
+            ),
             container(text("")).width(Length::Fill),
             label(
                 state_copy,
@@ -510,6 +516,7 @@ fn reading_surface<'a>(
                 if playing { palette.primary } else { with_alpha(palette.surface_text, 0.46) },
             ),
         ]
+        .spacing(10.0 * scale)
         .align_y(Alignment::Center),
         text(display_name)
             .font(UI_FONT)
@@ -575,6 +582,17 @@ fn reading_surface<'a>(
                     |value| Message::Pl(PlMsg::EditSource(value)),
                     Message::Pl(PlMsg::SetProp(id, "source".into(), playlists.source_buf.clone(),)),
                     Length::Fill,
+                    scale,
+                    palette,
+                ),
+                crate::frontend::ui::folio_action(
+                    tr("playlists-filter-help"),
+                    false,
+                    Some(Message::Pl(PlMsg::FilterHelp(true))),
+                    Length::Fixed(crate::frontend::ui::folio_action_width(
+                        tr("playlists-filter-help"),
+                        scale
+                    )),
                     scale,
                     palette,
                 ),
@@ -785,6 +803,9 @@ pub fn view<'a>(
     scale: f32,
     palette: &'a Palette,
 ) -> Element<'a, Message> {
+    if playlists.picker {
+        return super::picker::view(playlists, viewport, scale, palette);
+    }
     let selected = playlists
         .selected_def()
         .map(|playlist| playlist.name.as_str())
@@ -796,7 +817,7 @@ pub fn view<'a>(
         scale,
         palette,
     );
-    crate::frontend::ui::folio_sheet(
+    let sheet = crate::frontend::ui::folio_sheet(
         masthead,
         playlist_index(playlists, scale, palette),
         reading_surface(playlists, scale, palette),
@@ -806,5 +827,10 @@ pub fn view<'a>(
         1.0,
         crate::frontend::ui::FOLIO_INDEX_WIDTH,
         palette,
-    )
+    );
+    if playlists.filter_help {
+        iced::widget::stack![sheet, super::help::view(viewport, scale, palette)].into()
+    } else {
+        sheet
+    }
 }

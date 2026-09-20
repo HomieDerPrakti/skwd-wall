@@ -76,3 +76,37 @@ playlists-routing-all = প্রতিটি সংযুক্ত ডিসপ
 playlists-routing-live = সক্রিয় বরাদ্দ
 playlists-routing-none = কোনো সক্রিয় বরাদ্দ নেই
 playlists-demo-name = সেরা কাট
+
+playlists-id = ID { $id }
+playlists-picker-entry = { $name } · ID { $id }
+playlists-choose = Choose a playlist
+playlists-browse-all = All wallpapers
+playlists-edit = Edit playlists
+playlists-picker-search = Search by name or ID
+playlists-picker-no-match = No playlists match this search.
+playlists-picker-hint = Choose which wallpapers to browse. Playback stays as it is.
+playlists-filter-help = Filter reference
+playlists-help-combine = Separate filters with spaces. Every filter must match. Names and paths cannot contain spaces.
+playlists-help-source = all / favourites
+    Start with all wallpapers or only favourites.
+playlists-help-folder = folder:nature/forest
+    Match this exact folder, relative to the library root. Subfolders are separate.
+playlists-help-type = type:image / type:video / type:we
+    Images, videos, or Wallpaper Engine wallpapers. Also accepts static, picture, pic, img; vid, mp4; scene, wallpaperengine, wallpaper-engine.
+playlists-help-tag = tag:cat,night / tag:cat|dog,-anime
+    Commas require every tag; | accepts either tag; - excludes a tag. Include at least one positive tag. Tags ignore letter case.
+playlists-help-colour = color:blue,cyan / colour:gray
+    Commas accept any listed colour. Colours: red, orange, yellow, lime, green, spring, cyan, azure, blue, violet, magenta, pink, gray. Numeric buckets 0-11 and 99 also work.
+    Aliases: chartreuse; mint, emerald; teal, aqua; sky; purple, indigo; fuchsia; rose; grey, mono, monochrome, grayscale, greyscale, black, white.
+playlists-help-ratio = ratio:portrait / ratio:landscape / ratio:square
+    Tall, wide, or nearly square (within 0.05 of 1:1). Use decimal ratios for comparisons, such as ratio:>1.7.
+playlists-help-width = width:>=1920
+    Compare the wallpaper width in pixels.
+playlists-help-height = height:>=1080
+    Compare the wallpaper height in pixels.
+playlists-help-resolution = res:>=1920x1080
+    Both dimensions must satisfy the comparison.
+playlists-help-comparison = Comparisons: >=, <=, >, <, =
+    With no operator, numbers mean at least. Numeric = allows a difference below 0.5, including ratios. Use lowercase filter keywords.
+playlists-help-example = Example: favourites type:video ratio:landscape color:blue
+    Blue, wide videos from your favourites.

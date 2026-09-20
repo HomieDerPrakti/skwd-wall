@@ -17,7 +17,7 @@ impl App {
                 pl.assign = assigns.into_iter().map(|asg| (asg.output, asg.id)).collect();
             }
             let valid = pl.selected.is_some_and(|id| pl.lists.iter().any(|row| row.id == id));
-            if !valid {
+            if !valid && !pl.picker {
                 let first = pl.lists.first().map(|row| row.id);
                 pl.selected = first;
                 pl.sync_buffers();
@@ -38,14 +38,19 @@ impl App {
             return;
         }
         let mut filt = None;
+        let mut close_picker = false;
         if let Some(pl) = self.panels.playlists.as_mut() {
+            if result.id != pl.selected || result.members.is_none() {
+                return;
+            }
             if let Some(rows) = result.members {
                 pl.members = rows;
             }
             if let Some(id) = result.id {
                 pl.members_for = id;
             }
-            if pl.selected == Some(pl.members_for) {
+            if pl.selected == Some(pl.members_for) && (!pl.picker || pl.browse_pending) {
+                close_picker = pl.picker;
                 let id = pl.members_for;
                 let name = pl.lists.iter().find(|row| row.id == id).map_or_else(
                     || crate::i18n::tr("playlists-unnamed").to_string(),
@@ -55,6 +60,9 @@ impl App {
                     pl.members.iter().filter_map(|mem| mem.key.clone()).collect();
                 filt = Some((id, name, keys));
             }
+        }
+        if close_picker {
+            self.panels.playlists = None;
         }
         if let Some(flt) = filt {
             self.library_session.playlist_filter = Some(flt);

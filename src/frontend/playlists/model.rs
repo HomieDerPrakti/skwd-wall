@@ -8,6 +8,11 @@ pub enum CardPickerMsg {
 
 #[derive(Debug, Clone)]
 pub enum PlMsg {
+    OpenPicker,
+    EditPlaylists,
+    Browse(Option<i64>),
+    Search(String),
+    FilterHelp(bool),
     Select(i64),
     NewInput(String),
     NewSubmit,
@@ -28,6 +33,10 @@ pub enum PlMsg {
 #[derive(Default)]
 pub struct Playlists {
     pub demo: bool,
+    pub picker: bool,
+    pub browse_pending: bool,
+    pub search: String,
+    pub filter_help: bool,
     pub lists: Vec<crate::contracts::playlists::Playlist>,
     pub assign: Vec<(String, i64)>,
     pub outputs: Vec<String>,

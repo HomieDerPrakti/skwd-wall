@@ -4,7 +4,7 @@ use iced::{Alignment, Element, Length};
 use crate::app::Message;
 use crate::frontend::theme::Palette;
 use crate::frontend::ui::row;
-use crate::i18n::tr;
+use crate::i18n::{tr, tr_args};
 
 use super::model::{CardPicker, CardPickerMsg};
 use super::widgets::{field, hint_line, row_chip};
@@ -48,6 +48,7 @@ pub fn card_picker_view<'a>(
         } else {
             playlist.name.clone()
         };
+        let display = tr_args!("playlists-picker-entry", name => display, id => id.to_string());
         let label = if member { format!("\u{2713} {display}") } else { display };
         column = column.push(row_chip(
             label,

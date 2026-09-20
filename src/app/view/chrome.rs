@@ -20,7 +20,7 @@ pub(crate) fn bar_intent_message(intent: crate::frontend::ui::BarIntent) -> Mess
             BarAction::FolderToggle => Message::FolderMenuToggle,
             BarAction::Settings => Message::ToggleSettings,
             BarAction::Download => Message::OpenSourceBrowser,
-            BarAction::Playlists => Message::OpenPlaylists,
+            BarAction::Playlists => Message::Pl(crate::frontend::playlists::PlMsg::OpenPicker),
             BarAction::Random => Message::ToggleRandomRotate,
             BarAction::TagCloud => Message::OpenTagCloud,
             BarAction::ThemePanel => Message::ToggleThemePanel,

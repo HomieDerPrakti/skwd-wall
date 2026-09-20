@@ -77,6 +77,8 @@ pub(crate) fn ui_state_json(app: &App) -> String {
             "lists": playlists.lists.len(),
             "members": playlists.members.len(),
             "members_for": playlists.members_for,
+            "picker": playlists.picker,
+            "filter_help": playlists.filter_help,
         })
     });
     let mut state = json!({
@@ -231,6 +233,10 @@ pub(crate) fn ui_state_json(app: &App) -> String {
             "search_results": app.panels.settings.search_results.len(),
         },
     });
+    state["playlist_filter"] = app.library_session.playlist_filter.as_ref().map_or(
+        serde_json::Value::Null,
+        |(id, name, keys)| json!({"id": id, "name": name, "count": keys.len()}),
+    );
     let scope =
         app.runtime_state.demo.as_ref().and_then(|session| session.allowed_keys.as_ref()).map(
             |keys| {
