@@ -38,7 +38,11 @@
 
 ### A video is a thousand pictures - Sun Tzu (probably)
 
-https://github.com/user-attachments/assets/336fec28-0cc1-4f19-adf3-fc80652b6a13
+
+
+https://github.com/user-attachments/assets/46efe308-806d-466d-8834-3052134f00eb
+
+
 
 ## What is Skwd-wall?
 > Something so beautiful and aesthetic yet so lightweight to run amazingly on a celeron
