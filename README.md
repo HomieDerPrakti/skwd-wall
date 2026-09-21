@@ -167,6 +167,84 @@ skwd-wall-v2
 <Details>
 <Summary>NixOS</Summary>
 
+<h4>Declarative installation</h4>
+
+This assumes a basic layout that looks like this:
+```
+.
+├── configuration.nix
+└── flake.nix
+```
+If you don't have a `flake.nix` and don't understand what it does, consider researching about nix flakes first, or using the imperative installation method.
+
+```nix
+# Enable flakes if you don't already use them
+## configuration.nix
+nix.settings.experimental-features = [
+  "nix-command"
+  "flakes"
+];
+
+# Add the input to flake.nix
+## flake.nix
+{
+  description = "Example flake";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    skwd-wall = {
+      url = "github:liixini/skwd-wall/nix";
+    };
+  };
+  outputs = inputs@{ nixpkgs, ... }:
+  {
+    nixosConfigurations = {
+      # adjust to your actual hostname
+      hostname = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = {
+          inherit inputs;
+        };
+        modules = [ ./configuration.nix ];
+      };
+    };
+  };
+}
+
+# Install
+## configuration.nix
+{ inputs, pkgs, ... }:
+let
+  skwd-wall = inputs.skwd-wall.programs.${pkgs.stdenv.hostPlatform.system}.default;
+  skwd-paper-plasma = inputs.skwd-wall.programs.${pkgs.stdenv.hostPlatform.system}.skwd-paper-plasma;
+in
+{
+  # import the NixOS Module if you're using it
+  imports = [
+    inputs.skwd-wall.nixosModules.default
+  ];
+  environment.systemPacakges = with pkgs; [
+    skwd-wall
+    # If you're using KDE Plasma, you also need the KDE Plasma plugin
+    skwd-paper-plasma
+  ];
+
+  # If you use the module, you don't need to add the packages to environment.systemPacakges
+  services.skwd-deck = {
+    # enable the systemd service
+    enable = true;
+    extraPackages = [
+      # If you're using KDE Plasma, you also need the KDE Plasma plugin
+      skwd-paper-plasma
+    ];
+  };
+}
+
+# run with (or put in a keybind, convenient script... up to you)...
+skwd-wall-v2
+```
+
+<h4>Imperative installation</h4>
+
 ```
 # Enable flakes if you don't already use them
 nix --extra-experimental-features 'nix-command flakes'
