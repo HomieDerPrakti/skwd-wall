@@ -72,6 +72,7 @@ pub(crate) fn theme_designer_save(app: &mut App, apply: bool) -> bool {
         crate::app::update::theme::update_pinned_wallpaper_settings(app);
     }
     app.config.persist();
+    app.call_tracked("effects.list", json!({}), Pending::EffectThemes);
     if apply {
         app.daemon.client.call("wall.retheme", json!({}));
         app.invalidate_swatch();

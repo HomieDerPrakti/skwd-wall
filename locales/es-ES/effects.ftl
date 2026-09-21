@@ -74,3 +74,5 @@ effects-name-pixel-sort = Pixel Sort
 effects-name-rack-focus = Rack Focus
 effects-name-topographic = Topographic
 effects-name-tonal-layers = Tonal Layers
+
+effects-saved-palette = { $name } (guardado)

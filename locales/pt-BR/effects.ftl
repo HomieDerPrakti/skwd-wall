@@ -74,3 +74,5 @@ effects-name-pixel-sort = Ordenação de pixels
 effects-name-rack-focus = Mudança de foco
 effects-name-topographic = Topográfico
 effects-name-tonal-layers = Camadas tonais
+
+effects-saved-palette = { $name } (salvo)

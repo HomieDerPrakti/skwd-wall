@@ -22,7 +22,14 @@ fn theme_options(definitions: &[EffectDefinition]) -> Option<Vec<String>> {
     let mut result = None;
     for definition in definitions.iter().filter(|definition| definition.id == "theme") {
         for parameter in definition.params.iter().filter(|parameter| parameter.id == "theme") {
-            result = Some(parameter.options.iter().map(|option| option.mode.clone()).collect());
+            result = Some(
+                parameter
+                    .options
+                    .iter()
+                    .filter(|option| !option.mode.starts_with("saved:"))
+                    .map(|option| option.mode.clone())
+                    .collect(),
+            );
         }
     }
     result

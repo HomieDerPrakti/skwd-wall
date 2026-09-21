@@ -68,6 +68,7 @@ fn open_effects_inner(
         );
     }
     app.panels.effects = Some(effects);
+    app.call_tracked("effects.list", serde_json::json!({}), Pending::EffectThemes);
     app.call_tracked("wall.outputs", serde_json::json!({}), Pending::Outputs);
     if request_preview
         && mode == crate::frontend::effects::EffectsMode::Studio

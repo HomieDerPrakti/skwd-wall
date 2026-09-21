@@ -287,3 +287,37 @@ fn video_monitor_thumb_by_file() {
     assert_eq!(mons.len(), 1);
     assert_eq!(mons[0].current_thumb.as_deref(), Some("/thumbs/rainsong.png"));
 }
+
+#[test]
+fn saved_palette_refresh_preserves_selection_and_requests_new_preview() {
+    let mut app = test_app();
+    seed(&mut app, &[wall("a.png", "static", 1, 0)]);
+    let definitions = |colour| {
+        json!([{
+            "id": "theme", "label": "Palette", "category": "Colour",
+            "params": [{"id": "theme", "type": "dropdown", "default": "Nord", "options": [
+                {"mode": "Nord", "label": "Nord"},
+                {"mode": "saved:Nord", "label": "Nord", "swatch": [colour]}
+            ]}]
+        }])
+    };
+    app.daemon.effect_definitions = crate::infrastructure::effects::decode_definitions(
+        definitions("#123456").as_array().unwrap(),
+    );
+    crate::app::helpers::open_effects_without_preview(
+        &mut app,
+        0,
+        crate::frontend::effects::EffectsMode::Studio,
+    );
+    assert!(drain_calls(&app).iter().any(|(method, _)| method == "effects.list"));
+    let effects = app.panels.effects.as_mut().unwrap();
+    effects.set_str("theme", "saved:Nord".into());
+    effects.toggle_saved();
+    app.on_result(Pending::EffectThemes, &json!({"effects": definitions("#abcdef")}));
+    let effects = app.panels.effects.as_ref().unwrap();
+    assert_eq!(effects.parameter_values()["theme"].as_str(), Some("saved:Nord"));
+    assert_eq!(effects.saved_effects()[0].params["theme"].as_str(), Some("saved:Nord"));
+    assert_eq!(effects.selected().unwrap().params[0].options[1].swatch, ["#abcdef"]);
+    assert!(drain_calls(&app).iter().any(|(method, params)| method == "effects.preview"
+        && params["effects"][0]["params"]["theme"] == "saved:Nord"));
+}

@@ -74,3 +74,5 @@ effects-name-pixel-sort = Pixelsortering
 effects-name-rack-focus = Fokusskifte
 effects-name-topographic = Topografisk
 effects-name-tonal-layers = Tonlager
+
+effects-saved-palette = { $name } (sparat)

@@ -187,6 +187,7 @@ fn theme_delete_saved(app: &mut App, name: &str) -> Task<Message> {
         app.config.set_key(skwd_config::keys::theme::STATIC_THEME, json!("nord"));
     }
     app.config.persist();
+    app.call_tracked("effects.list", json!({}), Pending::EffectThemes);
     if active && let Some(candidate) = crate::domain::theme::Candidate::from_preset("nord") {
         let palette = crate::frontend::theme::Palette::from_candidate(&candidate);
         app.theme.base_palette = palette;

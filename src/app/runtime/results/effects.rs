@@ -62,7 +62,18 @@ impl App {
 
     pub(super) fn on_effect_themes(&mut self, result: crate::contracts::daemon::EffectsListResult) {
         if let Some(definitions) = result.definitions {
+            let changed = self
+                .panels
+                .effects
+                .as_mut()
+                .is_some_and(|effects| effects.refresh_definitions(definitions.clone()));
             self.daemon.effect_definitions = definitions;
+            if changed {
+                let _ = crate::app::update::update_inner(
+                    self,
+                    Message::Effects(crate::frontend::effects::EffectsMsg::Preview),
+                );
+            }
         }
         if let Some(options) = result.theme_options {
             self.daemon.effect_themes = options;

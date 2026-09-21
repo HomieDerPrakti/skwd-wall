@@ -158,12 +158,16 @@ impl App {
     }
 
     pub(in crate::app) fn adopt_external_config(&mut self) -> bool {
+        let saved_themes_before = self.config.array_values(skwd_config::keys::theme::SAVED_THEMES);
         let semantic_before = (
             self.config.str_path(skwd_config::keys::semantic::MANIFEST),
             self.config.str_path(skwd_config::keys::semantic::INDEX_PROFILE),
         );
         if !self.config.reload() {
             return false;
+        }
+        if saved_themes_before != self.config.array_values(skwd_config::keys::theme::SAVED_THEMES) {
+            self.call_tracked("effects.list", serde_json::json!({}), Pending::EffectThemes);
         }
         let previous = crate::i18n::active_script();
         crate::i18n::set_language(&self.config.str_path(skwd_config::keys::general::LANGUAGE));

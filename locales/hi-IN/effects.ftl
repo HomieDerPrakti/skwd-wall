@@ -74,3 +74,5 @@ effects-name-pixel-sort = पिक्सेल सॉर्ट
 effects-name-rack-focus = रैक फ़ोकस
 effects-name-topographic = टोपोग्राफ़िक
 effects-name-tonal-layers = टोनल लेयर्स
+
+effects-saved-palette = { $name } (सहेजा गया)

@@ -82,3 +82,5 @@ effects-name-pixel-sort = فرز البكسل
 effects-name-rack-focus = نقل البؤرة
 effects-name-topographic = طبوغرافي
 effects-name-tonal-layers = طبقات لونية
+
+effects-saved-palette = { $name } (محفوظ)

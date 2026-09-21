@@ -66,3 +66,5 @@ effects-name-pixel-sort = 像素排序
 effects-name-rack-focus = 焦点转移
 effects-name-topographic = 地形线
 effects-name-tonal-layers = 色调分层
+
+effects-saved-palette = { $name }（已保存）

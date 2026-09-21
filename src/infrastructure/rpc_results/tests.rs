@@ -317,3 +317,12 @@ fn status_decodes_optional_steam_helper_availability() {
     );
     assert!(decode_status(&json!({"steam_helper_available":"no"})).is_err());
 }
+
+#[test]
+fn saved_effect_palettes_do_not_enter_builtin_auto_recolour_settings() {
+    let result = decode_effects_list(&json!({"effects": [{"id": "theme", "params": [{"id": "theme", "options": [
+        {"mode": "Nord", "label": "Nord"}, {"mode": "saved:Nord", "label": "Nord", "swatch": ["#123456"]}
+    ]}]}]})).unwrap();
+    assert_eq!(result.theme_options.unwrap(), ["Nord"]);
+    assert_eq!(result.definitions.unwrap()[0].params[0].options[1].mode, "saved:Nord");
+}

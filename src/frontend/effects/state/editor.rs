@@ -39,6 +39,23 @@ impl EffectEditorState {
 }
 
 impl Effects {
+    pub fn refresh_definitions(&mut self, definitions: Vec<EffectDefinition>) -> bool {
+        if self.editor.definitions == definitions {
+            return false;
+        }
+        self.editor.definitions = definitions;
+        if self.selected().is_none() {
+            self.editor.selected_id = self
+                .editor
+                .definitions
+                .first()
+                .map(|definition| definition.id.clone())
+                .unwrap_or_default();
+            self.reset_params();
+        }
+        true
+    }
+
     pub fn selected(&self) -> Option<&EffectDefinition> {
         self.editor.selected()
     }

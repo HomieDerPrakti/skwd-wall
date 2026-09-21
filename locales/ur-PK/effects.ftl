@@ -74,3 +74,5 @@ effects-name-pixel-sort = پکسل ترتیب
 effects-name-rack-focus = فوکس شفٹ
 effects-name-topographic = ٹوپوگرافک
 effects-name-tonal-layers = ٹونل تہیں
+
+effects-saved-palette = { $name } (محفوظ)

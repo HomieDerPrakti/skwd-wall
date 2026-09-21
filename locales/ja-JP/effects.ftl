@@ -66,3 +66,5 @@ effects-name-pixel-sort = ピクセルソート
 effects-name-rack-focus = ピント送り
 effects-name-topographic = 等高線
 effects-name-tonal-layers = トーンレイヤー
+
+effects-saved-palette = { $name }（保存済み）

@@ -69,15 +69,38 @@ pub(super) fn param_dropdown_reel<'a>(
         let active = option.mode == current;
         let mode = option.mode.clone();
         let message = Message::Effects(EffectsMsg::SetChoice(id.to_string(), mode));
-        let width = (option.label.chars().count() as f32 * 7.4 + 30.0).clamp(74.0, 160.0);
-        options = options.push(crate::frontend::ui::folio_action(
-            option.label.as_str(),
+        let label = if option.mode.starts_with("saved:") {
+            crate::i18n::tr_args!("effects-saved-palette", name => option.label.as_str())
+        } else {
+            option.label.clone()
+        };
+        let width = (label.chars().count() as f32 * 7.4 + 30.0).clamp(74.0, 240.0);
+        let action = crate::frontend::ui::folio_action(
+            label,
             active,
             Some(message),
             Length::Fixed(width * scale.max(0.95)),
             scale * 0.92,
             palette,
-        ));
+        );
+        let mut swatches = row![].spacing(1.0);
+        let count = option.swatch.len().min(6);
+        for slot in 0..count {
+            let index = slot * (option.swatch.len() - 1) / (count - 1).max(1);
+            if let Some(colour) = parse_hex(&option.swatch[index]) {
+                swatches = swatches.push(
+                    container(text(""))
+                        .width(Length::FillPortion(1))
+                        .height(3.0 * scale)
+                        .style(move |_| container::Style::default().background(colour)),
+                );
+            }
+        }
+        options = options.push(
+            column![action, swatches]
+                .spacing(3.0 * scale)
+                .width(Length::Fixed(width * scale.max(0.95))),
+        );
     }
 
     let reel = crate::frontend::ui::smooth_pane(

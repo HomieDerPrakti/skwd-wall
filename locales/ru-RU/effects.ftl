@@ -78,3 +78,5 @@ effects-name-pixel-sort = Сортировка пикселей
 effects-name-rack-focus = Перевод фокуса
 effects-name-topographic = Топография
 effects-name-tonal-layers = Тональные слои
+
+effects-saved-palette = { $name } (сохранено)
