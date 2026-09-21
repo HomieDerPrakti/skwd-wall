@@ -9,3 +9,7 @@ scene-props-on = Вкл.
 scene-props-off = Выкл.
 
 scene-props-scheme-colour = Цвет схемы
+
+scene-props-fps = FPS
+scene-props-fps-default = По умолчанию
+scene-props-fps-note = Ограничивает частоту кадров этих обоев. По умолчанию используется общая настройка Wallpaper Engine ({ $fps } FPS).

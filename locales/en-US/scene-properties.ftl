@@ -9,3 +9,7 @@ scene-props-on = On
 scene-props-off = Off
 
 scene-props-scheme-colour = Scheme colour
+
+scene-props-fps = FPS
+scene-props-fps-default = Default
+scene-props-fps-note = Limits this wallpaper’s frame rate. Default follows the global Wallpaper Engine setting ({ $fps } FPS).

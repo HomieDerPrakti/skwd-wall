@@ -9,3 +9,7 @@ scene-props-on = På
 scene-props-off = Av
 
 scene-props-scheme-colour = Schemafärg
+
+scene-props-fps = FPS
+scene-props-fps-default = Standard
+scene-props-fps-note = Begränsar bildfrekvensen för denna bakgrund. Standard följer den globala inställningen för Wallpaper Engine ({ $fps } FPS).

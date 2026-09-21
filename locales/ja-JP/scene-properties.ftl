@@ -9,3 +9,7 @@ scene-props-on = オン
 scene-props-off = オフ
 
 scene-props-scheme-colour = 配色
+
+scene-props-fps = FPS
+scene-props-fps-default = デフォルト
+scene-props-fps-note = この壁紙のフレームレートを制限します。デフォルトでは Wallpaper Engine の全体設定（{ $fps } FPS）に従います。

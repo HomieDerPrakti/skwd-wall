@@ -326,6 +326,8 @@ pub struct TaskListResult {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ScenePropertiesResult {
     pub we_id: String,
+    pub fps: Option<u32>,
+    pub global_fps: Option<u32>,
     pub rows: Vec<SceneProperty>,
 }
 

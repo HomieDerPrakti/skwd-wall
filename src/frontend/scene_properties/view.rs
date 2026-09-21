@@ -172,14 +172,53 @@ fn reading<'a>(
     if panel.loading {
         return notice(tr("scene-props-loading"), palette.surface_text, scale);
     }
-    if panel.rows.is_empty() {
-        if let Some(error) = &panel.error {
-            return notice(error.as_str(), palette.primary, scale);
-        }
-        return notice(tr("scene-props-empty"), palette.surface_text, scale);
-    }
-
     let mut body = column![].spacing(SECTION_SPACING * scale);
+    if let Some(global) = panel.global_fps {
+        let mut actions = vec![(
+            tr("scene-props-fps-default").to_string(),
+            panel.fps.is_none(),
+            wrap(ScenePropMsg::Fps(None)),
+        )];
+        actions.extend([15, 24, 30, 60, 90, 120, 144, 240].map(|fps| {
+            (fps.to_string(), panel.fps == Some(fps), wrap(ScenePropMsg::Fps(Some(fps))))
+        }));
+        body = body.push(
+            column![
+                label(tr("scene-props-fps"), 13.0, scale, palette.surface_text),
+                label(
+                    tr_args!("scene-props-fps-note", fps => global),
+                    TYPE_SMALL,
+                    scale,
+                    with_alpha(palette.surface_text, 0.58)
+                ),
+                folio_action_wrap(actions, available, scale, palette),
+                row![
+                    container(folio_slider(
+                        1.0,
+                        240.0,
+                        f64::from(panel.fps.unwrap_or(global)),
+                        1.0,
+                        |fps| wrap(ScenePropMsg::FpsSlide(fps as u32)),
+                        wrap(ScenePropMsg::FpsCommit),
+                        palette,
+                    ))
+                    .width(Length::Fill),
+                    label(
+                        panel.fps.unwrap_or(global).to_string(),
+                        11.0,
+                        scale,
+                        palette.surface_text
+                    ),
+                ]
+                .spacing(10.0 * scale)
+                .align_y(Alignment::Center),
+            ]
+            .spacing(9.0 * scale),
+        );
+    }
+    if panel.rows.is_empty() {
+        body = body.push(notice(tr("scene-props-empty"), palette.surface_text, scale));
+    }
     if let Some(error) = &panel.error {
         body = body.push(notice(error.as_str(), palette.primary, scale));
     }
@@ -243,7 +282,8 @@ fn index_column<'a>(
     let reset = folio_action(
         tr("scene-props-reset"),
         false,
-        panel.rows.iter().any(|row| row.overridden).then(|| wrap(ScenePropMsg::Reset)),
+        (panel.fps.is_some() || panel.rows.iter().any(|row| row.overridden))
+            .then(|| wrap(ScenePropMsg::Reset)),
         Length::Fill,
         scale,
         palette,

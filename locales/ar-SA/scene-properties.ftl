@@ -9,3 +9,7 @@ scene-props-on = تشغيل
 scene-props-off = إيقاف
 
 scene-props-scheme-colour = لون المخطط
+
+scene-props-fps = FPS
+scene-props-fps-default = افتراضي
+scene-props-fps-note = يحد معدل إطارات هذه الخلفية. يتبع الخيار الافتراضي إعداد Wallpaper Engine العام ({ $fps } FPS).

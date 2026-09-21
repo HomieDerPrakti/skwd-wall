@@ -261,3 +261,29 @@ fn colour_slider_writes_the_whole_colour_on_release() {
             && params["value"] == json!("1.000 0.250 1.000")
     }));
 }
+
+#[test]
+fn fps_override_and_default_write_without_author_properties() {
+    use crate::frontend::scene_properties::ScenePropMsg;
+    let mut app = test_app();
+    open_on_scene(&mut app);
+    let id = *app.daemon.pending.keys().next().unwrap();
+    respond(
+        &mut app,
+        id,
+        json!({"we_id":"2057951800", "properties":[], "fps":null, "global_fps":30}),
+    );
+    assert_eq!(app.panels.scene_properties.as_ref().unwrap().editable_count(), 1);
+    drain_calls(&app);
+    let _ = update(&mut app, Message::SceneProps(ScenePropMsg::FpsSlide(15)));
+    assert!(drain_calls(&app).is_empty());
+    let _ = update(&mut app, Message::SceneProps(ScenePropMsg::FpsCommit));
+    let calls = drain_calls(&app);
+    assert!(calls.iter().any(|(method, params)| method == wall_proto::rpc::WALL_SET_WE_PROPERTY
+        && params == &json!({"we_id":"2057951800", "fps":15})));
+    let _ = update(&mut app, Message::SceneProps(ScenePropMsg::Fps(None)));
+    let calls = drain_calls(&app);
+    assert!(calls.iter().any(|(method, params)| method == wall_proto::rpc::WALL_SET_WE_PROPERTY
+        && params == &json!({"we_id":"2057951800", "fps":null})));
+    assert_eq!(app.panels.scene_properties.as_ref().unwrap().fps, None);
+}

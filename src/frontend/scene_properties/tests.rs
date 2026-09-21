@@ -198,3 +198,24 @@ fn saved_defaults_are_resettable_without_counting_as_changes() {
     assert_eq!(panel.changed_count(), 0);
     assert!(panel.rows.iter().any(|row| row.overridden));
 }
+
+#[test]
+fn fps_follows_global_until_overridden_and_ignores_stale_replies() {
+    let mut panel = SceneProperties::opening("scene-a", "Scene A");
+    panel.accept_fps("scene-a", 0, None, Some(30));
+    assert_eq!(panel.fps, None);
+    assert_eq!(panel.global_fps, Some(30));
+    assert_eq!(panel.editable_count(), 1);
+    panel.set_fps_local(Some(15));
+    panel.accept_fps("scene-a", 0, None, Some(30));
+    panel.accept_fps("scene-b", 9, Some(60), Some(60));
+    assert_eq!(panel.fps, Some(15));
+    panel.accept_fps("scene-a", panel.revision, Some(15), Some(60));
+    assert_eq!(panel.global_fps, Some(60));
+    assert_eq!(panel.changed_count(), 1);
+    panel.reset_local();
+    panel.accept_fps("scene-a", 1, Some(15), Some(30));
+    assert_eq!(panel.fps, None);
+    assert_eq!(panel.global_fps, Some(60));
+    assert_eq!(panel.changed_count(), 0);
+}

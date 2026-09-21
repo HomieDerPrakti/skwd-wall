@@ -7,7 +7,7 @@ use crate::contracts::daemon::{
 
 use super::common::{
     DecodeError, DecodeResult, array, envelope, invalid, required_string, required_typed, string,
-    strings,
+    strings, typed,
 };
 
 pub fn decode_status(value: &Value) -> DecodeResult<StatusResult> {
@@ -62,6 +62,8 @@ pub fn decode_scene_properties(value: &Value) -> DecodeResult<ScenePropertiesRes
     )?);
     Ok(ScenePropertiesResult {
         we_id: required_string("wall.we_properties", object, "we_id")?,
+        fps: typed::<Option<u32>>("wall.we_properties", object, "fps", "FPS integer")?.flatten(),
+        global_fps: typed("wall.we_properties", object, "global_fps", "FPS integer")?,
         rows,
     })
 }

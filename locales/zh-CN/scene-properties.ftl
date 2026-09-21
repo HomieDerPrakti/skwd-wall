@@ -9,3 +9,7 @@ scene-props-on = 开
 scene-props-off = 关
 
 scene-props-scheme-colour = 配色
+
+scene-props-fps = FPS
+scene-props-fps-default = 默认
+scene-props-fps-note = 限制此壁纸的帧率。默认使用 Wallpaper Engine 的全局设置（{ $fps } FPS）。

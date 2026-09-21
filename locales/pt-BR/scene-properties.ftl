@@ -9,3 +9,7 @@ scene-props-on = Ligado
 scene-props-off = Desligado
 
 scene-props-scheme-colour = Cor do esquema
+
+scene-props-fps = FPS
+scene-props-fps-default = Padrão
+scene-props-fps-note = Limita a taxa de quadros deste papel de parede. Padrão segue a configuração global do Wallpaper Engine ({ $fps } FPS).

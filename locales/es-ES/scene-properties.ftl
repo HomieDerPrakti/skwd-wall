@@ -9,3 +9,7 @@ scene-props-on = Activado
 scene-props-off = Desactivado
 
 scene-props-scheme-colour = Color del esquema
+
+scene-props-fps = FPS
+scene-props-fps-default = Predeterminado
+scene-props-fps-note = Limita los fotogramas por segundo de este fondo. Predeterminado usa el ajuste global de Wallpaper Engine ({ $fps } FPS).

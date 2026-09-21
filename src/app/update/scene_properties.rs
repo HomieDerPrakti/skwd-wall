@@ -52,6 +52,22 @@ impl App {
         self.retick();
     }
 
+    fn write_scene_fps(&mut self, fps: Option<u32>) {
+        let Some(panel) = self.panels.scene_properties.as_mut() else {
+            return;
+        };
+        panel.set_fps_local(fps);
+        let we_id = panel.we_id.clone();
+        let revision = panel.revision;
+        let fps = panel.fps;
+        self.call_tracked(
+            wall_proto::rpc::WALL_SET_WE_PROPERTY,
+            json!({ "we_id": we_id, "fps": fps }),
+            Pending::SceneProperties { we_id, revision, writes: Vec::new() },
+        );
+        self.retick();
+    }
+
     pub(in crate::app) fn on_scene_properties(
         &mut self,
         result: crate::contracts::daemon::ScenePropertiesResult,
@@ -59,6 +75,7 @@ impl App {
         writes: &[String],
     ) {
         if let Some(panel) = self.panels.scene_properties.as_mut() {
+            panel.accept_fps(&result.we_id, revision, result.fps, result.global_fps);
             panel.accept(&result.we_id, revision, writes, result.rows);
         }
         self.retick();
@@ -136,6 +153,18 @@ pub(super) fn update(app: &mut App, message: ScenePropMsg) {
                 return;
             };
             app.write_scene_property(&name, ScenePropertyValue::Vector(parts));
+        }
+        ScenePropMsg::Fps(fps) => app.write_scene_fps(fps),
+        ScenePropMsg::FpsSlide(fps) => {
+            if let Some(panel) = app.panels.scene_properties.as_mut() {
+                panel.set_fps_local(Some(fps));
+            }
+            app.retick();
+        }
+        ScenePropMsg::FpsCommit => {
+            if let Some(panel) = app.panels.scene_properties.as_ref() {
+                app.write_scene_fps(panel.fps);
+            }
         }
         ScenePropMsg::Reset => {
             let Some(panel) = app.panels.scene_properties.as_mut() else {

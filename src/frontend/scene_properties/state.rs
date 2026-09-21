@@ -9,6 +9,9 @@ pub enum ScenePropMsg {
     ColourInput(String, String),
     ColourSlide(String, usize, f64),
     ColourCommit(String),
+    Fps(Option<u32>),
+    FpsSlide(u32),
+    FpsCommit,
     Reset,
     Close,
 }
@@ -19,6 +22,9 @@ pub struct SceneProperties {
     pub rows: Vec<SceneProperty>,
     pub loading: bool,
     pub error: Option<String>,
+    pub fps: Option<u32>,
+    pub global_fps: Option<u32>,
+    fps_revision: u64,
     pub revision: u64,
     accepted_revision: u64,
     edits: std::collections::BTreeMap<String, u64>,
@@ -34,6 +40,9 @@ impl SceneProperties {
             rows: Vec::new(),
             loading: true,
             error: None,
+            fps: None,
+            global_fps: None,
+            fps_revision: 0,
             revision: 0,
             accepted_revision: 0,
             edits: std::collections::BTreeMap::new(),
@@ -81,6 +90,28 @@ impl SceneProperties {
         self.error = None;
     }
 
+    pub fn accept_fps(
+        &mut self,
+        we_id: &str,
+        revision: u64,
+        fps: Option<u32>,
+        global: Option<u32>,
+    ) {
+        if we_id != self.we_id || revision < self.accepted_revision || revision < self.fps_revision
+        {
+            return;
+        }
+        self.fps = fps;
+        self.global_fps = global;
+    }
+
+    pub fn set_fps_local(&mut self, fps: Option<u32>) {
+        self.revision += 1;
+        self.fps_revision = self.revision;
+        self.fps = fps.map(|fps| fps.clamp(1, 240));
+        self.error = None;
+    }
+
     pub fn fail(&mut self, error: &str) {
         self.loading = false;
         self.error = Some(error.to_string());
@@ -99,11 +130,12 @@ impl SceneProperties {
     #[must_use]
     pub fn editable_count(&self) -> usize {
         self.rows.iter().filter(|row| row.editable() && row.shown(&self.rows)).count()
+            + usize::from(self.global_fps.is_some())
     }
 
     #[must_use]
     pub fn changed_count(&self) -> usize {
-        self.rows.iter().filter(|row| row.changed()).count()
+        self.rows.iter().filter(|row| row.changed()).count() + usize::from(self.fps.is_some())
     }
 
     #[must_use]
@@ -116,7 +148,7 @@ impl SceneProperties {
     }
 
     pub fn reset_local(&mut self) {
-        self.revision += 1;
+        self.set_fps_local(None);
         for row in &mut self.rows {
             row.value = row.default.clone();
             row.overridden = false;

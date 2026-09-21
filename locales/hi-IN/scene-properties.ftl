@@ -9,3 +9,7 @@ scene-props-on = चालू
 scene-props-off = बंद
 
 scene-props-scheme-colour = स्कीम का रंग
+
+scene-props-fps = FPS
+scene-props-fps-default = डिफ़ॉल्ट
+scene-props-fps-note = इस वॉलपेपर की फ़्रेम दर सीमित करता है। डिफ़ॉल्ट, Wallpaper Engine की वैश्विक सेटिंग ({ $fps } FPS) का पालन करता है।
