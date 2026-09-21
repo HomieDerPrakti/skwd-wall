@@ -64,8 +64,8 @@ Skwd-wall is a wallpaper manager for most Linux distros and WM:s that can show W
 We got all the features from changing the layout to right-to-left for languages read that way to letting you put videos in the Niri backdrop (paused unless you're looking, of course), and so much more - if you can think of it for a wallpaper manager chances are high Skwd-wall does it.
 
 So what about that performance claim? Don't take my word for it, I come with charts!
-<img width="1500" height="2619" alt="performance" src="https://github.com/user-attachments/assets/62ff97b4-e772-4d38-a63a-9deb2905c955" />
 
+<img width="1500" height="2466" alt="performance" src="https://github.com/user-attachments/assets/34586f27-daa1-4ded-b7cf-20a10bae3874" />
 
 ### What does it do besides apply wallpapers? well...
 
