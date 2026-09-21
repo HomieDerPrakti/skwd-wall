@@ -11,6 +11,8 @@
 > WIP: Wallpaper Engine inconsistencies / bugs in comparison to (the real) Wallpaper Engine. This part of the application is still Work in Progress and does not have perfect coverage yet. Please report any issues you may find with Wallpaper Engine scenes ❤️
 >
 > WIP: Debian version
+>
+> WIP: A wiki & better documentation. Skwd-wall is packed with tons of features, but almost nothing is explained in detail in writing.
 
 ![Stars](https://img.shields.io/github/stars/liixini/skwd-wall?style=for-the-badge)
 ![License](https://img.shields.io/github/license/liixini/skwd-wall?style=for-the-badge)
@@ -38,7 +40,11 @@
 
 ### A video is a thousand pictures - Sun Tzu (probably)
 
-https://github.com/user-attachments/assets/336fec28-0cc1-4f19-adf3-fc80652b6a13
+
+
+https://github.com/user-attachments/assets/46efe308-806d-466d-8834-3052134f00eb
+
+
 
 ## What is Skwd-wall?
 > Something so beautiful and aesthetic yet so lightweight to run amazingly on a celeron
@@ -51,7 +57,13 @@ https://github.com/user-attachments/assets/336fec28-0cc1-4f19-adf3-fc80652b6a13
 >
 > \- WanderingAstarael
 
-Skwd-wall v2 is what happens when someone says "hey so your wallpaper program is built in Quickshell and it is great but Quickshell is so-so for my 8 GB laptop, are you going to rewrite it?" and I go "challenge accepted".
+Skwd-wall is a wallpaper manager for most Linux distros and WM:s that can show Wallpaper Engine scenes (and browse them too!), images and videos and does so much more performant than most wallpaper daemons out there.
+
+We got all the features from changing the layout to right-to-left for languages read that way to letting you put videos in the Niri backdrop (paused unless you're looking, of course), and so much more - if you can think of it for a wallpaper manager chances are high Skwd-wall does it.
+
+So what about that performance claim? Don't take my word for it, I come with charts!
+
+<img width="1500" height="2466" alt="performance" src="https://github.com/user-attachments/assets/34586f27-daa1-4ded-b7cf-20a10bae3874" />
 
 ### What does it do besides apply wallpapers? well...
 
@@ -85,11 +97,6 @@ Skwd-wall v2 is what happens when someone says "hey so your wallpaper program is
 ### What does it work on?
 Skwd-wall has intentional wide support and targets all major distributions, Desktop Environments and Wayland compositors.
 However it does not support GNOME or Linux Mint's Cinnamon (yet!).
-
-### The stats
-~80% less RAM usage than the other video wallpaper daemons on average (check the performance chart for details) and for images I'm on par with awww (awww is an amazing piece of software, and if it supported video Skwd-paper would probably never have been built).
-
-<img width="1320" height="3530" alt="performance" src="https://github.com/user-attachments/assets/cfe5b00c-412d-4b03-b786-79309cff00c0" />
 
 ## Who is Skwd-wall not for?
 If you're someone that can reasonably name all the wallpapers you have, they're all images and you have one monitor chances are high Skwd-wall is not for you.
@@ -252,7 +259,7 @@ In **Settings > Playback > Video**, set **Wallpaper layer** to **Background**, t
 
 ```kdl
 layer-rule {
-    match namespace="^skwd-wall-vk$"
+    match namespace="^skwd-paper-backdrop$"
     place-within-backdrop true
 }
 ```
