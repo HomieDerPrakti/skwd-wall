@@ -76,6 +76,7 @@ pub enum Message {
     SemanticModelImported(
         Result<Option<crate::infrastructure::semantic_pack::ImportedSemanticPack>, String>,
     ),
+    SemanticModelDeleted(String, Option<String>, Result<(), String>),
     SettingsPreviewAllocated(String, Option<iced_runtime::image::Allocation>),
     SetSettingsTab(String),
     ApplyPreset(String, String),

@@ -91,9 +91,13 @@ impl App {
             std::env::var_os("SKWD_WALL_BAR").is_some() || config.filter_bar_always_visible();
         let filter_bar_vertical =
             config.filter_bar_orientation() == "vertical" && scene.mode != Mode::Sandy;
-        let search_mode = SearchMode::from_config(
-            &config.str_path(skwd_config::keys::tagging::DEFAULT_SEARCH_MODE),
-        );
+        let search_mode = if config.flag_default_true(skwd_config::keys::semantic::ENABLED) {
+            SearchMode::from_config(
+                &config.str_path(skwd_config::keys::tagging::DEFAULT_SEARCH_MODE),
+            )
+        } else {
+            SearchMode::Tags
+        };
         let mut app = Self {
             runtime_state: AppRuntimeState::new(
                 crate::infrastructure::runtime::FrameClock::start(tx.clone()),

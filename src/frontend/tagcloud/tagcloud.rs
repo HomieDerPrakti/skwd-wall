@@ -66,6 +66,7 @@ pub struct CloudView<'a> {
     pub match_any: bool,
     pub search_mode: SearchMode,
     pub semantic_model: String,
+    pub semantic_enabled: bool,
     pub search_text: &'a str,
     pub partial: &'a str,
     pub semantic_pending: bool,
@@ -92,6 +93,7 @@ pub fn view(cloud: CloudView<'_>) -> Element<'_, Message> {
         match_any,
         search_mode,
         semantic_model,
+        semantic_enabled,
         search_text,
         partial,
         semantic_pending,
@@ -263,26 +265,26 @@ pub fn view(cloud: CloudView<'_>) -> Element<'_, Message> {
     ]
     .width(Length::Fill)
     .height(Length::Fixed(field_h));
-    let mut search_controls = row![
-        tag_control_chip(
-            tr("tags-search-mode-tags"),
-            search_mode == SearchMode::Tags,
-            false,
-            Message::Update(TagMsg::SearchMode(SearchMode::Tags)),
-            scale,
-            pal,
-        ),
-        tag_control_chip(
+    let mut search_controls = row![tag_control_chip(
+        tr("tags-search-mode-tags"),
+        search_mode == SearchMode::Tags,
+        false,
+        Message::Update(TagMsg::SearchMode(SearchMode::Tags)),
+        scale,
+        pal,
+    ),]
+    .spacing(7.0 * scale)
+    .align_y(Alignment::Center);
+    if semantic_enabled {
+        search_controls = search_controls.push(tag_control_chip(
             tr("tags-search-mode-describe"),
             search_mode == SearchMode::Describe,
             false,
             Message::Update(TagMsg::SearchMode(SearchMode::Describe)),
             scale,
             pal,
-        ),
-    ]
-    .spacing(7.0 * scale)
-    .align_y(Alignment::Center);
+        ));
+    }
     if search_mode == SearchMode::Describe {
         search_controls = search_controls.push(
             text(semantic_model)

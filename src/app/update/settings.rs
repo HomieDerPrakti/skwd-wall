@@ -1401,6 +1401,8 @@ pub(super) fn settings_run(app: &mut App, id: ActionId) -> Task<Message> {
             ));
         }
         ActionId::ImportSemanticModel => return import_semantic_model(app),
+        ActionId::DeleteSemanticModel(index) => return delete_semantic_model(app, Some(index)),
+        ActionId::DeleteActiveSemanticModel => return delete_semantic_model(app, None),
         ActionId::AddPostCommand
         | ActionId::RemovePostCommand(_)
         | ActionId::AddIntegration
@@ -1672,3 +1674,109 @@ pub(super) fn delete_preset(app: &mut App, mode: &str, name: &str) -> Task<Messa
 
 #[cfg(test)]
 mod tests;
+
+fn delete_semantic_model(app: &mut App, index: Option<u16>) -> Task<Message> {
+    if app.panels.settings.semantic_importing {
+        return Task::none();
+    }
+    let models = app.config.array_values(skwd_config::keys::semantic::MODELS);
+    let selected = app.config.str_path(skwd_config::keys::semantic::MANIFEST);
+    let manifest = match index {
+        Some(index) => {
+            let Some(path) = models
+                .get(usize::from(index))
+                .and_then(|model| model.get("manifest"))
+                .and_then(serde_json::Value::as_str)
+                .filter(|path| !path.trim().is_empty())
+            else {
+                return Task::none();
+            };
+            path.to_string()
+        }
+        None => selected.clone(),
+    };
+    let resolved = if index.is_some() {
+        Ok(std::path::PathBuf::from(&manifest))
+    } else {
+        crate::infrastructure::semantic::SemanticPaths::manifest(&app.config.cache_dir(), &manifest)
+    };
+    let id = models
+        .iter()
+        .find(|model| {
+            model.get("manifest").and_then(serde_json::Value::as_str) == Some(manifest.as_str())
+                && model.get("managed").and_then(serde_json::Value::as_bool) == Some(true)
+        })
+        .and_then(|model| model.get("id"))
+        .and_then(serde_json::Value::as_str)
+        .map(String::from);
+    let current_path = crate::infrastructure::semantic::SemanticPaths::manifest(
+        &app.config.cache_dir(),
+        &selected,
+    )
+    .ok()
+    .and_then(|path| path.canonicalize().ok());
+    let target_path = resolved.as_ref().ok().and_then(|path| path.canonicalize().ok());
+    let selected = (index.is_none()
+        || selected == manifest
+        || current_path.is_some() && current_path == target_path)
+        .then_some(selected);
+    if selected.is_some() {
+        super::settings_policy::save_value(
+            app,
+            skwd_config::keys::semantic::ENABLED,
+            &json!(false),
+        );
+    }
+    app.panels.settings.semantic_importing = true;
+    app.panels.settings.semantic_import_status =
+        crate::i18n::tr("settings-semantic-delete-progress").to_string();
+    app.invalidate_settings();
+    app.retick();
+    iced_runtime::task::blocking(move |mut sender| {
+        let result = resolved.and_then(|path| {
+            crate::infrastructure::semantic_pack::delete_model(&path, id.as_deref())
+        });
+        let _ = sender.try_send(Message::SemanticModelDeleted(manifest, selected, result));
+    })
+}
+
+pub(super) fn semantic_model_deleted(
+    app: &mut App,
+    manifest: &str,
+    selected: Option<&str>,
+    result: Result<(), String>,
+) -> Task<Message> {
+    app.panels.settings.semantic_importing = false;
+    match result {
+        Ok(()) => {
+            let mut models = app.config.array_values(skwd_config::keys::semantic::MODELS);
+            models.retain(|model| {
+                model.get("manifest").and_then(serde_json::Value::as_str) != Some(manifest)
+            });
+            app.config.save_key(skwd_config::keys::semantic::MODELS, json!(models));
+            let current = app.config.str_path(skwd_config::keys::semantic::MANIFEST);
+            if current == manifest || selected == Some(current.as_str()) {
+                super::settings_policy::save_value(
+                    app,
+                    skwd_config::keys::semantic::ENABLED,
+                    &json!(false),
+                );
+                super::settings_policy::save_value(
+                    app,
+                    skwd_config::keys::semantic::MANIFEST,
+                    &json!(""),
+                );
+            }
+            app.panels.settings.semantic_import_status =
+                crate::i18n::tr("settings-semantic-delete-complete").to_string();
+        }
+        Err(error) => {
+            app.panels.settings.semantic_import_status =
+                crate::i18n::tr_args!("settings-semantic-delete-error", error => error);
+        }
+    }
+    app.init_settings_inputs();
+    app.invalidate_settings();
+    app.retick();
+    Task::none()
+}

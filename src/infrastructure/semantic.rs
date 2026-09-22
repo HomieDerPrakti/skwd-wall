@@ -159,22 +159,28 @@ impl Drop for ActiveProcess {
 }
 
 impl SemanticPaths {
+    pub fn manifest(cache_dir: &str, selected_manifest: &str) -> Result<PathBuf, String> {
+        let home = env_path_with_fallback("SKWD_LENS_HOME", "SKWD_SEMANTIC_HOME");
+        let explicit_manifest =
+            env_path_with_fallback("SKWD_LENS_MANIFEST", "SKWD_SEMANTIC_MANIFEST").or_else(|| {
+                (!selected_manifest.trim().is_empty()).then(|| PathBuf::from(selected_manifest))
+            });
+        let home_manifest = home.as_ref().map(|root| root.join("semantic-pack.json"));
+        explicit_manifest
+            .or(home_manifest.filter(|path| path.is_file()))
+            .or_else(|| installed_manifest(cache_dir))
+            .ok_or_else(|| String::from("semantic model pack is not installed"))
+    }
+
     pub fn discover(
         cache_dir: &str,
         selected_manifest: &str,
         profile: &str,
     ) -> Result<Self, String> {
         let home = env_path_with_fallback("SKWD_LENS_HOME", "SKWD_SEMANTIC_HOME");
-        let explicit_manifest =
-            env_path_with_fallback("SKWD_LENS_MANIFEST", "SKWD_SEMANTIC_MANIFEST").or_else(|| {
-                (!selected_manifest.trim().is_empty()).then(|| PathBuf::from(selected_manifest))
-            });
-        let custom_manifest = explicit_manifest.is_some();
-        let home_manifest = home.as_ref().map(|root| root.join("semantic-pack.json"));
-        let manifest = explicit_manifest
-            .or(home_manifest.filter(|path| path.is_file()))
-            .or_else(|| installed_manifest(cache_dir))
-            .ok_or_else(|| String::from("semantic model pack is not installed"))?;
+        let custom_manifest = !selected_manifest.trim().is_empty()
+            || env_path_with_fallback("SKWD_LENS_MANIFEST", "SKWD_SEMANTIC_MANIFEST").is_some();
+        let manifest = Self::manifest(cache_dir, selected_manifest)?;
         let profile = if profile == "multiview" { "multiview" } else { "full" };
         let installed_index = (!custom_manifest && profile == "full")
             .then(|| home.as_ref().map(|root| root.join("index.sidx")))
@@ -232,6 +238,16 @@ impl SemanticPaths {
 }
 
 impl SemanticTooling {
+    pub fn helper() -> Result<PathBuf, String> {
+        let bin = env_path_with_fallback("SKWD_LENS_BIN", "SKWD_SEMANTIC_BIN")
+            .or_else(installed_bin)
+            .ok_or_else(|| String::from("skwd-lens is not installed"))?;
+        if !executable::is_executable(&bin) {
+            return Err(format!("Lens helper is not executable at {}", bin.display()));
+        }
+        Ok(bin)
+    }
+
     pub fn discover(cache_dir: &str, selected_manifest: &str) -> Result<Self, String> {
         let home = env_path_with_fallback("SKWD_LENS_HOME", "SKWD_SEMANTIC_HOME");
         let selected_root = (!selected_manifest.trim().is_empty())
@@ -246,12 +262,7 @@ impl SemanticTooling {
             .or_else(|| data_root.as_deref().and_then(find_runtime))
             .or_else(|| installed_manifest(cache_dir).and_then(|path| find_runtime_near(&path)))
             .ok_or_else(|| String::from("semantic ONNX Runtime is not installed"))?;
-        let bin = env_path_with_fallback("SKWD_LENS_BIN", "SKWD_SEMANTIC_BIN")
-            .or_else(installed_bin)
-            .ok_or_else(|| String::from("skwd-lens is not installed"))?;
-        if !executable::is_executable(&bin) {
-            return Err(format!("Lens helper is not executable at {}", bin.display()));
-        }
+        let bin = Self::helper()?;
         if !runtime.is_file() {
             return Err(format!("semantic runtime not found at {}", runtime.display()));
         }

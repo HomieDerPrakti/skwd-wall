@@ -160,6 +160,7 @@ impl App {
     pub(in crate::app) fn adopt_external_config(&mut self) -> bool {
         let saved_themes_before = self.config.array_values(skwd_config::keys::theme::SAVED_THEMES);
         let semantic_before = (
+            self.config.flag_default_true(skwd_config::keys::semantic::ENABLED),
             self.config.str_path(skwd_config::keys::semantic::MANIFEST),
             self.config.str_path(skwd_config::keys::semantic::INDEX_PROFILE),
         );
@@ -173,6 +174,7 @@ impl App {
         crate::i18n::set_language(&self.config.str_path(skwd_config::keys::general::LANGUAGE));
         crate::shell::reload_ui_font(previous);
         let semantic_after = (
+            self.config.flag_default_true(skwd_config::keys::semantic::ENABLED),
             self.config.str_path(skwd_config::keys::semantic::MANIFEST),
             self.config.str_path(skwd_config::keys::semantic::INDEX_PROFILE),
         );
@@ -194,6 +196,7 @@ impl App {
             graphics.tier,
         ));
         self.apply_layout();
+        self.sync_semantic_enabled();
         if semantic_before != semantic_after {
             self.clear_semantic_search();
             self.request_semantic_search();

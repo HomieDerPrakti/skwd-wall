@@ -1109,3 +1109,166 @@ fn transition_rate_input_and_auto_leave_playback_and_preview_unchanged() {
         assert_eq!(app.config.num_path(skwd_config::keys::transition::PREVIEW_FPS), preview);
     }
 }
+
+#[test]
+fn disabling_semantic_search_preserves_tags_and_rejects_shortcuts_and_late_results() {
+    use crate::frontend::settings::SettingsMsg;
+    use crate::frontend::tagcloud::TagMsg;
+    let mut app = test_app();
+    app.tags.search_mode = SearchMode::Describe;
+    app.tags.semantic.search = String::from("green forest");
+    app.tags.semantic.pending = true;
+    app.tags.semantic.ranked = vec![String::from("old-result")];
+    app.library_session.filters.tags = vec![String::from("nature")];
+    let generation = app.tags.semantic.generation;
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Toggle(skwd_config::keys::semantic::ENABLED.into(), false)),
+    );
+    assert_eq!(app.tags.search_mode, SearchMode::Tags);
+    assert!(!app.tags.semantic.pending);
+    assert!(app.tags.semantic.ranked.is_empty());
+    assert_eq!(app.library_session.filters.tags, ["nature"]);
+    assert!(app.tags.tag_search.contains("nature"));
+    let _ = update(&mut app, Message::Tag(TagMsg::CycleSearchMode));
+    let _ = update(&mut app, Message::Tag(TagMsg::SearchMode(SearchMode::Describe)));
+    assert_eq!(app.tags.search_mode, SearchMode::Tags);
+    app.prewarm_semantic_search();
+    assert!(app.runtime_state.semantic.is_none());
+    app.apply_semantic_result(crate::infrastructure::semantic::SemanticResult {
+        generation,
+        keys: vec![String::from("late-result")],
+        exclusions: Vec::new(),
+        query_ms: 1.0,
+        search_ms: 1.0,
+        error: None,
+    });
+    assert!(app.tags.semantic.ranked.is_empty());
+    let _ = update(
+        &mut app,
+        Message::Settings(SettingsMsg::Toggle(skwd_config::keys::semantic::ENABLED.into(), true)),
+    );
+    let _ = update(&mut app, Message::Tag(TagMsg::CycleSearchMode));
+    assert_eq!(app.tags.search_mode, SearchMode::Describe);
+    assert_eq!(app.library_session.filters.tags, ["nature"]);
+}
+
+#[test]
+fn disabled_semantic_search_overrides_describe_default_on_startup_and_open() {
+    let mut app = App::with_config(Config::from_data(json!({
+        "semantic": {"enabled": false}, "tagging": {"defaultSearchMode": "describe"}
+    })));
+    assert_eq!(app.tags.search_mode, SearchMode::Tags);
+    let _ = update(&mut app, Message::OpenTagCloud);
+    assert_eq!(app.tags.search_mode, SearchMode::Tags);
+    assert!(app.runtime_state.semantic.is_none());
+}
+
+#[test]
+fn deleted_model_clears_only_matching_entries_and_disables_selected_search() {
+    let mut app = test_app();
+    app.config.set_key(
+        skwd_config::keys::semantic::MODELS,
+        json!([
+            {"manifest": "/models/first/semantic-pack.json", "managed": true},
+            {"manifest": "/models/second/semantic-pack.json", "managed": true}
+        ]),
+    );
+    app.config
+        .set_key(skwd_config::keys::semantic::MANIFEST, json!("/models/first/semantic-pack.json"));
+    let _ = update(
+        &mut app,
+        Message::SemanticModelDeleted("/models/first/semantic-pack.json".into(), None, Ok(())),
+    );
+    assert_eq!(app.config.array_len(skwd_config::keys::semantic::MODELS), 1);
+    assert_eq!(
+        app.config.array_values(skwd_config::keys::semantic::MODELS)[0]["manifest"],
+        "/models/second/semantic-pack.json"
+    );
+    assert_eq!(app.config.str_path(skwd_config::keys::semantic::MANIFEST), "");
+    assert!(!app.config.flag_default_true(skwd_config::keys::semantic::ENABLED));
+}
+
+#[test]
+fn failed_model_deletion_keeps_registration_and_reports_the_error() {
+    let mut app = test_app();
+    app.config.set_key(
+        skwd_config::keys::semantic::MODELS,
+        json!([{"manifest": "/model/semantic-pack.json", "managed": true}]),
+    );
+    let _ = update(
+        &mut app,
+        Message::SemanticModelDeleted(
+            "/model/semantic-pack.json".into(),
+            None,
+            Err("permission denied".into()),
+        ),
+    );
+    assert_eq!(app.config.array_len(skwd_config::keys::semantic::MODELS), 1);
+    assert!(app.panels.settings.semantic_import_status.contains("permission denied"));
+    assert!(!app.panels.settings.semantic_importing);
+}
+
+#[test]
+fn default_model_deletion_disables_search_without_removing_tags_or_other_models() {
+    let mut app = test_app();
+    app.config.set_key(
+        skwd_config::keys::semantic::MODELS,
+        json!([
+            {"manifest": "/manual/model.json", "name": "Manual model"}
+        ]),
+    );
+    app.library_session.filters.tags = vec!["nature".into()];
+    let _ = update(&mut app, Message::SemanticModelDeleted(String::new(), None, Ok(())));
+    assert!(!app.config.flag_default_true(skwd_config::keys::semantic::ENABLED));
+    assert_eq!(app.config.array_len(skwd_config::keys::semantic::MODELS), 1);
+    assert_eq!(app.library_session.filters.tags, ["nature"]);
+    assert!(app.runtime_state.semantic.is_none());
+}
+
+#[test]
+fn manual_model_deletion_keeps_another_selected_model_enabled() {
+    let mut app = test_app();
+    app.config.set_key(
+        skwd_config::keys::semantic::MODELS,
+        json!([
+            {"manifest": "/manual/model.json"}, {"manifest": "/active/model.json"}
+        ]),
+    );
+    app.config.set_key(skwd_config::keys::semantic::MANIFEST, json!("/active/model.json"));
+    let _ =
+        update(&mut app, Message::SemanticModelDeleted("/manual/model.json".into(), None, Ok(())));
+    assert!(app.config.flag_default_true(skwd_config::keys::semantic::ENABLED));
+    assert_eq!(app.config.str_path(skwd_config::keys::semantic::MANIFEST), "/active/model.json");
+    assert_eq!(app.config.array_len(skwd_config::keys::semantic::MODELS), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn deleting_a_reference_to_the_active_model_stops_search_before_removal() {
+    use crate::frontend::settings::{ActionId, SettingsMsg};
+    let dir = tempfile::tempdir().unwrap();
+    let manifest = dir.path().join("semantic-pack.json");
+    let alias = dir.path().join("alias.json");
+    std::fs::write(&manifest, "{}").unwrap();
+    std::os::unix::fs::symlink(&manifest, &alias).unwrap();
+    let mut app = test_app();
+    app.config.set_key(skwd_config::keys::semantic::MANIFEST, json!(manifest));
+    app.config.set_key(skwd_config::keys::semantic::MODELS, json!([{"manifest":alias}]));
+    let action = ActionId::DeleteSemanticModel(0);
+    let _ = update(&mut app, Message::Settings(SettingsMsg::Run(action)));
+    assert!(app.config.flag_default_true(skwd_config::keys::semantic::ENABLED));
+    let _ = update(&mut app, Message::Settings(SettingsMsg::Run(action)));
+    assert!(!app.config.flag_default_true(skwd_config::keys::semantic::ENABLED));
+    assert!(manifest.is_file());
+    let _ = update(
+        &mut app,
+        Message::SemanticModelDeleted(
+            alias.to_string_lossy().into(),
+            Some(manifest.to_string_lossy().into()),
+            Ok(()),
+        ),
+    );
+    assert_eq!(app.config.str_path(skwd_config::keys::semantic::MANIFEST), "");
+    assert_eq!(app.config.array_len(skwd_config::keys::semantic::MODELS), 0);
+}

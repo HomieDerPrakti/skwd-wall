@@ -105,6 +105,9 @@ fn sync_audio(app: &mut App, path: &str, value: &Value) {
 }
 
 fn sync_picker_runtime(app: &mut App, path: &str) {
+    if path == skwd_config::keys::semantic::ENABLED {
+        app.sync_semantic_enabled();
+    }
     if path == skwd_config::keys::general::LANGUAGE {
         let previous = crate::i18n::active_script();
         crate::i18n::set_language(&app.config.str_path(path));

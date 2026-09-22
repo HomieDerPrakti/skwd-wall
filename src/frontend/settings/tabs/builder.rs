@@ -411,7 +411,7 @@ fn compose_filter_search(
         model_rows.insert(
             0,
             Row {
-                title: tr("settings-tagging-model-import-status-label").to_string(),
+                title: tr("settings-semantic-model-status-label").to_string(),
                 desc: analysis.to_string(),
                 control: Control::Static,
             },

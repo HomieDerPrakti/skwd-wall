@@ -8,6 +8,7 @@ pub trait SettingsSource {
     fn text(&self, path: &str) -> String;
     fn number(&self, path: &str) -> f64;
     fn array_len(&self, path: &str) -> usize;
+    fn default_semantic_model_available(&self) -> bool;
 
     fn display_mode(&self) -> String;
     fn selector_mode(&self) -> String;

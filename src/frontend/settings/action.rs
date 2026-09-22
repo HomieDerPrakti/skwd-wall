@@ -18,6 +18,8 @@ pub enum ActionId {
     ImportSemanticModel,
     AddSemanticModel,
     RemoveSemanticModel(u16),
+    DeleteSemanticModel(u16),
+    DeleteActiveSemanticModel,
     AddResolutionPreset,
     CreateResolutionPresetBand(&'static str),
     RemoveResolutionPreset(u16),
@@ -33,7 +35,14 @@ pub enum ActionId {
 
 impl ActionId {
     pub const fn is_destructive(self) -> bool {
-        matches!(self, Self::ClearCache | Self::OptimizeImages | Self::ResetKeybinds)
+        matches!(
+            self,
+            Self::ClearCache
+                | Self::OptimizeImages
+                | Self::ResetKeybinds
+                | Self::DeleteSemanticModel(_)
+                | Self::DeleteActiveSemanticModel
+        )
     }
 }
 
