@@ -63,7 +63,7 @@ pub(super) fn panel_layers(app: &App) -> Vec<Element<'_, Message>> {
     }
     if let Some(td) = &app.panels.theme_designer {
         let saved = crate::infrastructure::theme::saved_palettes(
-            &app.config.array_values(skwd_config::keys::theme::SAVED_THEMES),
+            app.config.array_slice(skwd_config::keys::theme::SAVED_THEMES),
         );
         layers.push(td.view(saved, app.scene.viewport, app.config.ui_scale(), &app.theme.palette));
     }

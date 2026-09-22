@@ -759,7 +759,8 @@ fn pinned_wallpaper_settings_restore_before_apply() {
     let _ =
         update(&mut app, Message::Theme(ThemeMsg::Option(skwd_config::keys::theme::MODE, "dark")));
     assert_eq!(
-        crate::app::update::theme::wallpaper_setting(&app, skwd_config::keys::theme::MODE),
+        crate::app::update::theme::selected_wallpaper_settings(&app)
+            .and_then(|settings| settings.get(skwd_config::keys::theme::MODE).cloned()),
         Some(json!("dark"))
     );
 
@@ -855,4 +856,121 @@ fn unpin_preserves_saved_colours_and_ends_hover() {
     assert_eq!(profiles[0]["dark"]["primary"], "#123456");
     assert_eq!(profiles[0]["enabled"], true);
     assert!(drain_calls(&app).iter().any(|(method, _)| method == "wall.shell_preview_end"));
+}
+
+#[test]
+fn pinned_backend_matches_full_config_overlay_without_mutation() {
+    use crate::app::update::theme::wallpaper_theme_backend_for;
+    use skwd_config::keys::theme;
+
+    let mut app = test_app();
+    for legacy in
+        ["", "off", "static", "matugen", "wallust", "noctalia", "dms", "caelestia", "end4"]
+    {
+        for settings in [
+            json!({}),
+            json!({"theme.policy": "fixed"}),
+            json!({"theme.policy": "off"}),
+            json!({"theme.policy": "wallpaper", "theme.authority": "noctalia"}),
+            json!({"theme.authority": "skwd", "theme.engine": "matugen"}),
+            json!({"theme.policy": "invalid", "theme.engine": 42}),
+        ] {
+            app.config = Config::from_data(json!({
+                "theme": {"backend": legacy, "wallpaperProfiles": [{
+                    "key": "pinned", "settingsPinned": true, "settings": settings,
+                    "dark": {"primary": "#123456"}, "light": {"primary": "#abcdef"}
+                }]},
+                "matugen": {"mode": "light"},
+                "unrelated": {"values": [1, 2, 3]}
+            }));
+            let before = app.config.root().clone();
+            let mut expected = before.clone();
+            let overrides = skwd_config::theme_profile::settings(
+                app.config.array_slice(theme::WALLPAPER_PROFILES),
+                "pinned",
+            )
+            .unwrap();
+            for (path, value) in overrides {
+                let (group, name) = path.split_once('.').unwrap();
+                expected[group][name] = value;
+            }
+            assert_eq!(
+                wallpaper_theme_backend_for(&app, "pinned"),
+                skwd_config::theme_backend(&expected)
+            );
+            assert_eq!(wallpaper_theme_backend_for(&app, "missing"), app.config.theme_backend());
+            assert_eq!(app.config.root(), &before);
+        }
+    }
+}
+
+#[cfg(feature = "obs-heap")]
+#[test]
+fn theme_preview_allocations_do_not_grow_with_saved_profiles() {
+    use crate::infrastructure::observability::allocation::thread_alloc_count;
+    use skwd_config::keys::theme;
+
+    let mut app = test_app();
+    seed(&mut app, &[wall("profile.png", "static", 1, 0)]);
+    let key = app.library_session.library.catalog().items[0].key.clone();
+    app.theme.preview_target = Some(0);
+    app.theme.fade_t.snap(1.0);
+    let now = Instant::now();
+    for pinned in [false, true] {
+        let mut small_allocations = 0;
+        for count in [1, 78] {
+            let colors: serde_json::Map<String, Value> = (0..64)
+                .map(|index| (format!("color-{index}"), json!({"color": "#123456", "tone": 40})))
+                .collect();
+            let profiles: Vec<_> = (0..count)
+                .map(|index| {
+                    json!({
+                        "key": if index == 0 {key.clone()} else {format!("other-{index}")},
+                        "settingsPinned": pinned && index == 0,
+                        "settings": {"theme.policy": "fixed", "theme.staticTheme": "nord"},
+                        "dark": {"_scheme": {"colors": colors}},
+                        "light": {"_scheme": {"colors": colors}}
+                    })
+                })
+                .collect();
+            app.config.set_key(theme::WALLPAPER_PROFILES, json!(profiles));
+            app.config.set_key("unrelated", json!({"nested": vec!["payload"; count * 128]}));
+            app.update_theme_preview(now, 0.016);
+            let before = thread_alloc_count();
+            for _ in 0..32 {
+                app.update_theme_preview(now, 0.016);
+                assert_eq!(crate::app::update::theme::wallpaper_settings_pinned(&app), pinned);
+            }
+            let allocations = thread_alloc_count() - before;
+            assert!(
+                allocations <= 128 * 32,
+                "pinned={pinned}, count={count}, allocations={allocations}"
+            );
+            if count == 1 {
+                small_allocations = allocations;
+            } else {
+                assert_eq!(allocations, small_allocations, "pinned={pinned}");
+            }
+        }
+    }
+}
+
+#[cfg(feature = "obs-heap")]
+#[test]
+fn saved_theme_names_do_not_clone_palette_payloads() {
+    use crate::contracts::settings::SettingsSource;
+    use crate::infrastructure::observability::allocation::thread_alloc_count;
+
+    let themes: Vec<_> = (0..78)
+        .map(|index| json!({"name": format!("theme-{index}"), "_scheme": vec!["#123456"; 1500]}))
+        .collect();
+    let app = test_app();
+    let mut config = app.config;
+    config.set_key(skwd_config::keys::theme::SAVED_THEMES, json!(themes));
+    let before = thread_alloc_count();
+    let names = config.saved_theme_names();
+    let allocations = thread_alloc_count() - before;
+    assert_eq!(names.len(), 78);
+    assert_eq!(names[0], "theme-0");
+    assert!(allocations < 100, "{allocations} allocations to read 78 names");
 }

@@ -102,8 +102,10 @@ fn theme_bar_model(
     backend_menu_open: bool,
     backend_count: usize,
 ) -> crate::frontend::ui::ThemeBar {
+    let settings = crate::app::update::theme::selected_wallpaper_settings(app);
+    let setting = |key: &str| settings.as_ref().and_then(|settings| settings.get(key));
     let or_default = |key: &str, def: &str| {
-        let val = crate::app::update::theme::wallpaper_setting(app, key)
+        let val = setting(key)
             .and_then(|value| value.as_str().map(str::to_string))
             .unwrap_or_else(|| app.config.str_path(key));
         if val.is_empty() { String::from(def) } else { val }
@@ -117,25 +119,19 @@ fn theme_bar_model(
         scheme: or_default(skwd_config::keys::matugen::SCHEME_TYPE, "scheme-fidelity"),
         style: or_default(skwd_config::keys::theme::STYLE, "natural"),
         iris_scheme: or_default(skwd_config::keys::theme::SCHEME, "tonal-spot"),
-        color_index: crate::app::update::theme::wallpaper_setting(
-            app,
-            skwd_config::keys::matugen::COLOR_INDEX,
-        )
-        .and_then(|value| value.as_u64())
-        .unwrap_or_else(|| app.config.num_path(skwd_config::keys::matugen::COLOR_INDEX) as u64)
-        .min(3) as u32,
+        color_index: setting(skwd_config::keys::matugen::COLOR_INDEX)
+            .and_then(serde_json::Value::as_u64)
+            .unwrap_or_else(|| app.config.num_path(skwd_config::keys::matugen::COLOR_INDEX) as u64)
+            .min(3) as u32,
         wallust_palette: or_default(skwd_config::keys::theme::WALLUST_PALETTE, "dark"),
         wallust_colorspace: or_default(skwd_config::keys::theme::WALLUST_COLORSPACE, "lab"),
         pywal_saturate: app.config.str_path(skwd_config::keys::theme::PYWAL_SATURATE),
         noctalia_scheme: or_default(skwd_config::keys::theme::NOCTALIA_SCHEME, "m3-tonal-spot"),
-        noctalia_pure_black: crate::app::update::theme::wallpaper_setting(
-            app,
-            skwd_config::keys::theme::NOCTALIA_PURE_BLACK,
-        )
-        .and_then(|value| value.as_bool())
-        .unwrap_or_else(|| {
-            app.config.flag_default_config(skwd_config::keys::theme::NOCTALIA_PURE_BLACK)
-        }),
+        noctalia_pure_black: setting(skwd_config::keys::theme::NOCTALIA_PURE_BLACK)
+            .and_then(serde_json::Value::as_bool)
+            .unwrap_or_else(|| {
+                app.config.flag_default_config(skwd_config::keys::theme::NOCTALIA_PURE_BLACK)
+            }),
         backend_count,
         wallpaper_settings_pinned: crate::app::update::theme::wallpaper_settings_pinned(app),
     }

@@ -419,6 +419,10 @@ impl Config {
         self.get(path).and_then(Value::as_array).cloned().unwrap_or_default()
     }
 
+    pub fn array_slice(&self, path: &str) -> &[Value] {
+        self.get(path).and_then(Value::as_array).map_or(&[], Vec::as_slice)
+    }
+
     pub fn array_push(&mut self, path: &str, value: Value) {
         let needs_init = !matches!(self.get(path), Some(Value::Array(_)));
         if needs_init {

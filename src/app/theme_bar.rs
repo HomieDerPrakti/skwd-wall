@@ -65,8 +65,8 @@ impl App {
         let Some(item) = self.library_session.library.catalog().items.get(idx) else {
             return self.reset_theme_preview(dt);
         };
-        let backend = crate::app::update::theme::wallpaper_theme_backend_for(self, &item.key);
-        let pinned = crate::app::update::theme::wallpaper_settings(self, &item.key).is_some();
+        let (backend, pinned) =
+            crate::app::update::theme::wallpaper_theme_state_for(self, &item.key);
         if backend == "off" || (backend == "static" && !pinned) {
             return self.reset_theme_preview(dt);
         }
@@ -124,8 +124,8 @@ impl App {
         let Some(item) = self.library_session.library.catalog().items.get(idx) else {
             return;
         };
-        let backend = crate::app::update::theme::wallpaper_theme_backend_for(self, &item.key);
-        let pinned = crate::app::update::theme::wallpaper_settings(self, &item.key).is_some();
+        let (backend, pinned) =
+            crate::app::update::theme::wallpaper_theme_state_for(self, &item.key);
         let enabled = if pinned {
             self.shell_hover_enabled_for(&backend, true)
         } else {

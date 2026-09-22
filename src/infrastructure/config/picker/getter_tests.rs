@@ -51,6 +51,18 @@ fn battery_saver_fps_cap() {
 }
 
 #[test]
+fn array_slice_borrows_values_and_defaults_to_empty() {
+    let conf = cfg(json!({"profiles": [{"key": "wallpaper", "dark": {"primary": "#123456"}}]}));
+    let values = conf.array_slice("profiles");
+    assert_eq!(values.as_ptr(), conf.root()["profiles"].as_array().unwrap().as_ptr());
+    assert_eq!(values, conf.array_values("profiles"));
+    for path in ["missing", "profiles.0", "profiles.0.key"] {
+        assert!(conf.array_slice(path).is_empty());
+    }
+    assert!(cfg(json!({"profiles": null})).array_slice("profiles").is_empty());
+}
+
+#[test]
 fn array_index_paths() {
     let mut conf = cfg(json!({
         "postProcessing": [

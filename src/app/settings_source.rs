@@ -77,7 +77,7 @@ impl SettingsSource for Config {
 
     fn saved_theme_names(&self) -> Vec<String> {
         crate::infrastructure::theme::saved_names(
-            &self.array_values(skwd_config::keys::theme::SAVED_THEMES),
+            self.array_slice(skwd_config::keys::theme::SAVED_THEMES),
         )
     }
 
@@ -91,7 +91,7 @@ impl SettingsSource for Config {
             .collect();
         palettes.extend(
             crate::infrastructure::theme::saved_palettes(
-                &self.array_values(skwd_config::keys::theme::SAVED_THEMES),
+                self.array_slice(skwd_config::keys::theme::SAVED_THEMES),
             )
             .into_iter()
             .map(|(name, palette)| (name, palette.colors.to_vec())),

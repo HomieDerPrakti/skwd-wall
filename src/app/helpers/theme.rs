@@ -10,8 +10,8 @@ pub(crate) fn local_static_palette(
     use crate::domain::theme::Candidate;
     use crate::infrastructure::theme::find_saved;
 
-    let saved = app.config.array_values(skwd_config::keys::theme::SAVED_THEMES);
-    let candidate = match find_saved(&saved, name) {
+    let saved = app.config.array_slice(skwd_config::keys::theme::SAVED_THEMES);
+    let candidate = match find_saved(saved, name) {
         Some(candidate) => candidate,
         None => Candidate::from_preset(name)?,
     };
@@ -22,9 +22,9 @@ pub(crate) fn theme_designer_open(app: &mut App) {
     use crate::domain::theme::Candidate;
     use crate::infrastructure::theme::find_saved;
 
-    let saved = app.config.array_values(skwd_config::keys::theme::SAVED_THEMES);
+    let saved = app.config.array_slice(skwd_config::keys::theme::SAVED_THEMES);
     let current = app.config.str_path(skwd_config::keys::theme::STATIC_THEME);
-    let designer = if let Some(candidate) = find_saved(&saved, &current) {
+    let designer = if let Some(candidate) = find_saved(saved, &current) {
         crate::frontend::theme_designer::ThemeDesigner::new(candidate, current)
     } else if let Some(preset) = Candidate::from_preset(&current) {
         crate::frontend::theme_designer::ThemeDesigner::new_from_preset(preset, current)

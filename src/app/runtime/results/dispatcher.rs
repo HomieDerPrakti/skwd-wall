@@ -139,7 +139,7 @@ impl App {
                                 let mut candidate = current.palette.clone();
                                 if let Some(profile) = self
                                     .config
-                                    .array_values(skwd_config::keys::theme::WALLPAPER_PROFILES)
+                                    .array_slice(skwd_config::keys::theme::WALLPAPER_PROFILES)
                                     .iter()
                                     .find(|profile| {
                                         profile["key"].as_str() == Some(&current.key)
@@ -163,7 +163,7 @@ impl App {
                             }
                             designer.profile_enabled = self
                                 .config
-                                .array_values(skwd_config::keys::theme::WALLPAPER_PROFILES)
+                                .array_slice(skwd_config::keys::theme::WALLPAPER_PROFILES)
                                 .iter()
                                 .any(|profile| {
                                     profile["key"].as_str() == Some(&current.key)
@@ -171,7 +171,7 @@ impl App {
                                 });
                             designer.settings_pinned = self
                                 .config
-                                .array_values(skwd_config::keys::theme::WALLPAPER_PROFILES)
+                                .array_slice(skwd_config::keys::theme::WALLPAPER_PROFILES)
                                 .iter()
                                 .any(|profile| {
                                     profile["key"].as_str() == Some(&current.key)
