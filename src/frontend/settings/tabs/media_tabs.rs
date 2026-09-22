@@ -419,6 +419,11 @@ pub(super) fn tab_sources(builder: &mut Builder<'_>) {
 
 pub(super) fn tab_search(builder: &mut Builder<'_>) {
     builder.card(tr("settings-tagging-search-card"), tr("settings-tagging-search-card-desc"));
+    builder.toggle(
+        tr("settings-semantic-enabled-label"),
+        tr("settings-semantic-enabled-desc"),
+        keys::semantic::ENABLED,
+    );
     builder.dropdown_cur(
         tr("settings-tagging-search-mode-label"),
         tr("settings-tagging-search-mode-desc"),
@@ -444,7 +449,13 @@ pub(super) fn tab_search(builder: &mut Builder<'_>) {
         tr("settings-tagging-model-import-action"),
     );
     let count = builder.cfg.array_len(keys::semantic::MODELS);
-    let mut options = vec![(String::new(), tr("settings-tagging-model-default").to_string())];
+    let default_available = builder.cfg.default_semantic_model_available();
+    let default_label = if default_available {
+        tr("settings-tagging-model-default")
+    } else {
+        tr("settings-semantic-model-not-installed")
+    };
+    let mut options = vec![(String::new(), default_label.to_string())];
     for idx in 0..count {
         let base = format!("{}.{idx}", keys::semantic::MODELS);
         let name = builder.cfg.text(&format!("{base}.name"));
@@ -471,6 +482,14 @@ pub(super) fn tab_search(builder: &mut Builder<'_>) {
         keys::semantic::MANIFEST,
         options,
     );
+    if default_available || !selected.is_empty() {
+        builder.action(
+            tr("settings-semantic-delete-action"),
+            tr("settings-semantic-delete-desc"),
+            ActionId::DeleteActiveSemanticModel,
+            tr("settings-semantic-delete-action"),
+        );
+    }
     builder.chips(
         tr("settings-tagging-index-profile-label"),
         tr("settings-tagging-index-profile-desc"),
@@ -514,6 +533,12 @@ pub(super) fn tab_search(builder: &mut Builder<'_>) {
                     tr("settings-tagging-model-manifest-desc"),
                     &manifest_path,
                     "/path/to/semantic-pack.json",
+                );
+                builder.action(
+                    "",
+                    tr("settings-semantic-delete-desc"),
+                    ActionId::DeleteSemanticModel(idx as u16),
+                    tr("settings-semantic-delete-action"),
                 );
                 builder.action(
                     "",

@@ -88,6 +88,10 @@ impl FakeSettingsSource {
 }
 
 impl SettingsSource for FakeSettingsSource {
+    fn default_semantic_model_available(&self) -> bool {
+        self.flag_default_true("test.defaultModelAvailable")
+    }
+
     fn flag(&self, path: &str) -> bool {
         self.flags.get(path).copied().or_else(|| schema::boolean_default(path)).unwrap_or(false)
     }

@@ -9,6 +9,10 @@ use super::super::*;
 
 impl App {
     fn ensure_semantic_service(&mut self) -> bool {
+        if !self.config.flag_default_true(skwd_config::keys::semantic::ENABLED) {
+            self.sync_semantic_enabled();
+            return false;
+        }
         if self.runtime_state.semantic.is_none() {
             let paths = match SemanticPaths::discover(
                 &self.config.cache_dir(),
@@ -69,7 +73,9 @@ impl App {
     }
 
     pub(in crate::app) fn request_semantic_search(&mut self) {
-        if self.tags.search_mode != SearchMode::Describe {
+        if !self.config.flag_default_true(skwd_config::keys::semantic::ENABLED)
+            || self.tags.search_mode != SearchMode::Describe
+        {
             self.clear_semantic_search();
             self.refilter_from_start();
             return;
@@ -121,7 +127,8 @@ impl App {
     }
 
     pub(in crate::app) fn apply_semantic_result(&mut self, mut result: SemanticResult) {
-        if self.tags.search_mode != SearchMode::Describe
+        if !self.config.flag_default_true(skwd_config::keys::semantic::ENABLED)
+            || self.tags.search_mode != SearchMode::Describe
             || result.generation != self.tags.semantic.generation
         {
             return;
@@ -155,6 +162,21 @@ impl App {
         }
         self.refilter_semantic_from_start();
         self.retick();
+    }
+
+    pub(in crate::app) fn sync_semantic_enabled(&mut self) {
+        if !self.config.flag_default_true(skwd_config::keys::semantic::ENABLED) {
+            self.clear_semantic_search();
+            self.tags.search_mode = SearchMode::Tags;
+            self.tags.semantic.search.clear();
+            self.tags.tag_search = sync_library_search(
+                &self.library_session.filters.tags,
+                &self.library_session.filters.numeric,
+            );
+            self.refilter_from_start();
+            self.chrome.bar.cache.clear();
+            self.retick();
+        }
     }
 
     pub(in crate::app) fn clear_semantic_search(&mut self) {

@@ -1103,7 +1103,7 @@ fn search_single_index() {
     assert_eq!(cards[0].0.title, "Search");
     assert_eq!(cards[1].0.title, "Semantic models");
 
-    let expected = [("Search", "search.discovery", "Describe", 2)];
+    let expected = [("Search", "search.discovery", "Describe", 3)];
     assert_eq!(cards[0].1.len(), expected.len());
     for (row, (title, expected_id, expected_summary, field_count)) in
         cards[0].1.iter().zip(expected)
@@ -1183,7 +1183,7 @@ fn model_import_progress() {
         build_tab("filter", &FakeSettingsSource::default(), &[], &[], "Validating pack", &[]);
     assert!(cards.iter().find(|(card, _)| card.title == "Semantic models").unwrap().1.iter().any(
         |row| {
-            row.title == "Model-pack import"
+            row.title == "Model status"
                 && row.desc == "Validating pack"
                 && matches!(row.control, Control::Static)
         }
@@ -1463,4 +1463,44 @@ fn other_audio_status_row_follows_daemon_playback_state() {
     }
     let rows = audio_rows(&cfg(), &crate::contracts::daemon::PlaybackStatus::default());
     assert!(rows.iter().all(|row| !matches!(row.control, Control::Static)));
+}
+
+#[test]
+fn default_and_manual_models_have_destructive_delete_actions() {
+    let cfg = FakeSettingsSource::default()
+        .with_array_len(keys::semantic::MODELS, 1)
+        .with_text("semantic.models.0.manifest", "/manual/model.json");
+    let cards = build_tab("filter", &cfg, &[], &[], "", &[]);
+    let rows = &cards.iter().find(|(card, _)| card.title == "Semantic models").unwrap().1;
+    assert!(rows.iter().any(|row| matches!(
+        row.control,
+        Control::ActionBtn { id: ActionId::DeleteActiveSemanticModel, .. }
+    )));
+    let detail = rows
+        .iter()
+        .find_map(|row| match &row.control {
+            Control::Details { rows, .. } => Some(rows),
+            _ => None,
+        })
+        .unwrap();
+    assert!(detail.iter().any(|row| matches!(
+        row.control,
+        Control::ActionBtn { id: ActionId::DeleteSemanticModel(0), .. }
+    )));
+    assert!(ActionId::DeleteActiveSemanticModel.is_destructive());
+    assert!(ActionId::DeleteSemanticModel(0).is_destructive());
+}
+
+#[test]
+fn removed_default_model_is_not_presented_as_installed() {
+    let cfg = FakeSettingsSource::default().with_flag("test.defaultModelAvailable", false);
+    let cards = build_tab("filter", &cfg, &[], &[], "", &[]);
+    let rows = &cards.iter().find(|(card, _)| card.title == "Semantic models").unwrap().1;
+    assert!(!rows.iter().any(|row| matches!(
+        row.control,
+        Control::ActionBtn { id: ActionId::DeleteActiveSemanticModel, .. }
+    )));
+    assert!(rows.iter().any(|row| matches!(&row.control,
+        Control::Dropdown { path, options, .. } if path == keys::semantic::MANIFEST
+            && options == &vec![(String::new(), String::from("Not installed"))])));
 }

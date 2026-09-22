@@ -334,6 +334,7 @@ pub(super) fn tag_cloud_layer(app: &App, vh: f32) -> Element<'_, Message> {
         match_any: app.library_session.filters.tags_match_any,
         search_mode: app.tags.search_mode,
         semantic_model: semantic_model_name(app),
+        semantic_enabled: app.config.flag_default_true(skwd_config::keys::semantic::ENABLED),
         search_text: if app.tags.search_mode == SearchMode::Tags {
             &app.tags.tag_search
         } else {

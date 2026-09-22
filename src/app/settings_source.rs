@@ -3,6 +3,11 @@ use crate::domain::input::InputMap;
 use crate::infrastructure::config::Config;
 
 impl SettingsSource for Config {
+    fn default_semantic_model_available(&self) -> bool {
+        crate::infrastructure::semantic::SemanticPaths::manifest(&self.cache_dir(), "")
+            .is_ok_and(|path| path.is_file())
+    }
+
     fn flag(&self, path: &str) -> bool {
         self.flag_default_config(path)
     }

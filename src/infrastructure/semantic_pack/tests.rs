@@ -41,3 +41,25 @@ fn helper_failure_surfaces() {
     .unwrap_err();
     assert_eq!(error, "bad pack");
 }
+
+#[test]
+fn deletion_refuses_external_paths_and_symlinked_pack_directories() {
+    let directory = tempfile::tempdir().unwrap();
+    let models = directory.path().join("models");
+    let external = directory.path().join("external");
+    std::fs::create_dir_all(&models).unwrap();
+    std::fs::create_dir_all(&external).unwrap();
+    let manifest = external.join("semantic-pack.json");
+    std::fs::write(&manifest, "{}").unwrap();
+    let bin = Path::new("/missing-helper");
+    assert!(
+        remove_pack(bin, &models, &manifest, "model").unwrap_err().contains("only models imported")
+    );
+    std::os::unix::fs::symlink(&external, models.join("linked")).unwrap();
+    assert!(
+        remove_pack(bin, &models, &models.join("linked/semantic-pack.json"), "model")
+            .unwrap_err()
+            .contains("only models imported")
+    );
+    assert!(manifest.is_file());
+}

@@ -204,6 +204,9 @@ pub(crate) fn update_inner(app: &mut App, message: Message) -> Task<Message> {
         Message::SetViewMode(mode) => settings::set_view_mode(app, &mode),
         Message::Settings(message) => settings::update(app, message),
         Message::SemanticModelImported(result) => settings::semantic_model_imported(app, result),
+        Message::SemanticModelDeleted(manifest, selected, result) => {
+            settings::semantic_model_deleted(app, &manifest, selected.as_deref(), result)
+        }
         Message::SettingsPreviewAllocated(path, allocation) => {
             app.finish_settings_preview(&path, allocation);
             Task::none()

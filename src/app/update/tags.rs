@@ -127,9 +127,13 @@ pub(super) fn open_tag_cloud(app: &mut App) -> Task<Message> {
         return Task::none();
     }
     app.tags.cloud_entrance.run(0.0, 1.0);
-    app.tags.search_mode = SearchMode::from_config(
-        &app.config.str_path(skwd_config::keys::tagging::DEFAULT_SEARCH_MODE),
-    );
+    app.tags.search_mode = if app.config.flag_default_true(skwd_config::keys::semantic::ENABLED) {
+        SearchMode::from_config(
+            &app.config.str_path(skwd_config::keys::tagging::DEFAULT_SEARCH_MODE),
+        )
+    } else {
+        SearchMode::Tags
+    };
     if app.tags.search_mode == SearchMode::Tags {
         app.tags.tag_search = sync_library_search(
             &app.library_session.filters.tags,
@@ -238,6 +242,11 @@ pub(super) fn clear_tags(app: &mut App) -> Task<Message> {
 }
 
 fn set_search_mode(app: &mut App, mode: SearchMode) -> Task<Message> {
+    let mode = if app.config.flag_default_true(skwd_config::keys::semantic::ENABLED) {
+        mode
+    } else {
+        SearchMode::Tags
+    };
     if app.tags.search_mode == mode {
         return Task::none();
     }

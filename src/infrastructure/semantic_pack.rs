@@ -112,3 +112,52 @@ fn output_error(output: &Output, operation: &str) -> String {
     let detail = String::from_utf8_lossy(&output.stderr).trim().to_owned();
     if detail.is_empty() { format!("cannot {operation}") } else { detail }
 }
+
+pub fn delete_model(manifest: &Path, managed_id: Option<&str>) -> Result<(), String> {
+    let bin = super::semantic::SemanticTooling::helper()?;
+    if let Some(id) = managed_id {
+        return remove_pack(&bin, &models_directory()?, manifest, id);
+    }
+    let output = Command::new(bin)
+        .arg("--remove-manifest")
+        .arg(manifest)
+        .output()
+        .map_err(|error| format!("start Lens model removal: {error}"))?;
+    removal_report(&checked(output, "delete model")?)
+}
+
+pub fn remove_pack(bin: &Path, models_dir: &Path, manifest: &Path, id: &str) -> Result<(), String> {
+    let models_dir = models_dir.canonicalize().map_err(|error| error.to_string())?;
+    let root = manifest.parent().ok_or_else(|| String::from("invalid model manifest path"))?;
+    let resolved = root.canonicalize().map_err(|error| error.to_string())?;
+    if resolved != root
+        || resolved.parent() != Some(models_dir.as_path())
+        || manifest.file_name() != Some(std::ffi::OsStr::new("semantic-pack.json"))
+    {
+        return Err(String::from(
+            "only models imported into the user model directory can be deleted",
+        ));
+    }
+    let component = resolved.file_name().ok_or_else(|| String::from("invalid model directory"))?;
+    let output = Command::new(bin)
+        .arg("--remove-pack")
+        .arg(id)
+        .arg("--models-dir")
+        .arg(models_dir)
+        .arg("--pack-component")
+        .arg(component)
+        .arg("--allow-active")
+        .output()
+        .map_err(|error| format!("start Lens model removal: {error}"))?;
+    let output = checked(output, "delete model pack")?;
+    removal_report(&output)
+}
+
+fn removal_report(output: &Output) -> Result<(), String> {
+    let report: serde_json::Value = serde_json::from_slice(&output.stdout)
+        .map_err(|error| format!("read Lens removal report: {error}"))?;
+    if report.get("removed").and_then(serde_json::Value::as_bool) != Some(true) {
+        return Err(String::from("Lens did not confirm model removal"));
+    }
+    Ok(())
+}
