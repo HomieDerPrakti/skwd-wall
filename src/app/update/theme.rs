@@ -370,11 +370,9 @@ pub(crate) fn restore_wallpaper_settings(app: &mut App, key: &str) {
 
 pub(crate) fn wallpaper_settings_pinned(app: &App) -> bool {
     selected_wallpaper_key(app).is_some_and(|key| {
-        app.config.array_values(skwd_config::keys::theme::WALLPAPER_PROFILES).iter().any(
-            |profile| {
-                profile["key"].as_str() == Some(key.as_str()) && profile["settingsPinned"] == true
-            },
-        )
+        app.config.array_slice(skwd_config::keys::theme::WALLPAPER_PROFILES).iter().any(|profile| {
+            profile["key"].as_str() == Some(key.as_str()) && profile["settingsPinned"] == true
+        })
     })
 }
 
@@ -388,7 +386,7 @@ pub(crate) fn wallpaper_settings(
     key: &str,
 ) -> Option<serde_json::Map<String, serde_json::Value>> {
     skwd_config::theme_profile::settings(
-        &app.config.array_values(skwd_config::keys::theme::WALLPAPER_PROFILES),
+        app.config.array_slice(skwd_config::keys::theme::WALLPAPER_PROFILES),
         key,
     )
 }
@@ -400,7 +398,18 @@ pub(crate) fn wallpaper_theme_backend(app: &App) -> String {
 
 pub(crate) fn wallpaper_theme_backend_for(app: &App, key: &str) -> String {
     let Some(settings) = wallpaper_settings(app, key) else { return app.config.theme_backend() };
-    let mut root = app.config.root().clone();
+    let mut root = json!({});
+    for group in ["theme", "matugen"] {
+        if let Some(object) = app.config.root().get(group).and_then(serde_json::Value::as_object) {
+            root[group] = serde_json::Value::Object(
+                object
+                    .iter()
+                    .filter(|(_, value)| !value.is_array() && !value.is_object())
+                    .map(|(key, value)| (key.clone(), value.clone()))
+                    .collect(),
+            );
+        }
+    }
     for (path, value) in settings {
         if let Some((group, name)) = path.split_once('.') {
             if !root[group].is_object() {
