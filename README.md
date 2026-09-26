@@ -167,7 +167,27 @@ skwd-wall-v2
 <Details>
 <Summary>NixOS</Summary>
 
-<h4>Declarative installation</h4>
+<Details>
+<Summary>Imperative Installation</Summary>
+
+```
+# Enable flakes if you don't already use them
+nix --extra-experimental-features 'nix-command flakes'
+
+# Install
+nix profile install github:liixini/skwd-wall/nix#default
+
+# If you're using KDE Plasma you need the KDE Plasma plugin
+nix profile install github:liixini/skwd-wall/nix#skwd-paper-plasma
+
+# run with (or put in a keybind, convenient script... up to you)...
+skwd-wall-v2
+```
+
+</Details>
+
+<Details>
+<Summary>Declarative Installation provided by HomieDerPrakti</Summary>
 
 This assumes a basic layout that looks like this:
 ```
@@ -243,22 +263,8 @@ in
 skwd-wall-v2
 ```
 
-<h4>Imperative installation</h4>
-
-```
-# Enable flakes if you don't already use them
-nix --extra-experimental-features 'nix-command flakes'
-
-# Install
-nix profile install github:liixini/skwd-wall/nix#default
-
-# If you're using KDE Plasma you need the KDE Plasma plugin
-nix profile install github:liixini/skwd-wall/nix#skwd-paper-plasma
-
-# run with (or put in a keybind, convenient script... up to you)...
-skwd-wall-v2
-```
-
+</Details>
+</Details>
 </Details>
 
 ### Fedora, Nobara etc.
@@ -386,3 +392,5 @@ Harman1307 for [Iris](https://github.com/Harman1307/iris) which I have reimpleme
 Achno for [Gowall](https://github.com/Achno/gowall) which I have reimplemented using Rust and similarly extended.
 
 InioX for [Matugen](https://github.com/InioX/matugen) that powers a lot of the WIP bridges between Pywal et. al. that I'm building.
+
+Kian Blakey for [Pibble](https://github.com/kianblakley/pibble) which the view mode Depth is heavily based on.
